@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar, Clock, Search, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/api/supabaseClient';
 
 const STATUS_CONFIG = {
     pending: { label: 'Pending', color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' },
@@ -23,9 +24,10 @@ export default function BookingsAdmin() {
     const [selected, setSelected] = useState(null);
     const [updating, setUpdating] = useState(false);
 
-    const load = () => {
+    const load = async () => {
         setLoading(true);
-        setBookings([]);
+        const { data } = await supabase.from('bookings').select('*').order('created_date', { ascending: false });
+        if (data) setBookings(data);
         setLoading(false);
     };
 

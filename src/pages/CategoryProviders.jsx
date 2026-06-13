@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ProviderCard from '../components/ProviderCard';
 import MapView from '../components/MapView';
 import useGeolocation from '../hooks/useGeolocation';
+import { supabase } from '@/api/supabaseClient';
 
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
@@ -38,12 +39,14 @@ export default function CategoryProviders() {
 
     useEffect(() => {
         const load = async () => {
-            const cats = [], allProviders = [], servicesInCat = [];
-            setCategory(cats[0] || null);
-            // Match by category_slugs OR by having a service in this category
-            const providerIdsWithServices = new Set(servicesInCat.map(s => s.provider_id));
-            const filtered = allProviders.filter(p =>
-                p.category_slugs?.includes(slug) || providerIdsWithServices.has(p.id)
+            setLoading(true);
+            const [{ data: cats }, { data: allProviders }] = await Promise.all([
+                supabase.from('service_categories').select('*').eq('slug', slug).limit(1),
+                supabase.from('providers').select('*').eq('status', 'approved'),
+            ]);
+            setCategory(cats?.[0] || null);
+            const filtered = (allProviders || []).filter(p =>
+                p.category_slugs?.includes(slug)
             );
             setProviders(filtered);
             setLoading(false);

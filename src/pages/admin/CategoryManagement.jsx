@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { supabase } from '@/api/supabaseClient';
 
 const EMPTY = { name: '', slug: '', description: '', icon: 'wrench', is_active: true, sort_order: 0 };
 
@@ -15,6 +16,13 @@ export default function CategoryManagement() {
     const [form, setForm] = useState(EMPTY);
     const [editId, setEditId] = useState(null);
     const [saving, setSaving] = useState(false);
+
+    const load = async () => {
+        setLoading(true);
+        const { data } = await supabase.from('service_categories').select('*').order('sort_order', { ascending: true });
+        if (data) setCategories(data);
+        setLoading(false);
+    };
 
     useEffect(() => { load(); }, []);
 

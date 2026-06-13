@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '@/api/supabaseClient';
 import {
     computePlatformKPIs, computeMonthlyRevenue, computeBookingsByDayOfWeek,
     computeTopProviders, computeStatusDistribution, computeRevenueByCategory,
@@ -67,7 +68,13 @@ export default function Analytics() {
 
     const load = async () => {
         setLoading(true);
-        const bookings = [], providers = [], reviews = [], services = [];
+        const [{ data: b }, { data: p }, { data: r }, { data: s }] = await Promise.all([
+            supabase.from('bookings').select('*'),
+            supabase.from('providers').select('*'),
+            supabase.from('reviews').select('*'),
+            supabase.from('services').select('*'),
+        ]);
+        const bookings = b || [], providers = p || [], reviews = r || [], services = s || [];
         const kpis = computePlatformKPIs({ bookings, providers, reviews });
         const monthly = computeMonthlyRevenue(bookings);
         const byDay = computeBookingsByDayOfWeek(bookings);

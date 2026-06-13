@@ -63,7 +63,7 @@ export default function ServiceBundles() {
         if (hasJoined(bundle)) { toast('You already joined this bundle'); return; }
         if ((bundle.current_participants || 1) >= bundle.max_participants) { toast.error('Bundle is full'); return; }
         setJoining(bundle.id);
-        setServiceBundles(prev => prev.map(b => b.id === bundle.id ? {
+        setBundles(prev => prev.map(b => b.id === bundle.id ? {
             ...b,
             participant_emails: [...(b.participant_emails || [b.organizer_email]), user.email],
             current_participants: (b.current_participants || 1) + 1,
@@ -91,7 +91,7 @@ export default function ServiceBundles() {
             discounted_price: discounted || undefined,
             status: 'forming',
         };
-        setServiceBundles(prev => [newBundle, ...prev]);
+        setBundles(prev => [newBundle, ...prev]);
         toast.success('Bundle created! Share with your neighbors.');
         setDialog(false);
         setForm(EMPTY);

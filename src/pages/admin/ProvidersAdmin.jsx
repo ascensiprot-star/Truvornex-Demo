@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CheckCircle, XCircle, Shield, Search, MapPin, Star, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/api/supabaseClient';
 
 const STATUS_COLORS = {
     pending: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
@@ -20,9 +21,10 @@ export default function ProvidersAdmin() {
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState(null);
 
-    const load = () => {
+    const load = async () => {
         setLoading(true);
-        setProviders([]);
+        const { data } = await supabase.from('providers').select('*').order('created_date', { ascending: false });
+        if (data) setProviders(data);
         setLoading(false);
     };
 

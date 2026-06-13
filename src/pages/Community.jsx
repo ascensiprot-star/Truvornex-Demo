@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import { supabase } from '@/api/supabaseClient';
 
 const POST_TYPES = {
     announcement: { icon: Megaphone, label: 'Announcement', emoji: '📢' },
@@ -142,6 +143,13 @@ export default function Community() {
     const [createDialog, setCreateDialog] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
+
+    const load = async () => {
+        setLoading(true);
+        const { data } = await supabase.from('community_posts').select('*').order('created_date', { ascending: false }).limit(50);
+        if (data) setPosts(data);
+        setLoading(false);
+    };
 
     useEffect(() => {
         load();
