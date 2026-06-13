@@ -1,1 +1,4 @@
 - [Truvornex import fixes](truvornex-fixes.md) — all broken Promise.all/undefined-var patterns from stripped Base44 API calls; fix pattern documented
+- [DeepSeek AI wiring](deepseek-wiring.md) — Simon AI uses VITE_DEEPSEEK_API_KEY via client-side fetch with SSE streaming; isConfigured() guard before every call
+- [Dark mode pattern](dark-mode-pattern.md) — never use hardcoded Tailwind colors (text-zinc-900, bg-white); always use CSS var() inline styles; prose needs explicit overrides in index.css
+- [Auth page](auth-page.md) — /login and /signup both render Login.jsx (tab-based toggle); routes must be outside all Layout wrappers in App.jsx

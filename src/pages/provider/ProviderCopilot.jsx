@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { computeTrustScore, optimizeSchedule, predictRepeatBookings, TRUST_TIER_STYLE } from '@/lib/ai/engine';
-import { Button } from '@/components/ui/button';
-import { Send, Bot, User, Sparkles, Loader2, TrendingUp, CalendarDays, DollarSign, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Loader2, TrendingUp, CalendarDays, DollarSign, ArrowRight, CheckCircle, AlertTriangle, RefreshCw, Cpu } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { format, subDays, startOfMonth } from 'date-fns';
+import { chatDeepSeek, isConfigured } from '@/lib/deepseek';
 
 const QUICK_PROMPTS = [
     'What should I prioritize today to maximize earnings?',
@@ -12,22 +12,56 @@ const QUICK_PROMPTS = [
     'How am I performing compared to last month?',
     'Give me tips to reduce cancellations.',
     'What services should I add to grow revenue?',
+    'How should I price my services competitively?',
+    'Create a 30-day growth plan for my business.',
 ];
 
 function MessageBubble({ msg }) {
     const isUser = msg.role === 'user';
     return (
         <div className={`flex gap-3 items-start ${isUser ? 'flex-row-reverse' : ''}`}>
-            <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 ${isUser ? 'bg-zinc-900' : 'bg-gradient-to-br from-indigo-500 to-violet-600'}`}>
-                {isUser ? <User className="h-4 w-4 text-white" /> : <Bot className="h-4 w-4 text-white" />}
+            <div className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
+                style={isUser
+                    ? { background: 'var(--color-primary)' }
+                    : { background: 'linear-gradient(135deg, #7c6fcd, #a855f7)' }}>
+                {isUser
+                    ? <User className="h-4 w-4" style={{ color: 'var(--color-on-primary)' }} />
+                    : <Bot className="h-4 w-4 text-white" />}
             </div>
-            <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser ? 'bg-zinc-900 text-white rounded-tr-sm' : 'bg-white border border-zinc-100 text-zinc-800 shadow-premium rounded-tl-sm'
-                }`}>
-                {isUser ? <p>{msg.content}</p> : (
-                    <ReactMarkdown className="prose prose-sm prose-zinc max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+            <div className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
+                style={isUser
+                    ? { background: 'var(--color-primary)', color: 'var(--color-on-primary)', borderTopRightRadius: 4 }
+                    : { background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)', borderTopLeftRadius: 4 }}>
+                {isUser
+                    ? <p>{msg.content}</p>
+                    : <ReactMarkdown className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                        style={{ color: 'var(--color-text)' }}>
                         {msg.content}
-                    </ReactMarkdown>
+                    </ReactMarkdown>}
+                {!isUser && (
+                    <p className="text-[9px] mt-2 font-mono opacity-40" style={{ color: 'var(--color-text-subtle)' }}>
+                        SIMON COPILOT · TRUVORNEX
+                    </p>
                 )}
+            </div>
+        </div>
+    );
+}
+
+function TypingIndicator() {
+    return (
+        <div className="flex gap-3 items-start">
+            <div className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: 'linear-gradient(135deg, #7c6fcd, #a855f7)' }}>
+                <Bot className="h-4 w-4 text-white" />
+            </div>
+            <div className="rounded-2xl px-4 py-3" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center gap-1">
+                    {[0, 1, 2].map(i => (
+                        <div key={i} className="h-1.5 w-1.5 rounded-full"
+                            style={{ background: 'var(--color-text-subtle)', animation: `bounce 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -39,23 +73,17 @@ export default function ProviderCopilot() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const [streamingContent, setStreamingContent] = useState('');
     const [dataLoading, setDataLoading] = useState(true);
     const bottomRef = useRef(null);
 
     useEffect(() => {
-        const load = async () => {
-            const provs = [];
-            const bks = [];
-            if (provs.length > 0) {
-                setProvider(provs[0]);
-                setBookings(bks.filter(b => b.provider_id === provs[0].id));
-            }
-            setDataLoading(false);
-        };
-        load().catch(() => setDataLoading(false));
+        setProvider(null);
+        setBookings([]);
+        setDataLoading(false);
     }, []);
 
-    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, loading]);
+    useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, loading, streamingContent]);
 
     const metrics = useMemo(() => {
         if (!provider) return null;
@@ -70,188 +98,171 @@ export default function ProviderCopilot() {
     }, [provider, bookings]);
 
     const buildSystemPrompt = () => {
-        if (!provider || !metrics) return '';
-        const ts = metrics.trust;
-        return `You are the AI Business Copilot for ${provider.business_name} on ServiceFlow.
+        const ts = metrics?.trust;
+        return `You are the AI Business Copilot for ${provider?.business_name || 'a Truvornex provider'}.
 
 Provider profile:
-- Business: ${provider.business_name}
-- Rating: ${provider.rating?.toFixed(1) || 'N/A'}/5.0 (${provider.review_count || 0} reviews)
-- Verified: ${provider.verified ? 'Yes' : 'No'}
-- Auto-confirm: ${provider.auto_confirm ? 'Yes' : 'No'}
+- Business: ${provider?.business_name || 'Not set up yet'}
+- Rating: ${provider?.rating?.toFixed(1) || 'N/A'}/5.0 (${provider?.review_count || 0} reviews)
+- Verified: ${provider?.verified ? 'Yes' : 'No'}
+- Trust Score: ${ts?.score || 'N/A'}/100 (${ts?.label || 'N/A'})
+- Completion Rate: ${ts?.completionRate || 0}%
 
-Performance metrics:
-- Trust score: ${ts.score}/100 (${ts.label} tier)
-- Completion rate: ${ts.completionRate}%
-- Total bookings: ${ts.total} (${ts.completed} completed, ${ts.cancelled} cancelled, ${ts.noShows} no-shows)
-- Revenue this month: $${metrics.monthRevenue.toFixed(0)}
-- Revenue all time: $${metrics.totalRevenue.toFixed(0)}
-- Bookings this week: ${metrics.weekBookings}
+Business metrics:
+- Total bookings: ${bookings.length}
+- This month revenue: $${metrics?.monthRevenue?.toFixed(0) || 0}
+- Total revenue: $${metrics?.totalRevenue?.toFixed(0) || 0}
+- Bookings this week: ${metrics?.weekBookings || 0}
+- Schedule optimizations: ${metrics?.suggestions?.map(s => s.message).join('; ') || 'none'}
+- Upcoming jobs: ${metrics?.schedule?.map(b => `${b.service_name} on ${b.date}`).join(', ') || 'none'}
 
-Upcoming schedule (next ${metrics.schedule.length} jobs):
-${metrics.schedule.map(b => `- ${b.service_name} on ${b.date} at ${b.time_slot} (${b.status})`).join('\n') || '- No upcoming bookings'}
-
-Schedule optimization suggestions:
-${metrics.suggestions.map(s => `- ${s.message}`).join('\n') || '- Schedule looks good!'}
-
-Your role:
-- Help this provider grow their business on the platform
-- Give specific, actionable advice on earnings, scheduling, and ratings
-- Flag any concerns in their metrics
-- Suggest ways to improve their trust score
-- Be direct, specific, and practical — no generic advice
-- Use markdown formatting for clarity`;
+You are a proactive, data-driven business advisor. Give specific, numbered action steps. Use markdown. Focus on revenue growth, efficiency, and customer satisfaction.`;
     };
 
     const send = async (text) => {
         const content = text || input.trim();
         if (!content || loading) return;
         setInput('');
-        const updated = [...messages, { role: 'user', content }];
-        setMessages(updated);
+
+        const newMsg = { role: 'user', content };
+        const history = [...messages, newMsg];
+        setMessages(history);
         setLoading(true);
-        const history = updated.map(m => `${m.role === 'user' ? 'Provider' : 'Copilot'}: ${m.content}`).join('\n\n');
+        setStreamingContent('');
+
+        if (!isConfigured()) {
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: '**Simon Copilot needs DeepSeek configured.** Add `VITE_DEEPSEEK_API_KEY` to your Replit secrets to activate AI responses.',
+            }]);
+            setLoading(false);
+            return;
+        }
+
         try {
-            const response = `**Demo Mode** — AI backend not configured. Please set up Supabase and an AI provider.\n\n**Your message:** ${content}`;
-            setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-        } catch {
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Connection issue. Please try again.' }]);
+            let full = '';
+            await chatDeepSeek({
+                messages: history.map(m => ({ role: m.role, content: m.content })),
+                systemPrompt: buildSystemPrompt(),
+                temperature: 0.7,
+                maxTokens: 1500,
+                onChunk: (delta, acc) => {
+                    full = acc;
+                    setStreamingContent(acc);
+                },
+            });
+            setMessages(prev => [...prev, { role: 'assistant', content: full }]);
+        } catch (e) {
+            setMessages(prev => [...prev, { role: 'assistant', content: `**Error:** ${e.message}` }]);
         }
         setLoading(false);
+        setStreamingContent('');
     };
 
-    if (dataLoading) return (
-        <div className="flex justify-center py-20">
-            <div className="w-6 h-6 border-2 border-border border-t-foreground rounded-full animate-spin" />
-        </div>
-    );
-
-    if (!provider) return (
-        <div className="max-w-lg">
-            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 text-sm text-amber-800">
-                Set up your provider profile first to access the AI Copilot.
-            </div>
-        </div>
-    );
-
-    const ts = metrics?.trust;
-    const tierStyle = TRUST_TIER_STYLE[ts?.tier] || TRUST_TIER_STYLE.new;
+    const hasMessages = messages.length > 0;
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5 h-[calc(100vh-8rem)] max-h-[760px]">
-            {/* Sidebar: metrics */}
-            <div className="space-y-4 overflow-y-auto lg:max-h-full">
-                {/* Trust score */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-premium">
-                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Trust Score</p>
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="text-4xl font-black">{ts?.score}</div>
-                        <div>
-                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${tierStyle.bg} ${tierStyle.text} ${tierStyle.border}`}>
-                                {ts?.label}
+        <div className="flex flex-col h-[calc(100vh-7rem)] max-h-[900px]">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4 shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-xl flex items-center justify-center"
+                        style={{ background: 'linear-gradient(135deg, rgba(124,111,205,0.2), rgba(168,85,247,0.15))', border: '1px solid rgba(124,111,205,0.3)' }}>
+                        <Sparkles className="h-4 w-4" style={{ color: '#7c6fcd' }} />
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h1 className="font-bold text-base tracking-tight" style={{ color: 'var(--color-primary)' }}>
+                                Simon Copilot
+                            </h1>
+                            <span className="flex items-center gap-1">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>DeepSeek · Live</span>
                             </span>
                         </div>
-                    </div>
-                    <div className="h-2 bg-zinc-100 rounded-full overflow-hidden mb-3">
-                        <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all" style={{ width: `${ts?.score}%` }} />
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                        {[['Completion', `${ts?.completionRate}%`], ['Bookings', ts?.total], ['Rating', `${provider.rating?.toFixed(1) || '—'}`]].map(([l, v]) => (
-                            <div key={l} className="bg-zinc-50 rounded-xl p-2">
-                                <p className="text-base font-black">{v}</p>
-                                <p className="text-[10px] text-zinc-400 font-medium">{l}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Earnings */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-premium">
-                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Earnings</p>
-                    <div className="space-y-2">
-                        {[['This Month', `$${metrics?.monthRevenue.toFixed(0)}`], ['All Time', `$${metrics?.totalRevenue.toFixed(0)}`], ['This Week', `${metrics?.weekBookings} jobs`]].map(([l, v]) => (
-                            <div key={l} className="flex items-center justify-between">
-                                <span className="text-xs text-zinc-400">{l}</span>
-                                <span className="text-sm font-bold">{v}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Schedule suggestions */}
-                {metrics?.suggestions.length > 0 && (
-                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
-                        <p className="text-[11px] font-bold text-amber-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                            <AlertTriangle className="h-3.5 w-3.5" /> Schedule Tips
+                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                            Your AI business advisor · {isConfigured() ? 'Ready' : 'API key required'}
                         </p>
-                        {metrics.suggestions.map((s, i) => (
-                            <p key={i} className="text-xs text-amber-800 mb-1.5">{s.message}</p>
-                        ))}
-                    </div>
-                )}
-
-                {/* Quick prompts */}
-                <div className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-premium">
-                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3">Quick Ask</p>
-                    <div className="space-y-1.5">
-                        {QUICK_PROMPTS.slice(0, 4).map(p => (
-                            <button key={p} onClick={() => send(p)}
-                                className="w-full text-left text-xs text-zinc-600 hover:text-zinc-900 py-1.5 px-2.5 rounded-lg hover:bg-zinc-50 transition-colors flex items-center gap-2">
-                                <ArrowRight className="h-3 w-3 text-zinc-300 shrink-0" />
-                                {p}
-                            </button>
-                        ))}
                     </div>
                 </div>
+                {hasMessages && (
+                    <button onClick={() => setMessages([])}
+                        className="h-8 w-8 rounded-lg flex items-center justify-center transition-colors"
+                        style={{ border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)' }}>
+                        <RefreshCw className="h-3.5 w-3.5" />
+                    </button>
+                )}
             </div>
 
             {/* Chat area */}
-            <div className="flex flex-col min-h-0">
-                <div className="flex items-center gap-3 mb-4 shrink-0">
-                    <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-                        <Sparkles className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                        <h1 className="font-inter font-black text-xl tracking-tight">Provider Copilot</h1>
-                        <p className="text-zinc-400 text-xs">Personalized AI advice for {provider.business_name}</p>
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto space-y-4 pr-1 min-h-0">
-                    {messages.length === 0 && (
-                        <div className="text-center pt-8">
-                            <Bot className="h-10 w-10 text-zinc-200 mx-auto mb-3" />
-                            <p className="text-zinc-400 text-sm">Ask me anything about your business performance, schedule, or growth strategy.</p>
-                        </div>
-                    )}
-                    {messages.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
-                    {loading && (
-                        <div className="flex gap-3 items-center">
-                            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-                                <Bot className="h-4 w-4 text-white" />
+            <div className="flex-1 overflow-y-auto space-y-3.5 pr-0.5 min-h-0">
+                {!hasMessages && (
+                    <div className="pt-6 pb-4">
+                        <div className="text-center mb-6">
+                            <div className="h-14 w-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                                style={{ background: 'linear-gradient(135deg, rgba(124,111,205,0.2), rgba(168,85,247,0.15))', border: '1px solid rgba(124,111,205,0.3)' }}>
+                                <Sparkles className="h-6 w-6" style={{ color: '#7c6fcd' }} />
                             </div>
-                            <div className="bg-white border border-zinc-100 rounded-2xl px-4 py-3 shadow-premium">
-                                <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
-                            </div>
+                            <h2 className="font-bold text-base mb-1" style={{ color: 'var(--color-primary)' }}>
+                                Hi, I'm Simon Copilot
+                            </h2>
+                            <p className="text-xs max-w-xs mx-auto leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                                Your AI business advisor. Ask me anything about growing your provider business.
+                            </p>
                         </div>
-                    )}
-                    <div ref={bottomRef} />
-                </div>
-
-                <div className="shrink-0 pt-3">
-                    <div className="glass rounded-2xl p-2 shadow-float">
-                        <div className="flex items-center gap-2">
-                            <input type="text" placeholder="Ask about earnings, schedule, growth…"
-                                className="flex-1 h-10 px-3 bg-transparent text-sm placeholder:text-zinc-400 focus:outline-none"
-                                value={input} onChange={e => setInput(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && send()} />
-                            <Button onClick={() => send()} disabled={!input.trim() || loading}
-                                className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 p-0">
-                                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                            </Button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {QUICK_PROMPTS.map(prompt => (
+                                <button key={prompt} onClick={() => send(prompt)} disabled={dataLoading || loading}
+                                    className="flex items-center gap-2.5 p-3 rounded-xl text-left text-xs transition-all group"
+                                    style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
+                                    <ArrowRight className="h-3 w-3 shrink-0 transition-transform group-hover:translate-x-0.5" style={{ color: 'var(--color-accent)' }} />
+                                    {prompt}
+                                </button>
+                            ))}
                         </div>
                     </div>
+                )}
+                {messages.map((msg, i) => <MessageBubble key={i} msg={msg} />)}
+                {loading && !streamingContent && <TypingIndicator />}
+                {loading && streamingContent && (
+                    <div className="flex gap-3 items-start">
+                        <div className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #7c6fcd, #a855f7)' }}>
+                            <Bot className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
+                            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)', borderTopLeftRadius: 4 }}>
+                            <ReactMarkdown className="prose prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                                {streamingContent}
+                            </ReactMarkdown>
+                            <span className="inline-block h-3 w-0.5 ml-0.5 bg-current animate-pulse" />
+                        </div>
+                    </div>
+                )}
+                <div ref={bottomRef} />
+            </div>
+
+            {/* Input */}
+            <div className="shrink-0 pt-3">
+                <div className="flex items-center gap-2 rounded-xl p-2 transition-all"
+                    style={{ border: '1px solid var(--color-border)', background: 'var(--color-surface)' }}>
+                    <input
+                        type="text" value={input} onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
+                        placeholder="Ask Simon anything about your business…"
+                        disabled={dataLoading || loading}
+                        className="flex-1 h-9 bg-transparent text-sm focus:outline-none px-2"
+                        style={{ color: 'var(--color-primary)' }}
+                    />
+                    <button onClick={() => send()} disabled={!input.trim() || loading || dataLoading}
+                        className="h-9 w-9 rounded-lg flex items-center justify-center transition-all disabled:opacity-40"
+                        style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                        {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                    </button>
                 </div>
+                <p className="text-center text-[9px] mt-2 tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
+                    SIMON AI · TRUVORNEX PROVIDER COPILOT · DEEPSEEK
+                </p>
             </div>
         </div>
     );

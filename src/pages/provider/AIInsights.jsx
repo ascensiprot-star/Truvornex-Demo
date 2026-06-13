@@ -1,18 +1,52 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Cpu, TrendingUp, Users, DollarSign, Star, Lightbulb, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, DollarSign, Star, Lightbulb, Loader2, RefreshCw, Cpu } from 'lucide-react';
+import { chatDeepSeek, isConfigured } from '@/lib/deepseek';
+import ReactMarkdown from 'react-markdown';
 
 const INSIGHT_TYPES = [
-    { id: 'revenue', label: 'Revenue Optimization', icon: DollarSign, prompt: (data) => `Analyze provider data and give revenue optimization strategies: ${JSON.stringify(data)}. Give 5 specific actions to increase revenue.` },
-    { id: 'customers', label: 'Customer Retention', icon: Users, prompt: (data) => `Analyze booking patterns and suggest customer retention strategies: ${JSON.stringify(data)}. Focus on repeat customers and loyalty.` },
-    { id: 'pricing', label: 'Dynamic Pricing', icon: TrendingUp, prompt: (data) => `Suggest optimal pricing strategy based on demand and competition: ${JSON.stringify(data)}. Give specific price points and when to apply them.` },
-    { id: 'scheduling', label: 'Schedule Optimization', icon: Star, prompt: (data) => `Optimize provider's schedule for maximum efficiency and earnings: ${JSON.stringify(data)}. Suggest best working hours and slot intervals.` },
+    {
+        id: 'revenue',
+        label: 'Revenue Optimization',
+        icon: DollarSign,
+        color: '#22c55e',
+        prompt: (data) => `Analyze this service provider's data and give 5 specific revenue optimization strategies:
+${JSON.stringify(data, null, 2)}
+Focus on pricing, upselling, and capacity utilization. Include estimated revenue impact for each.`,
+    },
+    {
+        id: 'customers',
+        label: 'Customer Retention',
+        icon: Users,
+        color: '#7c6fcd',
+        prompt: (data) => `Analyze booking patterns and give 5 customer retention strategies:
+${JSON.stringify(data, null, 2)}
+Focus on repeat customers, loyalty building, and reducing churn. Include specific action steps.`,
+    },
+    {
+        id: 'pricing',
+        label: 'Dynamic Pricing',
+        icon: TrendingUp,
+        color: '#f59e0b',
+        prompt: (data) => `Suggest an optimal dynamic pricing strategy for this provider:
+${JSON.stringify(data, null, 2)}
+Give specific price points for peak/off-peak, seasonal adjustments, and bundle pricing.`,
+    },
+    {
+        id: 'scheduling',
+        label: 'Schedule Optimization',
+        icon: Star,
+        color: '#06b6d4',
+        prompt: (data) => `Optimize this provider's schedule for maximum efficiency and earnings:
+${JSON.stringify(data, null, 2)}
+Recommend best working hours, slot intervals, day-of-week patterns, and how to reduce gaps.`,
+    },
 ];
 
 export default function AIInsights() {
     const [provider, setProvider] = useState(null);
     const [bookings, setBookings] = useState([]);
     const [insights, setInsights] = useState({});
+    const [streaming, setStreaming] = useState({});
     const [loading, setLoading] = useState({});
     const [pageLoading, setPageLoading] = useState(true);
 
@@ -23,73 +57,120 @@ export default function AIInsights() {
     }, []);
 
     const getInsight = async (type) => {
+        if (!isConfigured()) {
+            setInsights(i => ({ ...i, [type.id]: '**DeepSeek not configured** — Add `VITE_DEEPSEEK_API_KEY` to unlock Simon AI insights.' }));
+            return;
+        }
         setLoading(l => ({ ...l, [type.id]: true }));
+        setStreaming(s => ({ ...s, [type.id]: '' }));
         const data = {
-            provider: { business_name: provider?.business_name, rating: provider?.rating, city: provider?.city },
+            provider: { business_name: provider?.business_name || 'Demo Business', rating: provider?.rating || 4.5, city: provider?.city || 'Your City' },
             totalBookings: bookings.length,
             completed: bookings.filter(b => b.status === 'completed').length,
             revenue: bookings.filter(b => b.status === 'completed').reduce((s, b) => s + (b.price || 0), 0),
             avgPrice: bookings.length ? (bookings.reduce((s, b) => s + (b.price || 0), 0) / bookings.length).toFixed(2) : 0,
+            cancellations: bookings.filter(b => b.status === 'cancelled').length,
         };
-        const res = `**Demo Mode** — AI backend not configured. Please configure Supabase and an AI provider to enable Simon AI insights.\n\nData snapshot: ${JSON.stringify(data, null, 2)}`;
-        setInsights(i => ({ ...i, [type.id]: res }));
+        try {
+            let full = '';
+            await chatDeepSeek({
+                messages: [{ role: 'user', content: type.prompt(data) }],
+                systemPrompt: 'You are Simon, an elite AI business analyst for Truvornex service providers. Give precise, data-driven, actionable insights. Use markdown with headers and bullet points.',
+                temperature: 0.65,
+                maxTokens: 1000,
+                onChunk: (delta, acc) => {
+                    full = acc;
+                    setStreaming(s => ({ ...s, [type.id]: acc }));
+                },
+            });
+            setInsights(i => ({ ...i, [type.id]: full }));
+        } catch (e) {
+            setInsights(i => ({ ...i, [type.id]: `**Error:** ${e.message}` }));
+        }
         setLoading(l => ({ ...l, [type.id]: false }));
+        setStreaming(s => ({ ...s, [type.id]: '' }));
     };
 
-    if (pageLoading) return <div className="space-y-3">{[1, 2, 3, 4].map(i => <div key={i} className="skeleton-wave h-24 rounded-2xl" />)}</div>;
+    if (pageLoading) return (
+        <div className="space-y-3">
+            {[1, 2, 3, 4].map(i => <div key={i} className="skeleton-wave h-24 rounded-2xl" />)}
+        </div>
+    );
+
+    const totalRevenue = bookings.filter(b => b.status === 'completed').reduce((s, b) => s + (b.price || 0), 0);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 pb-24 md:pb-8">
+            {/* Header */}
             <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-zinc-900 flex items-center justify-center">
-                    <Cpu className="h-5 w-5 text-white" />
+                <div className="h-10 w-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(124,111,205,0.15)', border: '1px solid rgba(124,111,205,0.25)' }}>
+                    <Cpu className="h-5 w-5" style={{ color: '#7c6fcd' }} />
                 </div>
                 <div>
-                    <h1 className="font-display font-bold text-2xl tracking-tight">Simon Business Intelligence</h1>
-                    <p className="text-zinc-400 text-sm">AI-powered insights to grow your business</p>
+                    <h1 className="font-display font-bold text-2xl tracking-tight" style={{ color: 'var(--color-primary)' }}>
+                        Simon Business Intelligence
+                    </h1>
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                        AI-powered insights to grow your business · DeepSeek
+                    </p>
                 </div>
             </div>
 
             {/* Quick stats */}
             <div className="grid grid-cols-3 gap-3">
-                <div className="card-premium p-4">
-                    <div className="text-2xl font-black">{bookings.length}</div>
-                    <div className="text-xs text-zinc-400">Total Bookings</div>
-                </div>
-                <div className="card-premium p-4">
-                    <div className="text-2xl font-black">${bookings.filter(b => b.status === 'completed').reduce((s, b) => s + (b.price || 0), 0).toFixed(0)}</div>
-                    <div className="text-xs text-zinc-400">Revenue</div>
-                </div>
-                <div className="card-premium p-4">
-                    <div className="text-2xl font-black">{provider?.rating?.toFixed(1) || '—'}</div>
-                    <div className="text-xs text-zinc-400">Avg Rating</div>
-                </div>
+                {[
+                    { label: 'Total Bookings', value: bookings.length, color: '#7c6fcd' },
+                    { label: 'Revenue', value: `$${totalRevenue.toFixed(0)}`, color: '#22c55e' },
+                    { label: 'Avg Rating', value: provider?.rating?.toFixed(1) || '—', color: '#f59e0b' },
+                ].map(s => (
+                    <div key={s.label} className="card-premium p-4">
+                        <div className="text-2xl font-black" style={{ color: 'var(--color-primary)' }}>{s.value}</div>
+                        <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</div>
+                    </div>
+                ))}
             </div>
 
-            {INSIGHT_TYPES.map(type => (
-                <div key={type.id} className="card-premium p-5">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2.5">
-                            <div className="h-9 w-9 rounded-xl bg-zinc-100 flex items-center justify-center">
-                                <type.icon className="h-4 w-4 text-zinc-700" />
+            {/* Insight cards */}
+            {INSIGHT_TYPES.map(type => {
+                const display = loading[type.id] ? streaming[type.id] : insights[type.id];
+                return (
+                    <div key={type.id} className="card-premium p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2.5">
+                                <div className="h-9 w-9 rounded-xl flex items-center justify-center"
+                                    style={{ background: `${type.color}18` }}>
+                                    <type.icon className="h-4 w-4" style={{ color: type.color }} />
+                                </div>
+                                <div>
+                                    <h2 className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{type.label}</h2>
+                                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Simon AI · DeepSeek</p>
+                                </div>
                             </div>
-                            <h2 className="font-semibold text-sm">{type.label}</h2>
+                            <button onClick={() => getInsight(type)} disabled={loading[type.id]}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all disabled:opacity-50"
+                                style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                {loading[type.id]
+                                    ? <><Loader2 className="h-3 w-3 animate-spin" />Analyzing…</>
+                                    : insights[type.id]
+                                        ? <><RefreshCw className="h-3 w-3" />Refresh</>
+                                        : <><Lightbulb className="h-3 w-3" />Get Insight</>}
+                            </button>
                         </div>
-                        <Button size="sm" onClick={() => getInsight(type)} disabled={loading[type.id]} className="rounded-xl bg-zinc-900 h-8 gap-1.5">
-                            {loading[type.id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : insights[type.id] ? <RefreshCw className="h-3.5 w-3.5" /> : <Lightbulb className="h-3.5 w-3.5" />}
-                            {loading[type.id] ? 'Analyzing...' : insights[type.id] ? 'Refresh' : 'Get Insight'}
-                        </Button>
+                        {display ? (
+                            <div className="rounded-xl p-4 prose prose-sm max-w-none text-sm leading-relaxed"
+                                style={{ background: 'var(--color-surface-low)', color: 'var(--color-text)' }}>
+                                <ReactMarkdown>{display}</ReactMarkdown>
+                                {loading[type.id] && <span className="inline-block h-3 w-0.5 ml-0.5 bg-current animate-pulse" />}
+                            </div>
+                        ) : (
+                            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                                Click to get Simon's AI analysis for {type.label.toLowerCase()}.
+                            </p>
+                        )}
                     </div>
-                    {insights[type.id] ? (
-                        <div className="bg-zinc-50 rounded-xl p-4 text-sm text-zinc-700 leading-relaxed prose prose-sm prose-zinc max-w-none">
-                            {insights[type.id].slice(0, 600)}
-                            {insights[type.id].length > 600 && '...'}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-zinc-400">Click to get Simon's AI analysis for {type.label.toLowerCase()}.</p>
-                    )}
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }

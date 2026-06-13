@@ -306,6 +306,18 @@
         box-shadow: var(--shadow-sm);
     }
 
+    /* Prose (ReactMarkdown) dark mode overrides */
+    .prose { color: var(--color-text) !important; }
+    .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--color-primary) !important; }
+    .prose strong { color: var(--color-primary) !important; }
+    .prose a { color: var(--color-accent) !important; }
+    .prose code { color: var(--color-primary) !important; background-color: var(--color-surface-high) !important; }
+    .prose pre { background-color: var(--color-surface-high) !important; }
+    .prose blockquote { border-left-color: var(--color-border-strong) !important; color: var(--color-text-muted) !important; }
+    .prose ul > li::before { background-color: var(--color-text-subtle) !important; }
+    .prose ol > li::before { color: var(--color-text-subtle) !important; }
+    .prose hr { border-color: var(--color-border) !important; }
+
     /* Divider */
     .divider {
         border-top: 1px solid var(--color-border);
