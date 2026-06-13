@@ -1,0 +1,1 @@
+- [Truvornex import fixes](truvornex-fixes.md) — all broken Promise.all/undefined-var patterns from stripped Base44 API calls; fix pattern documented
