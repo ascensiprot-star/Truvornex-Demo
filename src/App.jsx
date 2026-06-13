@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { ThemeProvider } from '@/lib/ThemeContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SplashScreen from './components/SplashScreen';
 import CustomerLayout from './components/CustomerLayout';
@@ -80,26 +81,26 @@ import Transport from './pages/Transport';
 import Community from './pages/Community';
 
 const AuthenticatedApp = () => {
-    const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+    const { isLoadingAuth, authError } = useAuth();
 
-    if (isLoadingPublicSettings || isLoadingAuth) {
+    if (isLoadingAuth) {
         return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black">
+            <div className="fixed inset-0 flex items-center justify-center"
+                style={{ backgroundColor: 'var(--color-bg)' }}>
                 <div className="text-center">
-                    <div className="h-10 w-10 border-2 border-white/10 border-t-white/60 rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-white/30 text-xs tracking-widest uppercase font-mono-premium">Loading Truvornex</p>
+                    <div className="h-10 w-10 rounded-full animate-spin mx-auto mb-4"
+                        style={{ border: '2px solid var(--color-border-strong)', borderTopColor: 'var(--color-primary)' }} />
+                    <p className="text-xs tracking-widest uppercase"
+                        style={{ color: 'var(--color-text-subtle)' }}>
+                        Loading Truvornex
+                    </p>
                 </div>
             </div>
         );
     }
 
-    if (authError) {
-        if (authError.type === 'user_not_registered') {
-            return <UserNotRegisteredError />;
-        } else if (authError.type === 'auth_required') {
-            navigateToLogin();
-            return null;
-        }
+    if (authError && authError.type === 'user_not_registered') {
+        return <UserNotRegisteredError />;
     }
 
     return (
@@ -176,7 +177,6 @@ const AuthenticatedApp = () => {
                 <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/system-health" element={<SystemHealth />} />
                 <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/content" element={<ContentManagement />} />
             </Route>
-            {/* Block old /admin/* paths */}
             <Route path="/admin" element={<AdminGuard><div /></AdminGuard>} />
             <Route path="/admin/*" element={<AdminGuard><div /></AdminGuard>} />
             <Route path="/onboarding" element={<Onboarding />} />
@@ -187,28 +187,25 @@ const AuthenticatedApp = () => {
 };
 
 function App() {
-    const [splashDone, setSplashDone] = useState(false);
-    const hasSeenSplash = sessionStorage.getItem('sf_splash');
-
-    useEffect(() => {
-        if (hasSeenSplash) setSplashDone(true);
-    }, []);
+    const [splashDone, setSplashDone] = useState(() => !!localStorage.getItem('truvornex-splash-seen'));
 
     const handleSplashComplete = () => {
-        sessionStorage.setItem('sf_splash', '1');
+        localStorage.setItem('truvornex-splash-seen', '1');
         setSplashDone(true);
     };
 
     return (
-        <AuthProvider>
-            <QueryClientProvider client={queryClientInstance}>
-                {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
-                <Router>
-                    <AuthenticatedApp />
-                </Router>
-                <Toaster />
-            </QueryClientProvider>
-        </AuthProvider>
+        <ThemeProvider>
+            <AuthProvider>
+                <QueryClientProvider client={queryClientInstance}>
+                    {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
+                    <Router>
+                        <AuthenticatedApp />
+                    </Router>
+                    <Toaster />
+                </QueryClientProvider>
+            </AuthProvider>
+        </ThemeProvider>
     );
 }
 

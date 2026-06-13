@@ -27,14 +27,11 @@ export default function ManageServices() {
 
     const uploadImage = async (file) => {
         setUploadingImg(true);
-        setForm(f => ({ ...f, image_url: file_url }));
+        toast.error('Image upload requires Supabase storage to be configured.');
         setUploadingImg(false);
-        toast.success('Image uploaded!');
     };
 
     const load = async () => {
-        if (provs.length === 0) { setLoading(false); return; }
-        setProvider(provs[0]);
         setServices([]);
         setCategories([]);
         setLoading(false);

@@ -37,9 +37,8 @@ export default function ProviderProfile() {
 
     const uploadImage = async (file, field, setUploading) => {
         setUploading(true);
-        set(field, file_url);
+        toast.error('Image upload requires Supabase storage to be configured.');
         setUploading(false);
-        toast.success('Image uploaded!');
     };
 
     const getMyLocation = () => {

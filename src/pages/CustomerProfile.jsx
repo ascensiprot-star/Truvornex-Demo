@@ -25,14 +25,18 @@ export default function CustomerProfile() {
 
     const uploadAvatar = async (file) => {
         setUploadingAvatar(true);
-        setForm(f => ({ ...f, avatar_url: file_url }));
+        toast.error('Image upload requires Supabase storage to be configured.');
         setUploadingAvatar(false);
-        toast.success('Photo updated!');
     };
 
     if (!user) return (
-        <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-3 border-zinc-200 border-t-zinc-800 rounded-full animate-spin" />
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
+                style={{ backgroundColor: 'var(--color-surface-high)' }}>
+                <User className="h-8 w-8" style={{ color: 'var(--color-text-subtle)' }} />
+            </div>
+            <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--color-primary)' }}>Sign in to view your profile</h2>
+            <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>Connect your Supabase account to manage your profile.</p>
         </div>
     );
 

@@ -17,11 +17,9 @@ export default function AIInsights() {
     const [pageLoading, setPageLoading] = useState(true);
 
     useEffect(() => {
-            if (provs[0]) {
-                setProvider(provs[0]);
-                setBookings(bks);
-            }
-            setPageLoading(false);
+        setProvider(null);
+        setBookings([]);
+        setPageLoading(false);
     }, []);
 
     const getInsight = async (type) => {

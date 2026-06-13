@@ -1,208 +1,367 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+    Search, Sparkles, MapPin, ChevronRight, Star, Clock,
+    Sparkle, Zap, Wrench, Droplets, ChefHat, Truck,
+    Heart, GraduationCap, Camera, Monitor, PawPrint, Dumbbell,
+    CalendarDays, Leaf, ArrowRight, CheckCircle2, Shield, Award
+} from 'lucide-react';
+
+const SERVICE_CATEGORIES = [
+    { slug: 'cleaning',    label: 'Cleaning',       icon: Sparkle,      color: '#3b82f6' },
+    { slug: 'plumbing',    label: 'Plumbing',       icon: Droplets,     color: '#06b6d4' },
+    { slug: 'electrical',  label: 'Electrical',     icon: Zap,          color: '#f59e0b' },
+    { slug: 'moving',      label: 'Moving',         icon: Truck,        color: '#8b5cf6' },
+    { slug: 'beauty',      label: 'Beauty',         icon: Heart,        color: '#ec4899' },
+    { slug: 'chef',        label: 'Personal Chef',  icon: ChefHat,      color: '#ef4444' },
+    { slug: 'fitness',     label: 'Fitness',        icon: Dumbbell,     color: '#22c55e' },
+    { slug: 'tutoring',    label: 'Tutoring',       icon: GraduationCap,color: '#f97316' },
+    { slug: 'pet-care',    label: 'Pet Care',       icon: PawPrint,     color: '#84cc16' },
+    { slug: 'photography', label: 'Photography',    icon: Camera,       color: '#a855f7' },
+    { slug: 'tech',        label: 'Tech Support',   icon: Monitor,      color: '#0ea5e9' },
+    { slug: 'garden',      label: 'Gardening',      icon: Leaf,         color: '#16a34a' },
+];
+
+const FEATURED_PROVIDERS = [
+    {
+        id: 1,
+        name: 'Marcus V.',
+        role: 'Private Concierge',
+        rating: 4.9,
+        reviews: 142,
+        badge: 'Top Rated',
+        location: 'Upper East Side',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+        category: 'concierge',
+        online: true,
+    },
+    {
+        id: 2,
+        name: 'Elena Rose',
+        role: 'Personal Chef',
+        rating: 4.8,
+        reviews: 98,
+        badge: 'Premium',
+        location: 'Chelsea',
+        image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&q=80',
+        category: 'chef',
+        online: true,
+    },
+    {
+        id: 3,
+        name: 'David Chen',
+        role: 'Wellness Coach',
+        rating: 5.0,
+        reviews: 61,
+        badge: 'New',
+        location: 'Midtown',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
+        category: 'fitness',
+        online: false,
+    },
+    {
+        id: 4,
+        name: 'Sarah K.',
+        role: 'Interior Designer',
+        rating: 4.7,
+        reviews: 203,
+        badge: 'Verified',
+        location: 'Brooklyn',
+        image: 'https://images.unsplash.com/photo-1494790108755-2616b612b977?w=200&q=80',
+        category: 'design',
+        online: true,
+    },
+];
+
+const HOW_IT_WORKS = [
+    { icon: Search,      title: 'Discover',  desc: 'Browse hundreds of verified providers across every service category.' },
+    { icon: CalendarDays,title: 'Book',       desc: 'Instantly book with real-time availability. No calls, no hassle.' },
+    { icon: CheckCircle2,title: 'Done',       desc: 'Provider shows up, job gets done. Rate & review when finished.' },
+];
+
+const STATS = [
+    { value: '2,400+', label: 'Verified Providers' },
+    { value: '98%',    label: 'Satisfaction Rate' },
+    { value: '15,000+',label: 'Bookings Completed' },
+    { value: '4.9★',   label: 'Average Rating' },
+];
 
 export default function Home() {
-    const [activeCategory, setActiveCategory] = useState('Services');
+    const navigate = useNavigate();
+    const [search, setSearch] = useState('');
 
-    const categories = ['Services', 'Restaurants', 'Jobs', 'Events', 'Housing'];
-
-    const nearbyProviders = [
-        {
-            id: 1,
-            name: "Marcus V.",
-            role: "Private Concierge",
-            image: "https://lh3.googleusercontent.com/aida/AP1WRLtKLjXiejGW1uf_djtSf9lbE1oPYBI5bCEW21bV4pirU74SqPFGrksmZCZj56RwhbtZ943NrCA8MkcA3B-cs6_16mdxnDtXj42Hce_0yr-yLl-SEyMN75ntIrMm7Z58KO4EAxEv2zGdRxnSpTfK5IP8LrrJSQP2KijE5Cr9fygjn4W0Hf6rs1KwJXW4zq1nacu41KLTFXDHl8fVnmZakAypLowQIMmw8xCrqqqMLeUJHvd3gx4qagQwvjs",
-            statusColor: "bg-green-500"
-        },
-        {
-            id: 2,
-            name: "Elena Rose",
-            role: "Personal Chef",
-            image: "https://lh3.googleusercontent.com/aida/AP1WRLsOo0klgBxwqK-xiF3EEKFwTdkfWlO18DsDlkaQBXFJQbC0-aNjQe0TRkGuszMmFz0R_rnRGty0tSrrBlzWehqMo4zqJw3NCPS2LZtB-YP1l2X9V390ZF7odwjXOkaNLtWeFIinWk6yQxZ3B6UGBu0v5-xsgVpA24ne6A5Y3A3M5Tjyk9OnI49t2pPZNZvqEd-bYESPgRe3RKFxeykXvWV0amQx7ebqdRzGqsSB_bvLYZWKjWJzyWrYrdY",
-            statusColor: "bg-green-500"
-        },
-        {
-            id: 3,
-            name: "David Chen",
-            role: "Wellness Lead",
-            image: "https://lh3.googleusercontent.com/aida/AP1WRLuMaSQQ_BTdVrtUH3nGy7FbeIBKE2JSzqp0pdOmF2i05-zokgH07BJ3yEcG-Muj18pyJ9RdAVyi9cxu9psJE9WP8n8VVl-mpDX12eDbunmg5GhIFsIwx2_gX-JW0uuPmxcpN0deLxBdxDLjvkhaB3ZZeFieAYdHyuzgdUb2NuJJrWZpB9j8i9datk4NdF8vgxf3KUBaobNsIVPBVaBJ9eq8Otv_k25XgPsfCCxEfOtt8uuec056MDT_Kco",
-            statusColor: "bg-gray-500"
-        },
-        {
-            id: 4,
-            name: "Sarah K.",
-            role: "Estate Mgmt",
-            image: "https://lh3.googleusercontent.com/aida/AP1WRLta-JWh1gvJWxKtvPBYJ45ZBqSqwwBAdhuP2SOoWKwu6sHZ8bPi8DymBe0_Zv07rVoet4K6jIc3yr7br7kQ8_a-FupcwSulyL5JRE0B1H_qYrwyp2zZGJxHEhFOpUIG0wbR0B_Gdl2JQPgBgvbMYnfYljLj1u07LKbYhQ9cLyANyWNYFUrn_dX-1wAM4chst9lN_YW2pydL0VEA8O_sljkbW0hGXUJWQMwM4BogZYB7zTXiQLpgf3uQHEg",
-            statusColor: "bg-green-500"
-        }
-    ];
-
-    const upcomingEvents = [
-        {
-            id: 1,
-            title: "Jazz Underground",
-            location: "The Vanguard • 21:00",
-            month: "OCT",
-            day: "12",
-            isPrimary: true,
-            plusCount: 24,
-            avatars: ["bg-gray-500", "bg-gray-400", "bg-gray-300"]
-        },
-        {
-            id: 2,
-            title: "Digital Art Expo",
-            location: "MoMA Annex • 10:00",
-            month: "OCT",
-            day: "15",
-            isPrimary: false,
-            plusCount: 82,
-            avatars: ["bg-gray-500", "bg-gray-400"]
-        },
-        {
-            id: 3,
-            title: "Chef's Table: Noir",
-            location: "Private Atelier • 19:30",
-            month: "OCT",
-            day: "18",
-            isPrimary: false,
-            plusCount: 4,
-            avatars: ["bg-gray-500"]
-        }
-    ];
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (search.trim()) navigate(`/services?q=${encodeURIComponent(search.trim())}`);
+    };
 
     return (
-        <div className="w-full">
-            {/* Hero Section */}
-            <section className="mb-xl">
-                <h2 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-lg">
-                    Discover New York
-                </h2>
-                <div className="relative w-full max-w-2xl">
-                    <input 
-                        className="w-full h-14 bg-surface-container-high border-subtle rounded-lg px-12 text-body-md focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all duration-200" 
-                        placeholder="Search services, tables, or events..." 
-                        type="text" 
+        <div className="w-full space-y-12 fade-in">
+
+            {/* ── Hero ─────────────────────────────────────────────────── */}
+            <section className="pt-4 pb-2">
+                <div className="mb-3">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold mb-4"
+                        style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
+                        <Sparkles style={{ width: 12, height: 12 }} />
+                        Now with AI-powered matching
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-3"
+                        style={{ color: 'var(--color-primary)' }}>
+                        Every service,<br />
+                        <span style={{
+                            background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-text-muted) 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
+                        }}>at your fingertips.</span>
+                    </h1>
+                    <p className="text-base max-w-lg mb-6" style={{ color: 'var(--color-text-muted)' }}>
+                        Connect with trusted, verified service providers in your neighborhood — instantly.
+                    </p>
+                </div>
+
+                {/* Search bar */}
+                <form onSubmit={handleSearch} className="relative max-w-xl">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: 'var(--color-text-subtle)' }} />
+                    <input
+                        type="text"
+                        placeholder="Search cleaning, plumbing, chef…"
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full h-14 rounded-2xl pl-12 pr-32 text-sm outline-none"
+                        style={{
+                            backgroundColor: 'var(--color-surface)',
+                            color: 'var(--color-text)',
+                            border: '1px solid var(--color-border-strong)',
+                            boxShadow: 'var(--shadow-md)'
+                        }}
                     />
-                    <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant">tune</span>
+                    <button type="submit"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                        Search
+                    </button>
+                </form>
+
+                {/* Quick tags */}
+                <div className="flex flex-wrap gap-2 mt-4">
+                    {['Cleaning', 'Plumbing', 'Chef', 'Moving', 'Fitness'].map(tag => (
+                        <button key={tag}
+                            onClick={() => navigate(`/services?q=${encodeURIComponent(tag)}`)}
+                            className="px-3 py-1.5 rounded-full text-xs font-medium transition-colors"
+                            style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
+                            {tag}
+                        </button>
+                    ))}
                 </div>
             </section>
 
-            {/* Category Pills */}
-            <section className="mb-xl overflow-x-auto no-scrollbar flex gap-sm py-2">
-                {categories.map(category => (
-                    <button 
-                        key={category}
-                        onClick={() => setActiveCategory(category)}
-                        className={`px-6 py-2 rounded-full font-label-md text-label-md whitespace-nowrap transition-all duration-200 active:scale-95 ${
-                            activeCategory === category 
-                                ? 'bg-primary text-on-primary' 
-                                : 'bg-surface-container-high border-subtle text-on-surface-variant hover:text-primary'
-                        }`}
-                    >
-                        {category}
-                    </button>
+            {/* ── Stats ─────────────────────────────────────────────────── */}
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {STATS.map(stat => (
+                    <div key={stat.label} className="rounded-2xl p-4 text-center"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <div className="text-2xl font-black mb-1" style={{ color: 'var(--color-primary)' }}>{stat.value}</div>
+                        <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{stat.label}</div>
+                    </div>
                 ))}
             </section>
 
-            {/* Nearby Services */}
-            <section className="mb-xl">
-                <div className="flex justify-between items-end mb-md">
-                    <h3 className="font-headline-md text-headline-md text-primary">Nearby Services</h3>
-                    <a className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer">SEE ALL</a>
+            {/* ── Service Categories ────────────────────────────────────── */}
+            <section>
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-xl font-bold tracking-tight" style={{ color: 'var(--color-primary)' }}>
+                        Browse by Category
+                    </h2>
+                    <Link to="/services"
+                        className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
+                        style={{ color: 'var(--color-text-muted)' }}>
+                        See all <ChevronRight className="h-4 w-4" />
+                    </Link>
                 </div>
-                <div className="flex gap-md overflow-x-auto no-scrollbar pb-4">
-                    {nearbyProviders.map(provider => (
-                        <div key={provider.id} className="min-w-[160px] p-md bg-surface-container-low border-subtle rounded-xl flex flex-col items-center text-center hover:bg-surface-container transition-colors cursor-pointer group">
-                            <div className="relative mb-sm">
-                                <img 
-                                    alt={provider.name} 
-                                    src={provider.image} 
-                                    className="w-16 h-16 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                                />
-                                <span className={`absolute bottom-0 right-0 w-4 h-4 ${provider.statusColor} border-2 border-surface-container-low rounded-full`}></span>
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {SERVICE_CATEGORIES.map(cat => (
+                        <Link key={cat.slug} to={`/category/${cat.slug}`}
+                            className="flex flex-col items-center gap-2 p-3 md:p-4 rounded-2xl text-center hover-lift group transition-all"
+                            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                            <div className="h-11 w-11 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110"
+                                style={{ backgroundColor: `${cat.color}18` }}>
+                                <cat.icon style={{ width: 22, height: 22, color: cat.color }} />
                             </div>
-                            <p className="font-label-md text-label-md text-primary truncate w-full">{provider.name}</p>
-                            <p className="font-body-sm text-[12px] text-on-surface-variant">{provider.role}</p>
-                        </div>
+                            <span className="text-[12px] font-semibold leading-tight" style={{ color: 'var(--color-text)' }}>
+                                {cat.label}
+                            </span>
+                        </Link>
                     ))}
                 </div>
             </section>
 
-            {/* Featured Providers */}
-            <section className="mb-xl">
-                <h3 className="font-headline-md text-headline-md text-primary mb-md">Featured Providers</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
-                    {/* Large Card 1 */}
-                    <div className="group relative aspect-[4/5] md:aspect-video rounded-xl overflow-hidden border-subtle cursor-pointer">
-                        <img 
-                            alt="The Obsidian Room" 
-                            className="absolute inset-0 w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" 
-                            src="https://lh3.googleusercontent.com/aida/AP1WRLsraC2w5dcUTZ0k7G0BIh_8efDlhNowjVfXg1m1h7-bbz3gOjHsUYy7f-T3OPV9B-acw9WeCLXh2w36BNQXBU-cYTuGNJaThZ1VZGF_gX8m2PfVb0IbFT9wTmBCvREXTMNI4sNKkXdKFQfKsVaQYy8iKm3ADGA_d56j02uNafPVQ-ylEKiEmOZMTCvsBsj84SdkjhgBUwGowqmn6oSPc_Me8XIJDP33OJEzrGwlA7k26HDAp_dOhi3vX9Q" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
-                        <div className="absolute bottom-0 p-lg w-full">
-                            <div className="flex justify-between items-end">
-                                <div>
-                                    <span className="bg-primary text-on-primary font-label-sm text-label-sm px-2 py-1 rounded mb-sm inline-block">PREMIUM SELECTION</span>
-                                    <h4 className="font-headline-lg text-headline-lg text-primary">The Obsidian Room</h4>
-                                    <p className="font-body-sm text-on-surface-variant">Upper East Side • 0.4 miles away</p>
-                                </div>
-                                <div className="flex items-center gap-1 bg-surface/80 backdrop-blur px-3 py-1 rounded-full border-subtle">
-                                    <span className="material-symbols-outlined text-primary text-[16px]">star</span>
-                                    <span className="font-label-md text-label-md text-primary">4.9</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Large Card 2 */}
-                    <div className="group relative aspect-[4/5] md:aspect-video rounded-xl overflow-hidden border-subtle cursor-pointer">
-                        <img 
-                            alt="Linear Coffee Co." 
-                            className="absolute inset-0 w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" 
-                            src="https://lh3.googleusercontent.com/aida/AP1WRLsK_ZV-nrvb-Omfq1YSC7KZeBFnwS9yUa856iMOKJB6uyZRQFnG6xknFNE2q4e7rXy_1lURKdAaJ-sYbGbLPSLxtjkTbLZDU0C86YxC7zo9hqLQ1L7Aak4RpE7lgR59brZVXMw5dmzXOCNL92453KMbggUMo86U6NK9GG5OZXD9oKVxDgIYLZV9Bb2_Dn0EpuQJUjvS1n92QPkBg7QxQ7GtgJlCmtGIeFQO5JvFHWmQ-ZvziOd8diAAcAg" 
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent"></div>
-                        <div className="absolute bottom-0 p-lg w-full">
-                            <div className="flex justify-between items-end">
-                                <div>
-                                    <span className="bg-primary text-on-primary font-label-sm text-label-sm px-2 py-1 rounded mb-sm inline-block">NEW ARRIVAL</span>
-                                    <h4 className="font-headline-lg text-headline-lg text-primary">Linear Coffee Co.</h4>
-                                    <p className="font-body-sm text-on-surface-variant">Chelsea • 1.2 miles away</p>
-                                </div>
-                                <div className="flex items-center gap-1 bg-surface/80 backdrop-blur px-3 py-1 rounded-full border-subtle">
-                                    <span className="material-symbols-outlined text-primary text-[16px]">star</span>
-                                    <span className="font-label-md text-label-md text-primary">4.7</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Upcoming Events Strip */}
-            <section className="mb-xl">
-                <h3 className="font-headline-md text-headline-md text-primary mb-md">Upcoming Events</h3>
-                <div className="flex gap-md overflow-x-auto no-scrollbar pb-2">
-                    {upcomingEvents.map(event => (
-                        <div key={event.id} className="min-w-[280px] bg-surface-container border-subtle rounded-xl p-md flex items-center gap-md hover:bg-surface-container-high transition-colors cursor-pointer">
-                            <div className={`w-16 h-20 flex flex-col items-center justify-center rounded-lg shrink-0 ${event.isPrimary ? 'bg-primary text-on-primary' : 'bg-surface-container-highest border border-subtle text-primary'}`}>
-                                <span className="font-label-sm text-label-sm">{event.month}</span>
-                                <span className="font-headline-md text-headline-md font-bold">{event.day}</span>
+            {/* ── How it Works ─────────────────────────────────────────── */}
+            <section className="rounded-3xl p-6 md:p-8"
+                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 className="text-xl font-bold tracking-tight mb-6" style={{ color: 'var(--color-primary)' }}>
+                    How Truvornex Works
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {HOW_IT_WORKS.map((step, i) => (
+                        <div key={i} className="flex gap-4">
+                            <div className="shrink-0 h-10 w-10 rounded-2xl flex items-center justify-center"
+                                style={{ backgroundColor: 'var(--color-surface-high)' }}>
+                                <step.icon className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
                             </div>
                             <div>
-                                <h5 className="font-label-md text-label-md text-primary mb-xs">{event.title}</h5>
-                                <p className="font-body-sm text-[12px] text-on-surface-variant">{event.location}</p>
-                                <div className="mt-2 flex -space-x-2">
-                                    {event.avatars.map((avatar, index) => (
-                                        <div key={index} className={`w-6 h-6 rounded-full border border-surface ${avatar}`}></div>
-                                    ))}
-                                    <span className="pl-4 font-label-sm text-label-sm text-on-surface-variant">+{event.plusCount}</span>
+                                <div className="font-bold text-sm mb-1" style={{ color: 'var(--color-primary)' }}>
+                                    {i + 1}. {step.title}
                                 </div>
+                                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                                    {step.desc}
+                                </p>
                             </div>
                         </div>
                     ))}
                 </div>
             </section>
+
+            {/* ── Featured Providers ───────────────────────────────────── */}
+            <section>
+                <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-xl font-bold tracking-tight" style={{ color: 'var(--color-primary)' }}>
+                        Top-Rated Providers
+                    </h2>
+                    <Link to="/nearby"
+                        className="flex items-center gap-1 text-sm font-medium transition-opacity hover:opacity-70"
+                        style={{ color: 'var(--color-text-muted)' }}>
+                        View all <ChevronRight className="h-4 w-4" />
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {FEATURED_PROVIDERS.map(provider => (
+                        <Link key={provider.id} to={`/providers/${provider.id}`}
+                            className="rounded-2xl overflow-hidden hover-lift group"
+                            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                            {/* Image */}
+                            <div className="relative h-40 overflow-hidden">
+                                <img src={provider.image} alt={provider.name}
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                                {/* Badge */}
+                                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold text-white"
+                                    style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+                                    {provider.badge}
+                                </span>
+                                {/* Online dot */}
+                                {provider.online && (
+                                    <span className="absolute top-3 right-3 h-2.5 w-2.5 rounded-full bg-green-400 border-2 border-white" />
+                                )}
+                            </div>
+                            {/* Info */}
+                            <div className="p-3">
+                                <div className="font-bold text-sm mb-0.5" style={{ color: 'var(--color-primary)' }}>{provider.name}</div>
+                                <div className="text-xs mb-2" style={{ color: 'var(--color-text-muted)' }}>{provider.role}</div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1">
+                                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                                        <span className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{provider.rating}</span>
+                                        <span className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>({provider.reviews})</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--color-text-subtle)' }}>
+                                        <MapPin className="h-3 w-3" />
+                                        <span>{provider.location}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            {/* ── Nearby Providers CTA ─────────────────────────────────── */}
+            <section>
+                <Link to="/nearby"
+                    className="flex items-center justify-between p-5 rounded-2xl group hover-lift transition-all"
+                    style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl flex items-center justify-center"
+                            style={{ backgroundColor: 'var(--color-accent-light)' }}>
+                            <MapPin className="h-6 w-6" style={{ color: 'var(--color-accent)' }} />
+                        </div>
+                        <div>
+                            <div className="font-bold text-sm mb-0.5" style={{ color: 'var(--color-primary)' }}>
+                                Providers Near You
+                            </div>
+                            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                                See available providers in your area right now
+                            </p>
+                        </div>
+                    </div>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform"
+                        style={{ color: 'var(--color-text-muted)' }} />
+                </Link>
+            </section>
+
+            {/* ── AI Assistant CTA ─────────────────────────────────────── */}
+            <section>
+                <Link to="/ai"
+                    className="block p-6 rounded-3xl relative overflow-hidden group hover-lift"
+                    style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <div className="relative z-10">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold mb-3"
+                            style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
+                            <Sparkles style={{ width: 10, height: 10 }} />
+                            AI-Powered
+                        </div>
+                        <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--color-primary)' }}>
+                            Meet Your AI Assistant
+                        </h3>
+                        <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                            Get personalized service recommendations, instant answers, and smart booking suggestions.
+                        </p>
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold"
+                            style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                            Try AI Assistant <ArrowRight className="h-4 w-4" />
+                        </span>
+                    </div>
+                    {/* Decorative gradient */}
+                    <div className="absolute right-0 top-0 h-full w-48 opacity-10 pointer-events-none"
+                        style={{ background: 'radial-gradient(circle at top right, var(--color-accent), transparent 70%)' }} />
+                </Link>
+            </section>
+
+            {/* ── Become a Provider ─────────────────────────────────────── */}
+            <section className="rounded-3xl p-6 md:p-8 relative overflow-hidden"
+                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                <div className="relative z-10">
+                    <div className="flex items-start gap-4 md:items-center flex-col md:flex-row">
+                        <div className="flex-1">
+                            <h2 className="text-xl font-black mb-2">Are you a service provider?</h2>
+                            <p className="text-sm opacity-70 mb-4 max-w-md">
+                                Join thousands of professionals earning more with Truvornex. Set your own hours, manage bookings, and grow your business.
+                            </p>
+                            <div className="flex flex-wrap gap-3 text-xs opacity-70 mb-4">
+                                {['Free to join', 'Instant payouts', 'AI-powered tools', 'Dedicated support'].map(f => (
+                                    <span key={f} className="flex items-center gap-1">
+                                        <Shield style={{ width: 12, height: 12 }} /> {f}
+                                    </span>
+                                ))}
+                            </div>
+                            <button onClick={() => navigate('/provider')}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-opacity hover:opacity-90"
+                                style={{ backgroundColor: 'var(--color-on-primary)', color: 'var(--color-primary)' }}>
+                                Start as Provider <ArrowRight className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div className="shrink-0 hidden md:flex items-center justify-center h-24 w-24 rounded-3xl"
+                            style={{ backgroundColor: 'rgba(0,0,0,0.15)' }}>
+                            <Wrench className="h-12 w-12" style={{ opacity: 0.8 }} />
+                        </div>
+                    </div>
+                </div>
+                <div className="absolute right-0 bottom-0 w-48 h-48 rounded-tl-3xl opacity-5 pointer-events-none"
+                    style={{ backgroundColor: 'white' }} />
+            </section>
+
         </div>
     );
 }

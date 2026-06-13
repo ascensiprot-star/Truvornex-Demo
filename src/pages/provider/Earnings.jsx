@@ -39,10 +39,8 @@ export default function Earnings() {
     const [tab, setTab] = useState('Overview');
 
     useEffect(() => {
-            if (provs.length > 0) {
-                setBookings(bks);
-            }
-            setLoading(false);
+        setBookings([]);
+        setLoading(false);
     }, []);
 
     const metrics = useMemo(() => {

@@ -4,10 +4,10 @@ export default function SplashScreen({ onComplete }) {
     const [phase, setPhase] = useState(0);
 
     useEffect(() => {
-        const t1 = setTimeout(() => setPhase(1), 400);
-        const t2 = setTimeout(() => setPhase(2), 1200);
-        const t3 = setTimeout(() => setPhase(3), 2200);
-        const t4 = setTimeout(() => onComplete(), 2900);
+        const t1 = setTimeout(() => setPhase(1), 200);
+        const t2 = setTimeout(() => setPhase(2), 600);
+        const t3 = setTimeout(() => setPhase(3), 1100);
+        const t4 = setTimeout(() => onComplete(), 1400);
         return () => [t1, t2, t3, t4].forEach(clearTimeout);
     }, []);
 

@@ -9,10 +9,8 @@ export default function CustomerInsights() {
     const [aiLoading, setAiLoading] = useState(false);
 
     useEffect(() => {
-            if (provs[0]) {
-                setBookings(bks);
-            }
-            setLoading(false);
+        setBookings([]);
+        setLoading(false);
     }, []);
 
     const customerMap = bookings.reduce((acc, b) => {
