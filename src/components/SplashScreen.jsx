@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 
-const PARTICLES = Array.from({ length: 16 }, (_, i) => ({
+const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    x: 10 + Math.floor((i * 73 + 17) % 80),
-    y: 10 + Math.floor((i * 47 + 31) % 80),
-    size: 1 + (i % 3),
-    delay: (i * 0.15) % 1.8,
-    duration: 2.5 + (i % 4) * 0.5,
+    x: 8 + Math.floor((i * 79 + 17) % 84),
+    y: 8 + Math.floor((i * 53 + 31) % 84),
+    size: 1 + (i % 2),
+    delay: (i * 0.18) % 1.6,
+    dur: 2.8 + (i % 3) * 0.6,
 }));
 
 export default function SplashScreen({ onComplete }) {
@@ -15,124 +15,90 @@ export default function SplashScreen({ onComplete }) {
     useEffect(() => {
         const t1 = setTimeout(() => setPhase(1), 100);
         const t2 = setTimeout(() => setPhase(2), 500);
-        const t3 = setTimeout(() => setPhase(3), 900);
+        const t3 = setTimeout(() => setPhase(3), 950);
         const t4 = setTimeout(() => setPhase(4), 1500);
-        const t5 = setTimeout(() => onComplete(), 1900);
+        const t5 = setTimeout(() => onComplete(), 1850);
         return () => [t1, t2, t3, t4, t5].forEach(clearTimeout);
     }, []);
 
     return (
-        <div
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
             style={{
-                backgroundColor: '#05070f',
-                transition: 'opacity 0.45s cubic-bezier(0.19,1,0.22,1), transform 0.45s cubic-bezier(0.19,1,0.22,1)',
+                backgroundColor: '#050505',
                 opacity: phase === 4 ? 0 : 1,
-                transform: phase === 4 ? 'scale(1.03)' : 'scale(1)',
+                transform: phase === 4 ? 'scale(1.02)' : 'scale(1)',
+                transition: 'opacity 0.4s cubic-bezier(0.19,1,0.22,1), transform 0.4s cubic-bezier(0.19,1,0.22,1)',
             }}>
 
-            {/* Deep grid */}
+            {/* Grid */}
             <div className="absolute inset-0" style={{
                 backgroundImage: `
-                    linear-gradient(rgba(139,124,246,0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(139,124,246,0.03) 1px, transparent 1px)
+                    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
                 `,
-                backgroundSize: '60px 60px',
+                backgroundSize: '56px 56px',
             }} />
 
-            {/* Radial vignette */}
+            {/* Ambient radial */}
             <div className="absolute inset-0" style={{
-                background: 'radial-gradient(ellipse 80% 60% at 50% 50%, rgba(139,124,246,0.06) 0%, transparent 70%)',
+                background: 'radial-gradient(ellipse 70% 55% at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%)',
             }} />
 
-            {/* Ambient glow blobs */}
-            <div className="absolute" style={{
-                width: 600, height: 600,
-                left: '50%', top: '50%',
-                transform: 'translate(-50%, -50%)',
-                background: 'radial-gradient(circle, rgba(139,124,246,0.08) 0%, transparent 65%)',
-                animation: 'pulseGlow 3s ease-in-out infinite',
-            }} />
-            <div className="absolute" style={{
-                width: 300, height: 300,
-                left: '30%', top: '30%',
-                background: 'radial-gradient(circle, rgba(96,165,250,0.05) 0%, transparent 65%)',
-                animation: 'pulseGlow 4s ease-in-out 1s infinite',
-            }} />
-
-            {/* Floating particles */}
+            {/* Particles */}
             {PARTICLES.map(p => (
                 <div key={p.id} className="absolute rounded-full" style={{
-                    width: p.size + 1,
-                    height: p.size + 1,
-                    left: `${p.x}%`,
-                    top: `${p.y}%`,
-                    backgroundColor: p.id % 3 === 0 ? 'rgba(139,124,246,0.4)' : p.id % 3 === 1 ? 'rgba(96,165,250,0.3)' : 'rgba(52,211,153,0.25)',
-                    opacity: phase >= 1 ? 1 : 0,
+                    width: p.size + 1, height: p.size + 1,
+                    left: `${p.x}%`, top: `${p.y}%`,
+                    backgroundColor: 'rgba(255,255,255,0.25)',
+                    opacity: phase >= 1 ? 0.6 : 0,
                     transition: `opacity 0.8s ${p.delay}s ease`,
-                    animation: `float ${p.duration}s ease-in-out ${p.delay}s infinite`,
+                    animation: `float ${p.dur}s ease-in-out ${p.delay}s infinite`,
                 }} />
             ))}
 
-            {/* Logo mark */}
+            {/* Logo */}
             <div style={{
                 opacity: phase >= 1 ? 1 : 0,
-                transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.9)',
-                transition: 'all 0.7s cubic-bezier(0.19,1,0.22,1)',
+                transform: phase >= 1 ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.92)',
+                transition: 'all 0.65s cubic-bezier(0.19,1,0.22,1)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
-                marginBottom: 32,
+                marginBottom: 28,
             }}>
-                {/* Icon ring */}
-                <div className="relative mb-8" style={{ width: 80, height: 80 }}>
-                    {/* Outer ring */}
-                    <div className="absolute inset-0 rounded-2xl" style={{
-                        background: 'linear-gradient(135deg, rgba(139,124,246,0.2) 0%, rgba(96,165,250,0.1) 100%)',
-                        border: '1px solid rgba(139,124,246,0.2)',
-                        animation: 'spin-slow 12s linear infinite',
-                    }} />
-                    {/* Inner glow */}
-                    <div className="absolute inset-0 rounded-2xl" style={{
-                        background: 'radial-gradient(circle at center, rgba(139,124,246,0.15) 0%, transparent 70%)',
-                    }} />
-                    {/* Center icon */}
-                    <div className="absolute inset-0 flex items-center justify-center rounded-2xl" style={{
-                        background: 'linear-gradient(135deg, rgba(139,124,246,0.15) 0%, rgba(13,17,23,0.8) 100%)',
-                        backdropFilter: 'blur(8px)',
-                        border: '1px solid rgba(139,124,246,0.25)',
-                    }}>
-                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                            <path d="M9 10h18M9 18h13M9 26h15" stroke="rgba(139,124,246,0.9)" strokeWidth="2.5" strokeLinecap="round"/>
-                            <circle cx="27" cy="26" r="5" fill="rgba(139,124,246,0.85)" />
+                {/* Icon */}
+                <div className="relative mb-6" style={{ width: 68, height: 68 }}>
+                    {/* Spinning outer ring */}
+                    <div className="absolute inset-0 rounded-2xl"
+                        style={{ border: '1px solid rgba(255,255,255,0.08)', animation: 'spin-slow 12s linear infinite' }} />
+                    {/* Main box */}
+                    <div className="absolute inset-0 rounded-2xl flex items-center justify-center"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+                        <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+                            <path d="M8 9h16M8 16h11M8 23h13" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round"/>
+                            <circle cx="27" cy="23" r="4" fill="rgba(255,255,255,0.8)" />
                         </svg>
                     </div>
                 </div>
 
-                {/* Brand name */}
+                {/* Name */}
                 <div style={{
                     opacity: phase >= 2 ? 1 : 0,
-                    transform: phase >= 2 ? 'translateY(0)' : 'translateY(8px)',
-                    transition: 'all 0.6s cubic-bezier(0.19,1,0.22,1) 0.2s',
+                    transform: phase >= 2 ? 'translateY(0)' : 'translateY(6px)',
+                    transition: 'all 0.55s cubic-bezier(0.19,1,0.22,1) 0.15s',
                     textAlign: 'center',
                 }}>
                     <h1 style={{
-                        fontSize: 32,
-                        fontWeight: 900,
-                        letterSpacing: '-0.04em',
-                        color: '#fff',
-                        fontFamily: 'Inter, sans-serif',
-                        lineHeight: 1,
-                        marginBottom: 8,
+                        fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em',
+                        color: '#ffffff', fontFamily: 'Inter, sans-serif', lineHeight: 1,
+                        marginBottom: 7,
                     }}>
                         Truvornex
                     </h1>
                     <p style={{
-                        color: 'rgba(139,124,246,0.7)',
-                        fontSize: 11,
-                        letterSpacing: '0.22em',
-                        textTransform: 'uppercase',
-                        fontWeight: 500,
+                        color: 'rgba(255,255,255,0.28)',
+                        fontSize: 10, letterSpacing: '0.2em',
+                        textTransform: 'uppercase', fontWeight: 500,
                         opacity: phase >= 3 ? 1 : 0,
-                        transition: 'opacity 0.5s ease 0.3s',
+                        transition: 'opacity 0.45s ease 0.25s',
                     }}>
                         Powered by Simon AI
                     </p>
@@ -141,37 +107,25 @@ export default function SplashScreen({ onComplete }) {
 
             {/* Progress bar */}
             <div style={{
-                width: 120,
-                height: 2,
+                width: 100, height: 1,
                 backgroundColor: 'rgba(255,255,255,0.06)',
-                borderRadius: 999,
-                overflow: 'hidden',
+                borderRadius: 999, overflow: 'hidden',
                 opacity: phase >= 2 ? 1 : 0,
-                transition: 'opacity 0.4s ease 0.4s',
-                position: 'relative',
+                transition: 'opacity 0.35s ease 0.35s',
             }}>
                 <div style={{
                     height: '100%',
-                    background: 'linear-gradient(90deg, rgba(139,124,246,0.8), rgba(96,165,250,0.8))',
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3))',
                     borderRadius: 999,
-                    width: phase >= 3 ? '100%' : '30%',
-                    transition: 'width 0.8s cubic-bezier(0.19,1,0.22,1)',
-                    boxShadow: '0 0 8px rgba(139,124,246,0.5)',
+                    width: phase >= 3 ? '100%' : '25%',
+                    transition: 'width 0.75s cubic-bezier(0.19,1,0.22,1)',
+                    boxShadow: '0 0 6px rgba(255,255,255,0.3)',
                 }} />
             </div>
 
             <style>{`
-                @keyframes float {
-                    0%,100% { transform: translateY(0px); }
-                    50% { transform: translateY(-8px); }
-                }
-                @keyframes spin-slow {
-                    to { transform: rotate(360deg); }
-                }
-                @keyframes pulseGlow {
-                    0%,100% { opacity: 0.4; }
-                    50% { opacity: 0.9; }
-                }
+                @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+                @keyframes spin-slow { to { transform: rotate(360deg); } }
             `}</style>
         </div>
     );
