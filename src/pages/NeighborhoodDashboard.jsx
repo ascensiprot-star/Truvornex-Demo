@@ -19,8 +19,10 @@ const OS_MODULES = [
     { icon: MessageSquare, label: 'Community Feed',  href: '/community',  color: 'bg-violet-100 dark:bg-violet-900/30', text: 'text-violet-600 dark:text-violet-300', desc: 'Posts & skill swaps' },
     { icon: Calendar,      label: 'Local Events',    href: '/events',     color: 'bg-sky-100 dark:bg-sky-900/30',    text: 'text-sky-600 dark:text-sky-300',    desc: 'Concerts & meetups' },
     { icon: Vote,          label: 'Polls',           href: '/community',  color: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-300', desc: 'Neighborhood votes' },
-    { icon: Zap,           label: 'Emergency',       href: '/emergency',  color: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-600 dark:text-red-300',    desc: 'Urgent services' },
-    { icon: Layers,        label: 'Group Deals',     href: '/bundles',    color: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-300', desc: 'Save with neighbors' },
+    { icon: Zap,           label: 'Emergency',       href: '/neighborhood/emergency',  color: 'bg-red-100 dark:bg-red-900/30',    text: 'text-red-600 dark:text-red-300',    desc: 'Urgent dispatch' },
+    { icon: Layers,        label: 'Group Deals',     href: '/neighborhood/group-buy',  color: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-300', desc: 'Save with neighbors' },
+    { icon: RefreshCw,     label: 'Skill Swap',      href: '/neighborhood/skill-swap', color: 'bg-teal-100 dark:bg-teal-900/30',   text: 'text-teal-600 dark:text-teal-300',    desc: 'Trade skills & time' },
+    { icon: ShieldCheck,   label: 'Jury',            href: '/neighborhood/jury',       color: 'bg-slate-100 dark:bg-slate-800',    text: 'text-slate-600 dark:text-slate-300',  desc: 'Resolve disputes' },
     { icon: Package,       label: 'Services',        href: '/services',   color: 'bg-zinc-100 dark:bg-zinc-800',     text: 'text-zinc-600 dark:text-zinc-300',   desc: 'Book any service' },
     { icon: Star,          label: 'Recommendations', href: '/recommendations', color: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600 dark:text-pink-300', desc: 'AI picks for you' },
     { icon: Heart,         label: 'Loyalty',         href: '/loyalty',    color: 'bg-rose-100 dark:bg-rose-900/30',  text: 'text-rose-600 dark:text-rose-300',   desc: 'Points & rewards' },
@@ -71,7 +73,7 @@ function GapBadge({ category, demand, supply }) {
     const ratio = supply === 0 ? 99 : demand / supply;
     const level = ratio > 3 ? 'critical' : ratio > 2 ? 'high' : 'moderate';
     const styles = { critical:'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300', high:'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300', moderate:'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300' };
-    const labels = { critical:'🔴 Critical Gap', high:'🟡 High Demand', moderate:'🔵 Moderate Gap' };
+    const labels = { critical:'Critical Gap', high:'High Demand', moderate:'Moderate Gap' };
     return (
         <div className={`rounded-xl border px-4 py-3 ${styles[level]}`}>
             <div className="flex items-center justify-between mb-1">
@@ -290,7 +292,7 @@ export default function NeighborhoodDashboard() {
                             </div>
                         ) : upcomingEvents.slice(0,5).map(ev => (
                             <div key={ev.id} className="px-4 py-2.5 flex items-center gap-2.5">
-                                <span className="text-xl shrink-0">{{'concert':'🎵','workshop':'🛠️','meetup':'🤝','sports':'⚽','festival':'🎉','food':'🍽️'}[ev.category] || '📅'}</span>
+                                <Calendar className="h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-medium text-zinc-900 dark:text-white line-clamp-1">{ev.title}</p>
                                     <div className="flex items-center gap-1.5 mt-0.5">
@@ -425,7 +427,7 @@ export default function NeighborhoodDashboard() {
                     </div>
                     <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl p-4">
                         <p className="text-xs text-amber-800 dark:text-amber-200 font-medium">
-                            💡 These gaps represent <strong>provider opportunities</strong>. Share this with local professionals to grow supply in underserved categories.
+                            These gaps represent <strong>provider opportunities</strong>. Share this with local professionals to grow supply in underserved categories.
                         </p>
                     </div>
                 </div>

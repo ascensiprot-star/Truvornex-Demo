@@ -80,6 +80,10 @@ import ContentManagement from './pages/admin/ContentManagement';
 import Events from './pages/Events';
 import Transport from './pages/Transport';
 import Community from './pages/Community';
+import EmergencyRequest from './pages/neighborhood/EmergencyRequest';
+import GroupBuy from './pages/neighborhood/GroupBuy';
+import SkillSwap from './pages/neighborhood/SkillSwap';
+import Jury from './pages/neighborhood/Jury';
 
 const AuthenticatedApp = () => {
     const { isLoadingAuth, authError } = useAuth();
@@ -117,6 +121,10 @@ const AuthenticatedApp = () => {
                 <Route path="/profile" element={<CustomerProfile />} />
                 <Route path="/notifications" element={<NotificationCenter />} />
                 <Route path="/neighborhood" element={<NeighborhoodDashboard />} />
+                <Route path="/neighborhood/emergency" element={<EmergencyRequest />} />
+                <Route path="/neighborhood/group-buy" element={<GroupBuy />} />
+                <Route path="/neighborhood/skill-swap" element={<SkillSwap />} />
+                <Route path="/neighborhood/jury" element={<Jury />} />
                 <Route path="/bundles" element={<ServiceBundles />} />
                 <Route path="/ai" element={<AIAssistant />} />
                 <Route path="/recommendations" element={<SmartRecommendations />} />

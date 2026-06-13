@@ -5,7 +5,8 @@ import {
     MessageCircle, Send, MapPin, Share2, Heart, Bookmark,
     ImageIcon, X, Camera, Loader2, BarChart2, Calendar,
     ChevronRight, Ticket, Users, Check, Vote, ArrowRight,
-    Clock, CheckCircle2
+    CheckCircle2, Music, Wrench, Zap, Sparkles, UtensilsCrossed,
+    GraduationCap, Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,33 +18,35 @@ import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 
 const POST_TYPES = {
-    general:       { icon: MessageCircle, label: 'General',      emoji: '💬' },
-    announcement:  { icon: Megaphone,     label: 'Announcement', emoji: '📢' },
-    lost_found:    { icon: Search,        label: 'Lost & Found', emoji: '🔍' },
-    recommendation:{ icon: Heart,         label: 'Recommend',    emoji: '👍' },
-    question:      { icon: HelpCircle,    label: 'Question',     emoji: '❓' },
-    job:           { icon: Briefcase,     label: 'Job',          emoji: '💼' },
-    skill_exchange:{ icon: RefreshCw,     label: 'Skill Swap',   emoji: '🔄' },
+    general:       { icon: MessageCircle, label: 'General'      },
+    announcement:  { icon: Megaphone,     label: 'Announcement' },
+    lost_found:    { icon: Search,        label: 'Lost & Found' },
+    recommendation:{ icon: Star,          label: 'Recommend'    },
+    question:      { icon: HelpCircle,    label: 'Question'     },
+    job:           { icon: Briefcase,     label: 'Job'          },
+    skill_exchange:{ icon: RefreshCw,     label: 'Skill Swap'   },
 };
 
 const MAIN_TABS = [
-    { key: 'feed',   label: '📱 Feed'   },
-    { key: 'jobs',   label: '💼 Jobs'   },
-    { key: 'events', label: '🎉 Events' },
-    { key: 'polls',  label: '🗳️ Polls'  },
+    { key: 'feed',   label: 'Feed'   },
+    { key: 'jobs',   label: 'Jobs'   },
+    { key: 'events', label: 'Events' },
+    { key: 'polls',  label: 'Polls'  },
 ];
 
-const FILTER_PILLS = ['All', '📸 Photo', 'Announcement', 'Lost & Found', 'Recommendation', 'Question'];
+const FILTER_PILLS = ['All', 'Photo', 'Announcement', 'Lost & Found', 'Recommendation', 'Question'];
 
 const EMPTY_POST = {
     type: 'general', title: '', body: '', neighborhood: '',
     job_type: '', job_salary: '', skill_offer: '', skill_want: '', contact_email: '',
 };
 const EMPTY_POLL = { question: '', neighborhood: '', options: ['', '', '', ''] };
-
 const JOB_TYPES = { full_time: 'Full-time', part_time: 'Part-time', freelance: 'Contract', gig: 'Gig' };
 
-const CAT_ICONS = { concert:'🎵', workshop:'🛠️', meetup:'🤝', sports:'⚽', festival:'🎉', exhibition:'🖼️', food:'🍽️', other:'📅' };
+const CAT_ICON_MAP = {
+    concert: Music, workshop: Wrench, meetup: Users, sports: Zap,
+    festival: Sparkles, exhibition: ImageIcon, food: UtensilsCrossed, other: Calendar,
+};
 
 function Avatar({ name, email, size = 8 }) {
     const initial = (name || email || 'A').charAt(0).toUpperCase();
@@ -67,11 +70,8 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
     const load = async () => {
         setLoading(true);
         const { data } = await supabase
-            .from('post_comments')
-            .select('*')
-            .eq('post_id', postId)
-            .order('created_at', { ascending: true })
-            .limit(30);
+            .from('post_comments').select('*')
+            .eq('post_id', postId).order('created_at', { ascending: true }).limit(30);
         if (data) setComments(data);
         setLoading(false);
     };
@@ -83,19 +83,15 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
         if (!user) { toast.error('Sign in to comment'); return; }
         setSubmitting(true);
         const comment = {
-            post_id: postId,
-            author_email: user.email,
+            post_id: postId, author_email: user.email,
             author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-            body: input.trim(),
-            created_at: new Date().toISOString(),
-            id: Date.now(),
+            body: input.trim(), created_at: new Date().toISOString(), id: Date.now(),
         };
         setComments(prev => [...prev, comment]);
         onCountChange && onCountChange(1);
         setInput('');
         await supabase.from('post_comments').insert([{
-            post_id: postId,
-            author_email: user.email,
+            post_id: postId, author_email: user.email,
             author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
             body: input.trim(),
         }]);
@@ -106,7 +102,7 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
     return (
         <div className="px-4 pb-3">
             <button onClick={() => setOpen(v => !v)} className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-                {open ? 'Hide comments' : count > 0 ? `View all ${count} comment${count !== 1 ? 's' : ''}` : 'Add a comment…'}
+                {open ? 'Hide comments' : count > 0 ? `View all ${count} comment${count !== 1 ? 's' : ''}` : 'Add a comment'}
             </button>
             {open && (
                 <div className="mt-2 space-y-2">
@@ -124,19 +120,14 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
                     ))}
                     <div className="flex gap-2 items-center pt-1 border-t border-zinc-100 dark:border-zinc-800">
                         {user && <Avatar name={user.user_metadata?.full_name} email={user.email} size={6} />}
-                        <input
-                            value={input}
-                            onChange={e => setInput(e.target.value)}
+                        <input value={input} onChange={e => setInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && submit()}
-                            placeholder={user ? 'Add a comment…' : 'Sign in to comment'}
+                            placeholder={user ? 'Add a comment' : 'Sign in to comment'}
                             disabled={!user || submitting}
-                            className="flex-1 text-xs bg-transparent outline-none border-b border-zinc-200 dark:border-zinc-700 py-1 text-zinc-900 dark:text-white placeholder:text-zinc-400"
-                        />
+                            className="flex-1 text-xs bg-transparent outline-none border-b border-zinc-200 dark:border-zinc-700 py-1 text-zinc-900 dark:text-white placeholder:text-zinc-400" />
                         {input.trim() && (
                             <button onClick={submit} disabled={submitting}
-                                className="text-xs font-bold text-zinc-900 dark:text-white shrink-0 hover:opacity-70 transition-opacity">
-                                Post
-                            </button>
+                                className="text-xs font-bold text-zinc-900 dark:text-white shrink-0 hover:opacity-70 transition-opacity">Post</button>
                         )}
                     </div>
                 </div>
@@ -171,7 +162,7 @@ function PostCard({ post, onLike, likedPosts, user }) {
                     </div>
                 </div>
                 <span className="flex items-center gap-1 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
-                    {cfg.emoji} {cfg.label}
+                    <cfg.icon className="h-3 w-3" /> {cfg.label}
                 </span>
             </div>
 
@@ -186,10 +177,10 @@ function PostCard({ post, onLike, likedPosts, user }) {
                 <button onClick={() => onLike(post)} className="transition-all active:scale-90">
                     <Heart className={`h-5 w-5 transition-all ${isLiked ? 'fill-rose-500 text-rose-500 scale-110' : 'text-zinc-400 dark:text-zinc-500'}`} strokeWidth={isLiked ? 0 : 1.8} />
                 </button>
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors" onClick={() => {}}>
+                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors">
                     <MessageCircle className="h-5 w-5" strokeWidth={1.8} />
                 </button>
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors" onClick={() => { navigator.clipboard?.writeText(window.location.href); toast('Link copied!'); }}>
+                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors" onClick={() => { navigator.clipboard?.writeText(window.location.href); toast('Link copied'); }}>
                     <Share2 className="h-5 w-5" strokeWidth={1.8} />
                 </button>
                 <div className="flex-1" />
@@ -199,9 +190,7 @@ function PostCard({ post, onLike, likedPosts, user }) {
             </div>
 
             {(post.upvotes || 0) > 0 && (
-                <p className="px-4 text-xs font-semibold text-zinc-900 dark:text-white pb-1">
-                    {post.upvotes} {post.upvotes === 1 ? 'like' : 'likes'}
-                </p>
+                <p className="px-4 text-xs font-semibold text-zinc-900 dark:text-white pb-1">{post.upvotes} {post.upvotes === 1 ? 'like' : 'likes'}</p>
             )}
 
             <div className="px-4 pb-3">
@@ -211,21 +200,25 @@ function PostCard({ post, onLike, likedPosts, user }) {
                         <span className="font-semibold text-zinc-900 dark:text-white mr-1.5">{authorName}</span>{post.body}
                     </p>
                 )}
-                {post.type === 'skill_exchange' && (
+                {post.type === 'skill_exchange' && (post.skill_offer || post.skill_want) && (
                     <div className="mt-2 flex items-center gap-2 text-xs flex-wrap">
-                        {post.skill_offer && <span className="bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800">🎓 {post.skill_offer}</span>}
-                        <span className="text-zinc-300">⇄</span>
-                        {post.skill_want && <span className="bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-800">🔍 {post.skill_want}</span>}
+                        {post.skill_offer && (
+                            <span className="bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800 flex items-center gap-1">
+                                <GraduationCap className="h-2.5 w-2.5" /> {post.skill_offer}
+                            </span>
+                        )}
+                        <ArrowRight className="h-3 w-3 text-zinc-300" />
+                        {post.skill_want && (
+                            <span className="bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-800 flex items-center gap-1">
+                                <Search className="h-2.5 w-2.5" /> {post.skill_want}
+                            </span>
+                        )}
                     </div>
                 )}
             </div>
 
-            <PostComments
-                postId={post.id}
-                user={user}
-                replyCount={replyCount}
-                onCountChange={(delta) => setReplyCount(v => v + delta)}
-            />
+            <PostComments postId={post.id} user={user} replyCount={replyCount}
+                onCountChange={(delta) => setReplyCount(v => v + delta)} />
         </div>
     );
 }
@@ -247,7 +240,7 @@ function JobCard({ post }) {
                 </div>
                 <Button size="sm" variant="outline" className="h-7 rounded-lg text-[10px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Apply</Button>
             </div>
-            {post.body && <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 ml-13 pl-0 line-clamp-2">{post.body}</p>}
+            {post.body && <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 line-clamp-2">{post.body}</p>}
         </div>
     );
 }
@@ -286,15 +279,14 @@ function PollCard({ poll, user }) {
                 <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-zinc-900 dark:text-white">{poll.created_by_name}</p>
                     <p className="text-[10px] text-zinc-400">
-                        {poll.neighborhood && <><MapPin className="inline h-2.5 w-2.5 mr-0.5" />{poll.neighborhood} · </>}
-                        {timeAgo}
+                        {poll.neighborhood && <><MapPin className="inline h-2.5 w-2.5 mr-0.5" />{poll.neighborhood} · </>}{timeAgo}
                     </p>
                 </div>
-                <span className="text-[10px] font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full">🗳️ Poll</span>
+                <span className="flex items-center gap-1 text-[10px] font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full">
+                    <Vote className="h-3 w-3" /> Poll
+                </span>
             </div>
-
             <p className="font-semibold text-sm text-zinc-900 dark:text-white mb-3 leading-snug">{poll.question}</p>
-
             <div className="space-y-2">
                 {options.map((opt, i) => {
                     const pct = totalVotes > 0 ? Math.round((opt.votes || 0) / totalVotes * 100) : 0;
@@ -361,14 +353,12 @@ export default function Community() {
         if (data) setPosts(data);
         setLoading(false);
     };
-
     const loadEvents = async () => {
         setEventsLoading(true);
         const { data } = await supabase.from('events').select('*').order('date', { ascending: true }).limit(20);
         if (data) setEvents(data);
         setEventsLoading(false);
     };
-
     const loadPolls = async () => {
         setPollsLoading(true);
         const { data } = await supabase.from('neighborhood_polls').select('*').order('created_at', { ascending: false }).limit(20);
@@ -386,15 +376,13 @@ export default function Community() {
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
     };
-
     const clearImage = () => { setImageFile(null); imagePreview && URL.revokeObjectURL(imagePreview); setImagePreview(null); };
     const closePostDialog = () => { setCreatePostDialog(false); setPostForm(EMPTY_POST); clearImage(); };
 
     const feedPosts = posts.filter(p => {
         if (mainTab === 'jobs') return p.type === 'job';
         const pillMap = { 'Announcement':'announcement', 'Lost & Found':'lost_found', 'Recommendation':'recommendation', 'Question':'question' };
-        const f = filterPill.replace('📸 ','');
-        const matchPill = f === 'All' ? true : f === 'Photo' ? !!p.image_url : p.type === pillMap[f];
+        const matchPill = filterPill === 'All' ? true : filterPill === 'Photo' ? !!p.image_url : p.type === pillMap[filterPill];
         const matchSearch = !search || p.title?.toLowerCase().includes(search.toLowerCase()) || p.body?.toLowerCase().includes(search.toLowerCase());
         return matchPill && matchSearch && p.type !== 'job';
     });
@@ -420,7 +408,7 @@ export default function Community() {
                 try { image_url = await uploadPostImage(imageFile, user.id); }
                 catch { toast.error('Image upload failed — posting without photo'); }
             }
-            const payload = {
+            const { error } = await supabase.from('community_posts').insert([{
                 type: postForm.type, title: postForm.title || null, body: postForm.body || null,
                 neighborhood: postForm.neighborhood || null, contact_email: postForm.contact_email || null,
                 job_type: postForm.job_type || null, job_salary: postForm.job_salary || null,
@@ -430,10 +418,9 @@ export default function Community() {
                 upvotes: 0, reply_count: 0, is_resolved: false,
                 created_date: new Date().toISOString(),
                 ...(image_url ? { image_url } : {}),
-            };
-            const { error } = await supabase.from('community_posts').insert([payload]);
+            }]);
             if (error) throw error;
-            toast.success('Posted! 🎉');
+            toast.success('Post published');
             closePostDialog();
             loadPosts();
         } catch (err) { toast.error(err.message || 'Failed to post'); }
@@ -456,7 +443,7 @@ export default function Community() {
                 created_at: new Date().toISOString(),
             }]);
             if (error) throw error;
-            toast.success('Poll created! 🗳️');
+            toast.success('Poll created');
             setCreatePollDialog(false);
             setPollForm(EMPTY_POLL);
             loadPolls();
@@ -475,7 +462,9 @@ export default function Community() {
                     <p className="text-zinc-400 dark:text-zinc-500 text-sm mt-0.5">Neighborhood feed · jobs · events · polls</p>
                 </div>
                 <button
-                    onClick={() => mainTab === 'polls' ? (user ? setCreatePollDialog(true) : toast.error('Sign in first')) : (user ? setCreatePostDialog(true) : toast.error('Sign in to post'))}
+                    onClick={() => mainTab === 'polls'
+                        ? (user ? setCreatePollDialog(true) : toast.error('Sign in first'))
+                        : (user ? setCreatePostDialog(true) : toast.error('Sign in to post'))}
                     className="h-9 px-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-semibold flex items-center gap-1.5 hover:opacity-80 transition-opacity">
                     <Plus className="h-4 w-4" />
                     {mainTab === 'polls' ? 'New Poll' : 'New Post'}
@@ -492,7 +481,7 @@ export default function Community() {
                 ))}
             </div>
 
-            {/* ── FEED TAB ── */}
+            {/* FEED */}
             {mainTab === 'feed' && (
                 <>
                     <div className="space-y-2.5">
@@ -506,7 +495,7 @@ export default function Community() {
                         </div>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                            <Input placeholder="Search posts…" value={search} onChange={e => setSearch(e.target.value)}
+                            <Input placeholder="Search posts" value={search} onChange={e => setSearch(e.target.value)}
                                 className="pl-8 h-8 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800" />
                         </div>
                     </div>
@@ -520,19 +509,17 @@ export default function Community() {
                             {user && <button onClick={() => setCreatePostDialog(true)} className="mt-4 text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Create a post</button>}
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {feedPosts.map(p => <PostCard key={p.id} post={p} onLike={handleLike} likedPosts={likedPosts} user={user} />)}
-                        </div>
+                        <div className="space-y-4">{feedPosts.map(p => <PostCard key={p.id} post={p} onLike={handleLike} likedPosts={likedPosts} user={user} />)}</div>
                     )}
                 </>
             )}
 
-            {/* ── JOBS TAB ── */}
+            {/* JOBS */}
             {mainTab === 'jobs' && (
                 <>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                        <Input placeholder="Search jobs…" value={search} onChange={e => setSearch(e.target.value)}
+                        <Input placeholder="Search jobs" value={search} onChange={e => setSearch(e.target.value)}
                             className="pl-8 h-8 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800" />
                     </div>
                     {loading ? (
@@ -549,7 +536,7 @@ export default function Community() {
                 </>
             )}
 
-            {/* ── EVENTS TAB ── */}
+            {/* EVENTS */}
             {mainTab === 'events' && (
                 <>
                     <div className="flex items-center justify-between">
@@ -569,12 +556,13 @@ export default function Community() {
                     ) : (
                         <div className="space-y-3">
                             {upcomingEvents.map(ev => {
+                                const CatIcon = CAT_ICON_MAP[ev.category] || Calendar;
                                 const soldOut = (ev.tickets_sold || 0) >= (ev.total_tickets || 9999);
                                 const pct = ev.total_tickets ? Math.round((ev.tickets_sold || 0) / ev.total_tickets * 100) : 0;
                                 return (
                                     <div key={ev.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden flex">
-                                        <div className="w-20 shrink-0 bg-gradient-to-br from-zinc-800 to-zinc-600 flex items-center justify-center text-3xl">
-                                            {ev.image_url ? <img src={ev.image_url} alt="" className="w-full h-full object-cover" /> : (CAT_ICONS[ev.category] || '📅')}
+                                        <div className="w-20 shrink-0 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                            <CatIcon className="h-7 w-7 text-zinc-400 dark:text-zinc-500" />
                                         </div>
                                         <div className="flex-1 p-3 min-w-0">
                                             <div className="flex items-start justify-between gap-2">
@@ -610,7 +598,7 @@ export default function Community() {
                 </>
             )}
 
-            {/* ── POLLS TAB ── */}
+            {/* POLLS */}
             {mainTab === 'polls' && (
                 <>
                     <div className="flex items-center justify-between">
@@ -627,21 +615,18 @@ export default function Community() {
                             {user && <button onClick={() => setCreatePollDialog(true)} className="mt-4 text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Create first poll</button>}
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            {polls.map(poll => <PollCard key={poll.id} poll={poll} user={user} />)}
-                        </div>
+                        <div className="space-y-4">{polls.map(poll => <PollCard key={poll.id} poll={poll} user={user} />)}</div>
                     )}
                 </>
             )}
 
-            {/* ── CREATE POST DIALOG ── */}
+            {/* CREATE POST DIALOG */}
             <Dialog open={createPostDialog} onOpenChange={closePostDialog}>
                 <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-0">
                     <DialogHeader className="px-5 pt-5 pb-0">
                         <DialogTitle className="font-semibold text-base">New Post</DialogTitle>
                     </DialogHeader>
                     <div className="px-5 pt-4 pb-5 space-y-4">
-                        {/* Image upload */}
                         <div ref={dropRef}
                             onDragOver={e => { e.preventDefault(); dropRef.current?.classList.add('border-zinc-500'); }}
                             onDragLeave={() => dropRef.current?.classList.remove('border-zinc-500')}
@@ -652,15 +637,13 @@ export default function Community() {
                                     <button onClick={clearImage} className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"><X className="h-3.5 w-3.5" /></button>
                                 </div>
                             ) : (
-                                <button onClick={() => fileInputRef.current?.click()} className="w-full border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-400 hover:border-zinc-400 transition-all" style={{ minHeight: 120 }}>
+                                <button onClick={() => fileInputRef.current?.click()} className="w-full border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-400 hover:border-zinc-400 transition-all" style={{ minHeight: 100 }}>
                                     <ImageIcon className="h-6 w-6" />
                                     <p className="text-xs">Add a photo (optional)</p>
                                 </button>
                             )}
                             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageSelect(e.target.files[0])} />
                         </div>
-
-                        {/* Author */}
                         <div className="flex items-center gap-2.5">
                             <Avatar name={user?.user_metadata?.full_name} email={user?.email} size={9} />
                             <div>
@@ -668,21 +651,18 @@ export default function Community() {
                                 <p className="text-[10px] text-zinc-400">Posting to Community</p>
                             </div>
                         </div>
-
-                        {/* Post type */}
                         <div className="grid grid-cols-4 gap-1.5">
                             {Object.entries(POST_TYPES).map(([k, v]) => (
                                 <button key={k} onClick={() => setPostForm(p => ({ ...p, type: k }))}
-                                    className={`py-2 rounded-xl border text-center transition-all ${postForm.type === k ? 'border-zinc-900 dark:border-white bg-zinc-900/5 dark:bg-white/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
-                                    <div className="text-base mb-0.5">{v.emoji}</div>
+                                    className={`py-2.5 rounded-xl border text-center transition-all ${postForm.type === k ? 'border-zinc-900 dark:border-white bg-zinc-900/5 dark:bg-white/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
+                                    <v.icon className="h-4 w-4 mx-auto mb-1 text-zinc-600 dark:text-zinc-400" />
                                     <p className="text-[9px] font-semibold text-zinc-600 dark:text-zinc-400 leading-tight">{v.label}</p>
                                 </button>
                             ))}
                         </div>
-
                         <Input placeholder="Title (optional)" value={postForm.title} onChange={e => setPostForm(p => ({ ...p, title: e.target.value }))} className="rounded-xl" />
                         <div className="relative">
-                            <Textarea placeholder="Write a caption…" value={postForm.body} onChange={e => setPostForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none pr-12" rows={3} />
+                            <Textarea placeholder="Write a caption" value={postForm.body} onChange={e => setPostForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none pr-12" rows={3} />
                             <span className="absolute bottom-2.5 right-3 text-[10px] text-zinc-300 dark:text-zinc-600">{postForm.body.length}/500</span>
                         </div>
                         <div className="relative">
@@ -693,15 +673,15 @@ export default function Community() {
                             <div className="grid grid-cols-2 gap-3">
                                 <Select value={postForm.job_type} onValueChange={v => setPostForm(p => ({ ...p, job_type: v }))}>
                                     <SelectTrigger className="rounded-xl"><SelectValue placeholder="Job type" /></SelectTrigger>
-                                    <SelectContent><SelectItem value="full_time">Full Time</SelectItem><SelectItem value="part_time">Part Time</SelectItem><SelectItem value="freelance">Freelance</SelectItem><SelectItem value="gig">Gig</SelectItem></SelectContent>
+                                    <SelectContent>{Object.entries(JOB_TYPES).map(([k,v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                                 </Select>
                                 <Input placeholder="Pay / Salary" value={postForm.job_salary} onChange={e => setPostForm(p => ({ ...p, job_salary: e.target.value }))} className="rounded-xl" />
                             </div>
                         )}
                         {postForm.type === 'skill_exchange' && (
                             <div className="grid grid-cols-2 gap-3">
-                                <Input placeholder="I offer…" value={postForm.skill_offer} onChange={e => setPostForm(p => ({ ...p, skill_offer: e.target.value }))} className="rounded-xl" />
-                                <Input placeholder="I want…" value={postForm.skill_want} onChange={e => setPostForm(p => ({ ...p, skill_want: e.target.value }))} className="rounded-xl" />
+                                <Input placeholder="I offer" value={postForm.skill_offer} onChange={e => setPostForm(p => ({ ...p, skill_offer: e.target.value }))} className="rounded-xl" />
+                                <Input placeholder="I want" value={postForm.skill_want} onChange={e => setPostForm(p => ({ ...p, skill_want: e.target.value }))} className="rounded-xl" />
                             </div>
                         )}
                         <Input placeholder="Contact email (optional)" value={postForm.contact_email} onChange={e => setPostForm(p => ({ ...p, contact_email: e.target.value }))} className="rounded-xl" type="email" />
@@ -709,14 +689,14 @@ export default function Community() {
                             <Button variant="outline" className="flex-1 h-10 rounded-xl text-sm" onClick={closePostDialog}>Cancel</Button>
                             <Button className="flex-1 h-10 rounded-xl text-sm gap-2" onClick={createPost} disabled={saving || (!postForm.body && !imageFile)}>
                                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                                {saving ? 'Publishing…' : 'Publish'}
+                                {saving ? 'Publishing' : 'Publish'}
                             </Button>
                         </div>
                     </div>
                 </DialogContent>
             </Dialog>
 
-            {/* ── CREATE POLL DIALOG ── */}
+            {/* CREATE POLL DIALOG */}
             <Dialog open={createPollDialog} onOpenChange={setCreatePollDialog}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
@@ -730,13 +710,8 @@ export default function Community() {
                                 <p className="text-[10px] text-zinc-400">Neighborhood Poll</p>
                             </div>
                         </div>
-                        <Textarea
-                            placeholder="Ask a question… e.g. Should we add a dog park to Riverside?"
-                            value={pollForm.question}
-                            onChange={e => setPollForm(p => ({ ...p, question: e.target.value }))}
-                            className="rounded-xl resize-none"
-                            rows={2}
-                        />
+                        <Textarea placeholder="Ask a question — e.g. Should we add a dog park to Riverside?" value={pollForm.question}
+                            onChange={e => setPollForm(p => ({ ...p, question: e.target.value }))} className="rounded-xl resize-none" rows={2} />
                         <div className="relative">
                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
                             <Input placeholder="Neighborhood (optional)" value={pollForm.neighborhood} onChange={e => setPollForm(p => ({ ...p, neighborhood: e.target.value }))} className="pl-8 rounded-xl" />
@@ -745,12 +720,9 @@ export default function Community() {
                             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Options (min 2)</p>
                             {pollForm.options.map((opt, i) => (
                                 <div key={i} className="relative">
-                                    <Input
-                                        placeholder={i < 2 ? `Option ${i + 1} *` : `Option ${i + 1} (optional)`}
-                                        value={opt}
+                                    <Input placeholder={i < 2 ? `Option ${i + 1} *` : `Option ${i + 1} (optional)`} value={opt}
                                         onChange={e => { const o = [...pollForm.options]; o[i] = e.target.value; setPollForm(p => ({ ...p, options: o })); }}
-                                        className="rounded-xl pr-8"
-                                    />
+                                        className="rounded-xl pr-8" />
                                     {opt && i >= 2 && (
                                         <button onClick={() => { const o = pollForm.options.map((x,j) => j === i ? '' : x); setPollForm(p => ({ ...p, options: o })); }}
                                             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
@@ -764,7 +736,7 @@ export default function Community() {
                             <Button variant="outline" className="flex-1 h-10 rounded-xl text-sm" onClick={() => setCreatePollDialog(false)}>Cancel</Button>
                             <Button className="flex-1 h-10 rounded-xl text-sm gap-2" onClick={createPoll} disabled={saving}>
                                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BarChart2 className="h-3.5 w-3.5" />}
-                                {saving ? 'Creating…' : 'Create Poll'}
+                                {saving ? 'Creating' : 'Create Poll'}
                             </Button>
                         </div>
                     </div>
