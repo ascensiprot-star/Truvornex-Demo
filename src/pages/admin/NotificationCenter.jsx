@@ -16,6 +16,8 @@ export default function AdminNotificationCenter() {
     const [search, setSearch] = useState('');
 
     useEffect(() => {
+        setNotifications([]);
+        setLoading(false);
     }, []);
 
     const send = async () => {

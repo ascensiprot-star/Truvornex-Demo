@@ -18,8 +18,8 @@ export default function EmergencyServices() {
     const [requesting, setRequesting] = useState(false);
 
     useEffect(() => {
-            setProviders(p.filter(pr => pr.category_slugs?.some(c => EMERGENCY_CATS.includes(c))));
-            setLoading(false);
+        setProviders([]);
+        setLoading(false);
     }, []);
 
     const requestEmergency = async () => {

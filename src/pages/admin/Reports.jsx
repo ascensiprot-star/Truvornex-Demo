@@ -6,6 +6,7 @@ export default function Reports() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(false);
     }, []);
 
     if (loading) return <div className="flex justify-center py-20"><div className="w-6 h-6 border-2 border-border border-t-foreground rounded-full animate-spin" /></div>;

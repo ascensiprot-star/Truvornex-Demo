@@ -15,8 +15,8 @@ export default function LoyaltyProgram() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-                setMemory(mem || { lifetime_value: 0, loyalty_tier: 'new', booking_count: 0 });
-                setLoading(false);
+        setMemory({ lifetime_value: 0, loyalty_tier: 'new', booking_count: 0 });
+        setLoading(false);
     }, []);
 
     const ltv = memory?.lifetime_value || 0;
