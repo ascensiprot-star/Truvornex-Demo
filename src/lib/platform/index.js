@@ -33,6 +33,54 @@ export { notificationService } from './notificationService';
 export { invoiceService } from './invoiceService';
 export { customerMemoryService } from './customerMemoryService';
 
+// ─── Feature #1: Neighborhood OS Engine ───────────────────────────────────────
+export {
+    computeNeighborhoodTrustGraph,
+    findNeighborhoodServiceGaps,
+    computeZoneHealthScore,
+    computeZoneSummary,
+} from './neighborhoodOSEngine';
+
+// ─── Feature #2: Portable Reputation Export ───────────────────────────────────
+export {
+    generateReputationCredential,
+    generateCredentialURL,
+    verifyCredentialFromURL,
+    generateReputationSummary,
+    compareCredentials,
+} from './reputationExport';
+
+// ─── Feature #4: Financial Engine (BNPL / Instant Payout / Savings) ──────────
+export {
+    computeBNPLEligibility,
+    computeInstantPayoutEligibility,
+    computeProviderSavingsRecommendation,
+    computeProviderWalletSummary,
+    computeCustomerSpendingIntelligence,
+} from './financialEngine';
+
+// ─── Feature #5: Diaspora / Cross-Border Service ─────────────────────────────
+export {
+    createDiasporaBookingRequest,
+    detectDiasporaPatterns,
+    computeDiasporaRouting,
+    buildCarePackage,
+    getDiasporaMarketInsights,
+    SUPPORTED_MARKETS,
+} from './diasporaService';
+
+// ─── Feature #6: Community Trust Engine ──────────────────────────────────────
+export {
+    vouchForProvider,
+    getProviderVouches,
+    computeVouchWeight,
+    computeCommunityTrustBoost,
+    computeDisputeNeighborhoodVisibility,
+    computeNeighborhoodVerificationStatus,
+    getProviderCommunityEngagement,
+    computeZoneDisputeHealth,
+} from './communityTrustEngine';
+
 export {
     computePlatformKPIs,
     computeMonthlyRevenue,

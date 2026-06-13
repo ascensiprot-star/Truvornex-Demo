@@ -18,11 +18,17 @@ function haversine(lat1, lon1, lat2, lon2) {
 // Weighted multi-factor model:
 //   completion history (40%), rating (20%), volume (10%),
 //   verification (10%), penalties for cancellations/no-shows
-export function computeTrustScore(provider, allBookings) {
+//   + community trust boost from neighbour vouches (up to +12) — Feature #6
+export function computeTrustScore(provider, allBookings, communityBoost = 0) {
     const pbs = allBookings.filter(b => b.provider_id === provider.id);
     const total = pbs.length;
 
-    if (total === 0) return { score: 50, tier: 'new', label: 'New', completionRate: 0, total: 0 };
+    if (total === 0) {
+        const baseScore = 50 + communityBoost;
+        const s = Math.max(0, Math.min(100, Math.round(baseScore)));
+        const tier = s >= 90 ? 'champion' : s >= 78 ? 'trusted' : s >= 62 ? 'verified' : s >= 45 ? 'rising' : 'new';
+        return { score: s, tier, label: { champion: 'Champion', trusted: 'Trusted', verified: 'Verified', rising: 'Rising', new: 'New' }[tier], completionRate: 0, total: 0, communityBoost };
+    }
 
     const completed = pbs.filter(b => b.status === 'completed').length;
     const cancelled = pbs.filter(b => b.status === 'cancelled').length;
@@ -39,6 +45,7 @@ export function computeTrustScore(provider, allBookings) {
     score += Math.min(total / 20, 1) * 7;               // volume bonus up to +7
     score -= cancellationRate * 25;
     score -= noShowRate * 35;
+    score += Math.min(communityBoost, 12);               // community vouch boost up to +12 (Feature #6)
 
     const s = Math.max(0, Math.min(100, Math.round(score)));
     const tier =
@@ -56,6 +63,7 @@ export function computeTrustScore(provider, allBookings) {
         completed,
         cancelled,
         noShows,
+        communityBoost,
     };
 }
 
