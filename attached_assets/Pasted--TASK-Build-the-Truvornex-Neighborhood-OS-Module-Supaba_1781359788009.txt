@@ -1,0 +1,155 @@
+# TASK: Build the Truvornex "Neighborhood OS" Module (Supabase + React/Vite, Linux dev environment)
+
+## Context
+You are working in the Truvornex monorepo (`Truvornex-Demo-main`), a React + Vite + Tailwind + shadcn frontend on Supabase. Dev environment is Linux (Arch). Do NOT assume Windows paths, PowerShell, or Windows-specific tooling anywhere — use bash, POSIX paths, and standard Unix CLI tools (psql, supabase CLI, node, pnpm/npm).
+
+The goal: turn the existing skeletal `NeighborhoodDashboard.jsx` and empty `NeighborhoodZone` / `CommunityPost` / `LocalEvent` entities into a fully working "Neighborhood OS" — the layer where local trust, transactions, and community coordination happen. This is the platform's core differentiator, not a side feature.
+
+## Non-negotiable principles
+- Zero placeholder/mock data in final code — every UI must read from real Supabase tables via `supabase.from(...)`, with RLS policies enforced.
+- Every new table needs RLS: customers see their own zone's data + their own records; providers see their own + zone aggregates; admins see all.
+- Use the existing `useRealtime.js` hook pattern for live updates (don't invent a new realtime abstraction).
+- DO NOT change, modify, override, or "improve" the existing theme, design system, color palette, typography, or UI styling in ANY way. The current premium monochrome design (`stitch_truvornex_hyper_premium_design_system/DESIGN.md` — dark mode #050505, Space Grotesk/Inter/JetBrains Mono) is FINAL and must be strictly reused as-is for all new components. Reuse existing classNames, tokens, and component patterns exactly. No generic shadcn defaults, no new colors, no new fonts, no theme changes of any kind.
+- All AI-driven logic (matching, predictions, jury summarization) goes through a Supabase Edge Function — never call DeepSeek/any LLM API directly from client code (no API keys in the bundle).
+- Write Postgres migrations as versioned SQL files under `supabase/migrations/`. Provide a single `npm run db:push` (or supabase CLI) instruction to apply them.
+
+---
+
+## 1. Database schema (new tables + migrations)
+
+Create the following tables (extend existing entities where they already exist instead of duplicating):
+
+### `neighborhood_zones` (flesh out existing `NeighborhoodZone` entity)
+- id, name, city, country, polygon/geojson boundary (use PostGIS `geography(Polygon)`), center_lat, center_lng, active_member_count, created_at
+
+### `zone_members`
+- user_id, zone_id, role (customer/provider), joined_at
+
+### `group_buys`
+- id, zone_id, service_category, initiator_id, target_participants, current_participants, discount_percent, status (open/locked/fulfilled/expired), expires_at, provider_id (assigned once locked)
+
+### `group_buy_participants`
+- group_buy_id, user_id, joined_at
+
+### `emergency_requests`
+- id, customer_id, zone_id, category, description, lat, lng, status (open/matched/in_progress/resolved/cancelled), surge_multiplier, created_at, matched_provider_id, matched_at, resolved_at
+
+### `skill_swaps`
+- id, zone_id, offerer_id, offering (text), seeking (text), time_credits_offered (int), status (open/matched/completed), matched_with_user_id
+
+### `time_credits_ledger`
+- id, user_id, amount (signed int), reason, related_entity_type, related_entity_id, created_at
+- (derive user balance via SUM, materialized view `time_credits_balances`)
+
+### `apprentices`
+- id, mentor_provider_id, apprentice_user_id, status (active/graduated/ended), earnings_split_percent, started_at
+
+### `disputes` / `neighborhood_jury`
+- `disputes`: id, booking_id, raised_by, against_id, description, evidence_urls (jsonb array), status (open/voting/resolved), resolution, created_at
+- `jury_assignments`: dispute_id, juror_user_id, vote (for/against/abstain), voted_at, reward_credits
+
+### `time_bank_fund`
+- id, zone_id, balance, funded_this_month
+- `time_bank_contributions`: transaction_id, amount, zone_id, created_at (auto-populated by a trigger: small % of every completed booking)
+- `time_bank_grants`: id, zone_id, recipient_id, amount, approved_by, reason, created_at
+
+### `predictive_maintenance_signals`
+- id, customer_id, service_category, last_service_date, predicted_due_date, confidence_score, dismissed (bool)
+- Populate via a scheduled Edge Function (pg_cron + Edge Function) that reads `CustomerMemory`/`Booking` history.
+
+### `proof_of_work_sessions`
+- id, booking_id, provider_id, customer_id, stream_status (off/live/ended), opt_in (bool), started_at, ended_at
+- (Actual streaming via a third-party WebRTC service — stub the signaling table now, integration later.)
+
+### `receipt_stories`
+- id, booking_id, before_photo_url, after_photo_url, summary_text (AI-generated via Edge Function), shareable_slug, created_at
+
+All tables: enable RLS, add indexes on zone_id and user_id, add `updated_at` triggers.
+
+---
+
+## 2. Supabase Edge Functions (Deno, in `supabase/functions/`)
+
+1. **`simon-dispatch`** — replaces direct DeepSeek calls. Takes a prompt + context (zone demand/supply data), holds the LLM key as a Supabase secret, returns structured JSON (recommendations, matches, dispute summaries). Rate-limit per user_id.
+2. **`emergency-match`** — given an `emergency_requests` row, queries `zone_members` + `ProviderMetrics` for currently-idle providers in radius (PostGIS `ST_DWithin`), ranks by distance + trust score, triggers Notification + Realtime broadcast.
+3. **`group-buy-lock`** — triggered when `group_buy.current_participants >= target_participants`; assigns best-fit provider, updates status to `locked`, creates `Booking` rows for each participant.
+4. **`predictive-maintenance-scan`** — scheduled (pg_cron daily), scans booking history per customer per category, writes `predictive_maintenance_signals`.
+5. **`receipt-story-generate`** — on booking completion, calls `simon-dispatch` to generate the shareable summary text, writes `receipt_stories`.
+6. **`jury-resolve`** — when a dispute reaches quorum (3 votes), tallies votes, updates `disputes.status`, distributes `time_credits_ledger` rewards to jurors.
+
+---
+
+## 3. Frontend pages/components to build or rebuild
+
+### `/neighborhood` (rebuild `NeighborhoodDashboard.jsx`)
+Replace the empty `useState([])` placeholders with real Supabase queries scoped to the user's zone. Sections:
+- Live zone stats (StatCard components already exist — wire to real data)
+- Demand/supply gap heatmap (GapBadge components exist — feed from real `Booking`/`Provider` queries)
+- **Active Group Buys** — list with progress bars, "Join" button, countdown to `expires_at`
+- **Emergency Now** banner — prominent red "Something urgent?" CTA → opens `EmergencyRequestModal`
+- **Time Bank** widget — zone fund balance, recent grants, "request support" link
+
+### `/neighborhood/emergency` — Emergency Now flow
+- Form: category, description, optional photo, geolocation (use `useGeolocation.js`)
+- On submit → insert `emergency_requests`, invoke `emergency-match` Edge Function
+- Realtime-subscribe to the row for status updates; show live ETA countdown once matched
+- Visually distinct status only via existing semantic color tokens already present in the design system (e.g. existing red/amber states used in GapBadge) — do NOT introduce new colors or styles
+
+### `/neighborhood/group-buy` — Group Buy hub
+- Browse open group buys in zone, join with one tap (`group_buy_participants` insert)
+- "Start a group buy" form (category, target participants, suggested discount)
+- Progress bar component, realtime participant count via `useRealtime.js`
+
+### `/neighborhood/skill-swap` — Skill Swap board
+- Post an offer/seek pair, browse others' posts, "Propose swap" → creates `skill_swaps` match
+- On completion, both sides confirm → `time_credits_ledger` entries created (offering side earns, receiving side spends), reflected in user wallet balance display
+
+### `/neighborhood/jury` — Neighborhood Jury
+- List of open disputes available for voting (excluding ones the user is party to)
+- Anonymized evidence view (photos/description, no names)
+- Vote button → `jury_assignments` insert; show reward (time credits) for participating
+- For users involved in a dispute: `/disputes/:id` status page
+
+### `/profile/trust-passport/:providerId` — Trust Passport (public, shareable)
+- No auth required to view (public RLS read on aggregated provider stats)
+- Animated counters (jobs completed, years active — use a lightweight count-up component)
+- Response-time heatmap (reuse recharts patterns from `NeighborhoodDashboard.jsx`)
+- Map of completed job locations (reuse `MapView.jsx`, anonymized/clustered)
+- Verified skill badges, dispute-free streak counter
+- "Share" button generating a QR code (use a small QR lib) + copyable link
+- Apprentice badge if `apprentices` row exists for this provider
+
+### `/receipts/:slug` — Receipt Story (public share page)
+- Before/after photo, AI-generated summary from `receipt_stories`, provider mini-bio, "Book again" CTA
+- Designed as a vertical/story-format card (Instagram-story aspect ratio option for export)
+
+### Predictive Maintenance — surface in `CustomerDashboard.jsx`
+- New card: "Coming due" list from `predictive_maintenance_signals` where `dismissed = false`, with "Book now" / "Not yet" actions (dismiss writes back to the row)
+
+---
+
+## 4. Voice-first booking (Urdu/Sindhi + English)
+- Add a mic button to `BookService.jsx` and the `AIAssistant` chat input
+- Use Web Speech API (`SpeechRecognition`) for capture where available, with language selector (en-US, ur-PK, sd-PK if supported; otherwise fall back to ur-PK transcription + Simon Edge Function for intent parsing since browser Sindhi support is limited)
+- Transcribed text → `simon-dispatch` Edge Function with a system prompt instructing it to extract `{intent, category, urgency, location_hint}` as JSON, then route to existing booking flow or `/neighborhood/emergency` if urgency is high
+
+---
+
+## 5. Time Bank funding trigger
+- Postgres trigger on `Booking` status → `completed`: insert into `time_bank_contributions` (e.g. 1% of invoice amount), update `time_bank_fund.balance` for the zone
+- Admin-side `/admin/time-bank` page (extend `admin/Dashboard.jsx` patterns) to review/approve `time_bank_grants` requests from customers in financial hardship (simple request form on customer side first)
+
+---
+
+## 6. Deliverables checklist
+1. SQL migration files (numbered, idempotent) under `supabase/migrations/`
+2. Edge Functions under `supabase/functions/` with `deno.json` + tests
+3. New pages/components listed above, routed in `App.jsx`, added to relevant nav (`CustomerLayout.jsx`, `ProviderLayout.jsx`, `AdminLayout.jsx`)
+4. RLS policy SQL reviewed for each new table — no table should be world-readable/writable
+5. Update `useRealtime.js` if needed to support new channel subscriptions (group buys, emergency requests, dispute votes)
+6. A short `NEIGHBORHOOD_MODULE.md` doc summarizing schema + Edge Functions + how to run migrations locally on Linux (`supabase start`, `supabase db push`, `supabase functions deploy <name>`)
+
+## Out of scope for this pass
+- Full WebRTC implementation for Proof-of-Work streaming (table + opt-in toggle only)
+- Native mobile wrapper (Capacitor) — web-responsive only for now
+- Multi-language UI translation beyond the voice-input language selector
