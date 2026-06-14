@@ -161,7 +161,7 @@ export default function Home() {
                 <h1 className="font-black leading-[1.06] mb-2.5"
                     style={{ ...anim(0.04), fontSize: 'clamp(1.75rem,5vw,2.6rem)', letterSpacing: '-0.045em', color: 'var(--color-primary)' }}>
                     Every service,<br />
-                    <span style={{ ...gradientText, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                    <span className="hero-gradient-text">
                         at your fingertips.
                     </span>
                 </h1>

@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Plus, Pencil, Trash2, Home, Briefcase } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
 const ADDR_TYPES = [
-    { value: 'home', label: 'Home', icon: Home },
-    { value: 'work', label: 'Work', icon: Briefcase },
+    { value: 'home',  label: 'Home',  icon: Home },
+    { value: 'work',  label: 'Work',  icon: Briefcase },
     { value: 'other', label: 'Other', icon: MapPin },
 ];
+
+const inputStyle = {
+    width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 13,
+    backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
+    color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
+};
 
 export default function SavedAddresses() {
     const [addresses, setAddresses] = useState([]);
@@ -33,8 +36,7 @@ export default function SavedAddresses() {
         setAddresses(updated);
         localStorage.setItem('saved_addresses', JSON.stringify(updated));
         toast.success(editId ? 'Address updated' : 'Address saved');
-        setDialog(false);
-        setEditId(null);
+        setDialog(false); setEditId(null);
         setForm({ label: 'home', address: '', notes: '' });
     };
 
@@ -47,48 +49,67 @@ export default function SavedAddresses() {
 
     const openEdit = (a) => {
         setForm({ label: a.label, address: a.address, notes: a.notes || '' });
-        setEditId(a.id);
-        setDialog(true);
+        setEditId(a.id); setDialog(true);
     };
 
     return (
-        <div className="space-y-6 max-w-xl">
+        <div className="space-y-5 max-w-xl">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="font-display font-bold text-3xl tracking-tight">Saved Addresses</h1>
-                    <p className="text-zinc-500 text-sm mt-1">Quick-fill your addresses when booking</p>
+                    <h1 className="font-black text-2xl tracking-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>Saved Addresses</h1>
+                    <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Quick-fill your addresses when booking</p>
                 </div>
-                <Button className="rounded-xl gap-2" onClick={() => { setEditId(null); setForm({ label: 'home', address: '', notes: '' }); setDialog(true); }}>
+                <button className="h-9 px-4 rounded-xl text-sm font-semibold flex items-center gap-1.5 transition-all"
+                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer' }}
+                    onClick={() => { setEditId(null); setForm({ label: 'home', address: '', notes: '' }); setDialog(true); }}
+                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                     <Plus className="h-4 w-4" /> Add Address
-                </Button>
+                </button>
             </div>
 
             {addresses.length === 0 ? (
-                <div className="card-premium p-12 text-center">
-                    <MapPin className="h-10 w-10 text-zinc-200 mx-auto mb-3" />
-                    <p className="text-zinc-400 text-sm">No saved addresses yet</p>
-                    <Button variant="outline" className="mt-4 rounded-xl" onClick={() => setDialog(true)}>Add your first address</Button>
+                <div className="rounded-xl p-12 text-center" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                    <MapPin className="h-9 w-9 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} />
+                    <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>No saved addresses yet</p>
+                    <button className="h-9 px-4 rounded-xl text-sm font-semibold transition-all"
+                        style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text)', border: '1px solid var(--color-border-strong)', cursor: 'pointer' }}
+                        onClick={() => setDialog(true)}>
+                        Add your first address
+                    </button>
                 </div>
             ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                     {addresses.map(a => {
                         const type = ADDR_TYPES.find(t => t.value === a.label) || ADDR_TYPES[2];
                         const Icon = type.icon;
                         return (
-                            <div key={a.id} className="card-premium p-5 flex items-center gap-4">
-                                <div className="h-10 w-10 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                                    <Icon className="h-4.5 w-4.5 text-zinc-600" />
+                            <div key={a.id} className="rounded-xl p-4 flex items-center gap-3 shimmer"
+                                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
+                                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+                                    style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)' }}>
+                                    <Icon className="h-4 w-4" style={{ color: 'var(--color-text-muted)' }} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-0.5">
-                                        <p className="font-semibold text-sm capitalize">{type.label}</p>
-                                    </div>
-                                    <p className="text-sm text-zinc-600 truncate">{a.address}</p>
-                                    {a.notes && <p className="text-xs text-zinc-400 mt-0.5">{a.notes}</p>}
+                                    <p className="font-semibold text-sm capitalize" style={{ color: 'var(--color-primary)' }}>{type.label}</p>
+                                    <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{a.address}</p>
+                                    {a.notes && <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{a.notes}</p>}
                                 </div>
                                 <div className="flex gap-1 shrink-0">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl" onClick={() => openEdit(a)}><Pencil className="h-3.5 w-3.5" /></Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-red-400 hover:text-red-600" onClick={() => del(a.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                                    <button className="h-8 w-8 rounded-xl flex items-center justify-center transition-all"
+                                        style={{ backgroundColor: 'transparent', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                                        onClick={() => openEdit(a)}
+                                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)')}
+                                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
+                                        <Pencil className="h-3.5 w-3.5" style={{ color: 'var(--color-text-muted)' }} />
+                                    </button>
+                                    <button className="h-8 w-8 rounded-xl flex items-center justify-center transition-all"
+                                        style={{ backgroundColor: 'transparent', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                                        onClick={() => del(a.id)}
+                                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(252,165,165,0.1)', e.currentTarget.style.borderColor = 'rgba(252,165,165,0.3)')}
+                                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.borderColor = 'var(--color-border)')}>
+                                        <Trash2 className="h-3.5 w-3.5" style={{ color: 'var(--color-error)' }} />
+                                    </button>
                                 </div>
                             </div>
                         );
@@ -96,27 +117,64 @@ export default function SavedAddresses() {
                 </div>
             )}
 
-            <Dialog open={dialog} onOpenChange={setDialog}>
-                <DialogContent className="max-w-sm">
-                    <DialogHeader><DialogTitle>{editId ? 'Edit' : 'Add'} Address</DialogTitle></DialogHeader>
-                    <div className="space-y-3 pt-1">
+            {/* Dialog */}
+            {dialog && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)' }}
+                    onClick={e => e.target === e.currentTarget && setDialog(false)}>
+                    <div className="w-full max-w-sm rounded-2xl p-5 space-y-4"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-float)' }}>
+                        <h2 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>{editId ? 'Edit' : 'Add'} Address</h2>
+
                         <div>
-                            <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 block">Type</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Type</label>
                             <div className="flex gap-2">
-                                {ADDR_TYPES.map(t => (
-                                    <button key={t.value} onClick={() => setForm(p => ({ ...p, label: t.value }))}
-                                        className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${form.label === t.value ? 'bg-zinc-900 text-white border-zinc-900' : 'border-zinc-200 text-zinc-500'}`}>
-                                        {t.label}
-                                    </button>
-                                ))}
+                                {ADDR_TYPES.map(t => {
+                                    const active = form.label === t.value;
+                                    return (
+                                        <button key={t.value} onClick={() => setForm(p => ({ ...p, label: t.value }))}
+                                            className="flex-1 py-2 rounded-xl text-xs font-semibold transition-all"
+                                            style={{
+                                                backgroundColor: active ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                                color: active ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                                                border: `1px solid ${active ? 'var(--color-primary)' : 'var(--color-border-strong)'}`,
+                                                cursor: 'pointer',
+                                            }}>
+                                            {t.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
-                        <Input placeholder="Full address *" value={form.address} onChange={e => setForm(p => ({ ...p, address: e.target.value }))} className="rounded-xl" />
-                        <Input placeholder="Notes (optional)" value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} className="rounded-xl" />
-                        <Button className="w-full h-11 rounded-xl" onClick={save}>{editId ? 'Update' : 'Save'} Address</Button>
+
+                        <input placeholder="Full address *" value={form.address}
+                            onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                            style={inputStyle}
+                            onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                            onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
+                        <input placeholder="Notes (optional)" value={form.notes}
+                            onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
+                            style={inputStyle}
+                            onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                            onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
+
+                        <div className="flex gap-2">
+                            <button className="flex-1 h-10 rounded-xl text-sm font-semibold transition-all"
+                                style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)', cursor: 'pointer' }}
+                                onClick={() => setDialog(false)}>
+                                Cancel
+                            </button>
+                            <button className="flex-1 h-10 rounded-xl text-sm font-semibold transition-all"
+                                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer' }}
+                                onClick={save}
+                                onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                                {editId ? 'Update' : 'Save'} Address
+                            </button>
+                        </div>
                     </div>
-                </DialogContent>
-            </Dialog>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Zap, Phone, MapPin, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Zap, AlertTriangle, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
-const EMERGENCY_CATS = ['plumbing', 'electrical', 'locksmith', 'hvac', 'appliance-repair'];
 const URGENCY_LEVELS = [
-    { label: 'Right Now', sub: 'Within 1 hour', color: 'bg-red-600 text-white', border: 'border-red-200' },
-    { label: 'Within 4 Hours', sub: 'Same day', color: 'bg-amber-500 text-white', border: 'border-amber-200' },
-    { label: 'Today', sub: 'Within 8 hours', color: 'bg-zinc-900 text-white', border: 'border-zinc-200' },
+    { label: 'Right Now',      sub: 'Within 1 hour',  activeColor: 'rgba(252,165,165,0.15)', activeBorder: 'var(--color-error)' },
+    { label: 'Within 4 Hours', sub: 'Same day',        activeColor: 'rgba(252,211,77,0.12)',  activeBorder: 'var(--color-warning)' },
+    { label: 'Today',          sub: 'Within 8 hours',  activeColor: 'var(--color-surface-high)', activeBorder: 'var(--color-border-accent)' },
 ];
 
 export default function EmergencyServices() {
@@ -17,10 +15,7 @@ export default function EmergencyServices() {
     const [selectedUrgency, setSelectedUrgency] = useState(0);
     const [requesting, setRequesting] = useState(false);
 
-    useEffect(() => {
-        setProviders([]);
-        setLoading(false);
-    }, []);
+    useEffect(() => { setProviders([]); setLoading(false); }, []);
 
     const requestEmergency = async () => {
         setRequesting(true);
@@ -30,63 +25,93 @@ export default function EmergencyServices() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-5">
             <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-red-100 flex items-center justify-center">
-                    <Zap className="h-5 w-5 text-red-600" />
+                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: 'var(--color-error-bg)', border: '1px solid rgba(252,165,165,0.2)' }}>
+                    <Zap className="h-4 w-4" style={{ color: 'var(--color-error)' }} />
                 </div>
                 <div>
-                    <h1 className="font-display font-bold text-3xl tracking-tight">Emergency Services</h1>
-                    <p className="text-zinc-500 text-sm mt-0.5">On-demand urgent service dispatch</p>
+                    <h1 className="font-black text-xl tracking-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>Emergency Services</h1>
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>On-demand urgent service dispatch</p>
                 </div>
             </div>
 
-            <div className="bg-red-50 border border-red-100 rounded-2xl p-4 flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+            {/* Warning banner */}
+            <div className="rounded-xl p-3.5 flex items-start gap-2.5"
+                style={{ backgroundColor: 'var(--color-error-bg)', border: '1px solid rgba(252,165,165,0.2)' }}>
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" style={{ color: 'var(--color-error)' }} />
                 <div>
-                    <p className="font-semibold text-sm text-red-700">For life-threatening emergencies, call 911</p>
-                    <p className="text-xs text-red-500 mt-0.5">This service is for home emergencies like burst pipes, power outages, and lockouts.</p>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--color-error)' }}>For life-threatening emergencies, call 911</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>This service is for home emergencies like burst pipes, power outages, and lockouts.</p>
                 </div>
             </div>
 
+            {/* Urgency selector */}
             <div>
-                <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">How urgent is it?</p>
-                <div className="grid grid-cols-3 gap-3">
-                    {URGENCY_LEVELS.map((u, i) => (
-                        <button key={i} onClick={() => setSelectedUrgency(i)}
-                            className={`rounded-2xl p-4 text-center border-2 transition-all ${selectedUrgency === i ? `${u.color} border-transparent` : `bg-white ${u.border} hover:border-zinc-300`}`}>
-                            <p className={`font-bold text-sm ${selectedUrgency === i ? 'text-white' : 'text-zinc-900'}`}>{u.label}</p>
-                            <p className={`text-xs mt-0.5 ${selectedUrgency === i ? 'text-white/80' : 'text-zinc-400'}`}>{u.sub}</p>
-                        </button>
-                    ))}
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--color-text-subtle)' }}>How urgent is it?</p>
+                <div className="grid grid-cols-3 gap-2">
+                    {URGENCY_LEVELS.map((u, i) => {
+                        const active = selectedUrgency === i;
+                        return (
+                            <button key={i} onClick={() => setSelectedUrgency(i)}
+                                className="rounded-xl p-3 text-center transition-all"
+                                style={{
+                                    backgroundColor: active ? u.activeColor : 'var(--color-surface)',
+                                    border: `1px solid ${active ? u.activeBorder : 'var(--color-border)'}`,
+                                    cursor: 'pointer',
+                                }}>
+                                <p className="font-bold text-xs" style={{ color: 'var(--color-primary)' }}>{u.label}</p>
+                                <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{u.sub}</p>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
-            <Button className="w-full h-14 rounded-2xl text-base font-bold bg-red-600 hover:bg-red-700 gap-3" onClick={requestEmergency} disabled={requesting}>
-                <Zap className="h-5 w-5" />
+            {/* CTA */}
+            <button className="w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all"
+                style={{ backgroundColor: 'var(--color-error)', color: '#ffffff', border: 'none', cursor: 'pointer', opacity: requesting ? 0.7 : 1 }}
+                onClick={requestEmergency} disabled={requesting}
+                onMouseEnter={e => !requesting && (e.currentTarget.style.opacity = '0.88')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = requesting ? '0.7' : '1')}>
+                <Zap className="h-4 w-4" />
                 {requesting ? 'Dispatching…' : 'Request Emergency Service'}
-            </Button>
+            </button>
 
+            {/* Provider list */}
             <div>
-                <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Available Emergency Providers ({providers.length})</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>
+                    Available Emergency Providers ({providers.length})
+                </p>
                 {loading ? (
-                    <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-20 rounded-2xl" />)}</div>
+                    <div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-14 rounded-xl" />)}</div>
                 ) : providers.length === 0 ? (
-                    <div className="card-premium p-8 text-center text-zinc-400 text-sm">No emergency providers available in your area right now</div>
+                    <div className="rounded-xl p-8 text-center" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <Users className="h-7 w-7 mx-auto mb-2" style={{ color: 'var(--color-text-subtle)' }} />
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No emergency providers available in your area right now</p>
+                    </div>
                 ) : (
                     <div className="space-y-2">
                         {providers.map(p => (
-                            <Link key={p.id} to={`/providers/${p.id}`} className="card-premium p-4 flex items-center gap-4 hover:shadow-float transition-all block">
-                                <div className="h-12 w-12 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                                    {p.logo_url ? <img src={p.logo_url} alt="" className="h-full w-full object-cover rounded-xl" /> : <span className="font-bold text-zinc-600">{p.business_name?.[0]}</span>}
+                            <Link key={p.id} to={`/providers/${p.id}`}
+                                className="rounded-xl p-3.5 flex items-center gap-3 transition-all"
+                                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}
+                                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+                                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0"
+                                    style={{ backgroundColor: 'var(--color-surface-high)' }}>
+                                    {p.logo_url
+                                        ? <img src={p.logo_url} alt="" className="h-full w-full object-cover rounded-xl" />
+                                        : <span className="font-bold text-sm" style={{ color: 'var(--color-text-muted)' }}>{p.business_name?.[0]}</span>}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-semibold text-sm">{p.business_name}</p>
-                                    <p className="text-xs text-zinc-400 truncate">{p.city} · ⭐ {p.rating?.toFixed(1) || 'New'}</p>
+                                    <p className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{p.business_name}</p>
+                                    <p className="text-xs truncate" style={{ color: 'var(--color-text-muted)' }}>{p.city} · ⭐ {p.rating?.toFixed(1) || 'New'}</p>
                                 </div>
-                                <div className="flex items-center gap-1 text-emerald-600 shrink-0">
-                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-xs font-semibold">Available</span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    <div className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-success)' }} />
+                                    <span className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>Available</span>
                                 </div>
                             </Link>
                         ))}

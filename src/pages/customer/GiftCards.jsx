@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Gift, Send, CreditCard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 const AMOUNTS = [25, 50, 100, 150, 200, 500];
@@ -33,17 +31,30 @@ export default function GiftCards() {
         setRedeemCode('');
     };
 
+    const inputStyle = {
+        width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 13,
+        backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
+        color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
+        transition: 'border-color 0.18s',
+    };
+
     return (
-        <div className="space-y-6 max-w-xl">
+        <div className="space-y-5 max-w-xl">
             <div>
-                <h1 className="font-display font-bold text-3xl tracking-tight">Gift Cards</h1>
-                <p className="text-zinc-500 text-sm mt-1">Give the gift of great service</p>
+                <h1 className="font-black text-2xl tracking-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>Gift Cards</h1>
+                <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Give the gift of great service</p>
             </div>
 
-            <div className="glass rounded-2xl p-1.5 flex gap-1">
+            {/* Tab switcher */}
+            <div className="flex gap-1 p-1 rounded-xl" style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)' }}>
                 {[['send', 'Send Gift Card'], ['redeem', 'Redeem Code']].map(([key, label]) => (
                     <button key={key} onClick={() => setTab(key)}
-                        className={`flex-1 h-9 rounded-xl text-xs font-semibold transition-all ${tab === key ? 'bg-zinc-900 text-white' : 'text-zinc-500 hover:text-zinc-900'}`}>
+                        className="flex-1 h-8 rounded-lg text-xs font-semibold transition-all"
+                        style={{
+                            backgroundColor: tab === key ? 'var(--color-primary)' : 'transparent',
+                            color: tab === key ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                            border: 'none', cursor: 'pointer',
+                        }}>
                         {label}
                     </button>
                 ))}
@@ -51,47 +62,87 @@ export default function GiftCards() {
 
             {tab === 'send' && (
                 <div className="space-y-5">
-                    <div className="rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-700 p-8 text-white">
-                        <Gift className="h-8 w-8 mb-4 text-zinc-300" />
-                        <p className="text-zinc-400 text-xs uppercase tracking-wider mb-1">Gift Card Value</p>
-                        <p className="font-black text-5xl">${selectedAmount}</p>
-                        <p className="text-zinc-400 text-sm mt-2">Truvornex Services Gift Card</p>
+                    {/* Gift card preview */}
+                    <div className="rounded-2xl p-7 shimmer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border-accent)', boxShadow: 'var(--shadow-card-hover)' }}>
+                        <Gift className="h-7 w-7 mb-3" style={{ color: 'var(--color-text-muted)' }} />
+                        <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-subtle)' }}>Gift Card Value</p>
+                        <p className="font-black text-5xl" style={{ color: 'var(--color-primary)', letterSpacing: '-0.05em' }}>${selectedAmount}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Truvornex Services Gift Card</p>
                     </div>
 
+                    {/* Amount selector */}
                     <div>
-                        <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3">Select Amount</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>Select Amount</p>
                         <div className="grid grid-cols-3 gap-2 mb-3">
-                            {AMOUNTS.map(a => (
-                                <button key={a} onClick={() => { setAmount(a); setCustomAmount(''); }}
-                                    className={`h-10 rounded-xl text-sm font-bold border transition-all ${amount === a && !customAmount ? 'bg-zinc-900 text-white border-zinc-900' : 'border-zinc-200 text-zinc-600 hover:border-zinc-400'}`}>
-                                    ${a}
-                                </button>
-                            ))}
+                            {AMOUNTS.map(a => {
+                                const selected = amount === a && !customAmount;
+                                return (
+                                    <button key={a} onClick={() => { setAmount(a); setCustomAmount(''); }}
+                                        className="h-10 rounded-xl text-sm font-bold transition-all"
+                                        style={{
+                                            backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                            color: selected ? 'var(--color-on-primary)' : 'var(--color-text)',
+                                            border: `1px solid ${selected ? 'var(--color-primary)' : 'var(--color-border-strong)'}`,
+                                            cursor: 'pointer',
+                                        }}>
+                                        ${a}
+                                    </button>
+                                );
+                            })}
                         </div>
-                        <Input placeholder="Custom amount" type="number" value={customAmount} onChange={e => setCustomAmount(e.target.value)} className="rounded-xl" />
+                        <input placeholder="Custom amount" type="number" value={customAmount}
+                            onChange={e => setCustomAmount(e.target.value)}
+                            style={{ ...inputStyle }}
+                            onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                            onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
                     </div>
 
-                    <div className="space-y-3">
-                        <Input placeholder="Recipient email *" type="email" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} className="rounded-xl" />
-                        <Input placeholder="Recipient name (optional)" value={recipientName} onChange={e => setRecipientName(e.target.value)} className="rounded-xl" />
-                        <textarea placeholder="Personal message (optional)" value={message} onChange={e => setMessage(e.target.value)} className="w-full border border-input rounded-xl px-3 py-2 text-sm resize-none bg-transparent" rows={3} />
+                    {/* Recipient fields */}
+                    <div className="space-y-2.5">
+                        {[
+                            { placeholder: 'Recipient email *', type: 'email', value: recipientEmail, set: setRecipientEmail },
+                            { placeholder: 'Recipient name (optional)', type: 'text', value: recipientName, set: setRecipientName },
+                        ].map(f => (
+                            <input key={f.placeholder} placeholder={f.placeholder} type={f.type} value={f.value}
+                                onChange={e => f.set(e.target.value)}
+                                style={{ ...inputStyle }}
+                                onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                                onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
+                        ))}
+                        <textarea placeholder="Personal message (optional)" value={message} onChange={e => setMessage(e.target.value)}
+                            rows={3}
+                            style={{ ...inputStyle, height: 'auto', padding: '10px 12px', resize: 'none' }} />
                     </div>
 
-                    <Button className="w-full h-11 rounded-xl gap-2" onClick={sendGift} disabled={sending}>
+                    <button className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer' }}
+                        onClick={sendGift} disabled={sending}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                         <Send className="h-4 w-4" /> {sending ? 'Sending…' : `Send $${selectedAmount} Gift Card`}
-                    </Button>
+                    </button>
                 </div>
             )}
 
             {tab === 'redeem' && (
                 <div className="space-y-4">
-                    <div className="card-premium p-6 text-center">
-                        <CreditCard className="h-12 w-12 text-zinc-300 mx-auto mb-4" />
-                        <h2 className="font-bold text-lg mb-2">Redeem a Gift Card</h2>
-                        <p className="text-zinc-500 text-sm">Enter your gift card code below to add credits to your account</p>
+                    <div className="rounded-xl p-6 text-center" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <CreditCard className="h-10 w-10 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} />
+                        <h2 className="font-bold text-base mb-1.5" style={{ color: 'var(--color-primary)' }}>Redeem a Gift Card</h2>
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Enter your gift card code below to add credits to your account</p>
                     </div>
-                    <Input placeholder="Gift card code (e.g. TRV-XXXX-XXXX)" value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())} className="rounded-xl font-mono text-center text-lg h-12" />
-                    <Button className="w-full h-11 rounded-xl" onClick={redeem}>Redeem Gift Card</Button>
+                    <input placeholder="Gift card code (e.g. TRV-XXXX-XXXX)"
+                        value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
+                        style={{ ...inputStyle, height: 48, textAlign: 'center', fontSize: 14, fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                        onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
+                        onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
+                    <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer' }}
+                        onClick={redeem}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                        Redeem Gift Card
+                    </button>
                 </div>
             )}
         </div>

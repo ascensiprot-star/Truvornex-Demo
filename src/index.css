@@ -440,6 +440,15 @@
         background-clip: text;
     }
 
+    /* Hero gradient — theme-adaptive, no JS re-render glitch */
+    .hero-gradient-text {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-2) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        transition: none;
+    }
+
     /* Glow */
     .glow-white   { box-shadow: var(--shadow-glow); }
     .glow-strong  { box-shadow: var(--shadow-glow-strong); }
