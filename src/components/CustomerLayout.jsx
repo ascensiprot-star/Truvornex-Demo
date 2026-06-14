@@ -42,7 +42,14 @@ export default function CustomerLayout() {
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [scrolled, setScrolled] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 768);
     const searchRef = useRef(null);
+
+    useEffect(() => {
+        const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+        window.addEventListener('resize', handleResize, { passive: true });
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const toggleCollapsed = () => {
         setCollapsed(c => {
@@ -366,9 +373,9 @@ export default function CustomerLayout() {
 
             {/* Main */}
             <main className="pt-14 md:pt-0 pb-20 md:pb-6 transition-all"
-                style={{ marginLeft: 0, minHeight: '100vh' }}>
-                <div className="md:block" style={{ marginLeft: `${sidebarW}px`, transition: 'margin-left 0.22s cubic-bezier(0.25,1,0.5,1)' }}>
-                    <div className="max-w-4xl mx-auto px-4 md:px-7 py-5 md:py-7 page-enter">
+                style={{ minHeight: '100vh' }}>
+                <div style={{ marginLeft: isDesktop ? sidebarW : 0, transition: 'margin-left 0.22s cubic-bezier(0.25,1,0.5,1)' }}>
+                    <div className="max-w-4xl mx-auto px-3 md:px-7 py-4 md:py-7 page-enter">
                         <Outlet />
                     </div>
                 </div>

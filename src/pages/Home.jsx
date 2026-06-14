@@ -142,7 +142,7 @@ export default function Home() {
     };
 
     return (
-        <div className="w-full flex flex-col gap-7">
+        <div className="w-full flex flex-col gap-4 md:gap-7">
 
             {/* ── Hero ──────────────────────────────────────────────────── */}
             <section className="pt-1 relative flex flex-col items-center text-center">
@@ -151,71 +151,61 @@ export default function Home() {
                     style={{ background: 'radial-gradient(circle,rgba(255,255,255,0.028) 0%,transparent 70%)', filter: 'blur(32px)' }} />
 
                 {/* pill */}
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold mb-3"
-                    style={{ ...anim(0), backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)' }}>
-                    <Sparkles style={{ width: 10, height: 10 }} />
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold mb-3"
+                    style={{ ...anim(0), fontSize: 10, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)' }}>
+                    <Sparkles style={{ width: 9, height: 9 }} />
                     AI-powered neighborhood services
                 </div>
 
-                {/* headline */}
-                <h1 className="font-black leading-[1.06] mb-2.5"
-                    style={{ ...anim(0.04), fontSize: 'clamp(1.75rem,5vw,2.6rem)', letterSpacing: '-0.045em', color: 'var(--color-primary)' }}>
-                    Every service,<br />
-                    <span className="hero-gradient-text">
-                        at your fingertips.
-                    </span>
+                {/* headline — one line on all screens */}
+                <h1 className="font-black leading-tight mb-2"
+                    style={{ ...anim(0.04), fontSize: 'clamp(1.15rem,5.2vw,2.6rem)', letterSpacing: '-0.045em', color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>
+                    Every service,{' '}
+                    <span className="hero-gradient-text">at your fingertips.</span>
                 </h1>
 
                 {/* short subtitle */}
-                <p className="text-[14px] leading-relaxed mb-3 max-w-xs"
-                    style={{ ...anim(0.06), color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                <p className="leading-relaxed mb-3"
+                    style={{ ...anim(0.06), fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 400 }}>
                     Real people, real skills — ready when you need them most.
                 </p>
 
                 {/* trust row */}
-                <div className="flex items-center justify-center gap-3 mb-4" style={anim(0.08)}>
+                <div className="flex items-center justify-center gap-2 mb-3" style={anim(0.08)}>
                     {['Verified', 'Insured', 'Instant Booking'].map((label) => (
                         <div key={label} className="flex items-center gap-1">
-                            <CheckCircle2 style={{ width: 12, height: 12, color: '#22c55e', flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
+                            <CheckCircle2 style={{ width: 10, height: 10, color: '#22c55e', flexShrink: 0 }} />
+                            <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
                         </div>
                     ))}
                 </div>
 
-                {/* CTA buttons */}
-                <div className="flex items-center gap-2.5 mb-5" style={anim(0.1)}>
+                {/* CTA buttons — stack on mobile, row on sm+ */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4 w-full max-w-xs sm:max-w-none sm:w-auto" style={anim(0.1)}>
                     <button
                         onClick={() => navigate('/services')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all"
-                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', letterSpacing: '-0.01em' }}
+                        className="flex items-center justify-center gap-1.5 px-5 rounded-xl font-semibold transition-all"
+                        style={{ fontSize: 12, height: 40, backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', letterSpacing: '-0.01em' }}
                         onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                        <Zap style={{ width: 13, height: 13 }} />
+                        <Zap style={{ width: 12, height: 12 }} />
                         Book a Service
                     </button>
                     <button
-                        onClick={() => navigate('/provider/register')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all"
-                        style={{ backgroundColor: 'transparent', color: 'var(--color-primary)', border: '1.5px solid var(--color-primary)', cursor: 'pointer', letterSpacing: '-0.01em' }}
+                        onClick={() => navigate('/onboarding')}
+                        className="flex items-center justify-center gap-1.5 px-5 rounded-xl font-semibold transition-all"
+                        style={{ fontSize: 12, height: 40, backgroundColor: 'transparent', color: 'var(--color-primary)', border: '1.5px solid var(--color-primary)', cursor: 'pointer', letterSpacing: '-0.01em' }}
                         onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--color-surface-high)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}>
-                        <Users style={{ width: 13, height: 13 }} />
+                        <Users style={{ width: 12, height: 12 }} />
                         Become a Provider
                     </button>
                 </div>
 
-                {/* subtitle */}
-                <p className="text-[13px] leading-relaxed mb-3 max-w-sm"
-                    style={{ ...anim(0.12), color: 'var(--color-text-muted)' }}>
-                    {city
-                        ? <>Connect with trusted providers in{' '}<strong style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{city}</strong>{' '}— available right now.</>
-                        : <>Connect with trusted, verified providers in your neighborhood — instantly.</>}
-                </p>
-
                 {/* city chip */}
                 {city && (
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium mb-3"
-                        style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium mb-3"
+                        style={{ fontSize: 10, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
                         <Navigation style={{ width: 9, height: 9 }} /> {city}
                     </div>
                 )}
