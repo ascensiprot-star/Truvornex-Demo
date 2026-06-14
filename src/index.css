@@ -527,4 +527,121 @@
     /* Mode badge */
     .mode-badge-customer { background: var(--color-primary); color: var(--color-on-primary); }
     .mode-badge-provider { background: var(--color-surface-highest); color: var(--color-text-muted); border: 1px solid var(--color-border-strong); }
+
+    /* ── Extra stagger delays ────────────────────────────────────── */
+    .fade-in-delay-5  { animation: fadeInUp 0.45s var(--ease-out-expo) 0.25s both; }
+    .fade-in-delay-6  { animation: fadeInUp 0.45s var(--ease-out-expo) 0.30s both; }
+    .fade-in-delay-7  { animation: fadeInUp 0.45s var(--ease-out-expo) 0.35s both; }
+    .fade-in-delay-8  { animation: fadeInUp 0.45s var(--ease-out-expo) 0.40s both; }
+    .fade-in-delay-9  { animation: fadeInUp 0.45s var(--ease-out-expo) 0.45s both; }
+    .fade-in-delay-10 { animation: fadeInUp 0.45s var(--ease-out-expo) 0.50s both; }
+
+    /* Pop in — snappy scale entrance for badges / icons */
+    .pop-in { animation: popIn 0.28s var(--ease-spring) forwards; }
+    @keyframes popIn {
+        from { opacity: 0; transform: scale(0.72); }
+        to   { opacity: 1; transform: scale(1);    }
+    }
+
+    /* Slide in from bottom */
+    .slide-in-bottom { animation: slideInBottom 0.38s var(--ease-out-expo) forwards; }
+    @keyframes slideInBottom {
+        from { opacity: 0; transform: translateY(22px); }
+        to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    /* Blur in — premium entrance */
+    .blur-in { animation: blurIn 0.5s var(--ease-out-expo) forwards; }
+    @keyframes blurIn {
+        from { opacity: 0; filter: blur(7px); transform: translateY(5px); }
+        to   { opacity: 1; filter: blur(0);   transform: translateY(0);   }
+    }
+
+    /* Nav item slide in from left (for drawer items) */
+    .nav-enter { animation: navSlideIn 0.32s var(--ease-out-expo) both; }
+    @keyframes navSlideIn {
+        from { opacity: 0; transform: translateX(-14px); }
+        to   { opacity: 1; transform: translateX(0);     }
+    }
+
+    /* Stagger group — auto-delay children */
+    .stagger > *:nth-child(1)  { animation-delay: 0.00s !important; }
+    .stagger > *:nth-child(2)  { animation-delay: 0.04s !important; }
+    .stagger > *:nth-child(3)  { animation-delay: 0.08s !important; }
+    .stagger > *:nth-child(4)  { animation-delay: 0.12s !important; }
+    .stagger > *:nth-child(5)  { animation-delay: 0.16s !important; }
+    .stagger > *:nth-child(6)  { animation-delay: 0.20s !important; }
+    .stagger > *:nth-child(7)  { animation-delay: 0.24s !important; }
+    .stagger > *:nth-child(8)  { animation-delay: 0.28s !important; }
+    .stagger > *:nth-child(9)  { animation-delay: 0.32s !important; }
+    .stagger > *:nth-child(10) { animation-delay: 0.36s !important; }
+    .stagger > *:nth-child(11) { animation-delay: 0.40s !important; }
+    .stagger > *:nth-child(12) { animation-delay: 0.44s !important; }
+
+    /* Hover glow utility */
+    .hover-glow { transition: box-shadow 0.22s var(--ease-out-quart), border-color 0.22s var(--ease-out-quart); }
+    .hover-glow:hover { box-shadow: var(--shadow-glow-strong); border-color: var(--color-border-accent) !important; }
+
+    /* Ping ring — for live/active indicators */
+    .ping-ring { animation: pingRing 1.6s var(--ease-out-expo) infinite; }
+    @keyframes pingRing {
+        0%   { transform: scale(1); opacity: 0.75; }
+        70%  { transform: scale(2.2); opacity: 0; }
+        100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    /* Bounce subtle — for attention-grabbing icons */
+    .bounce-sm { animation: bounceSm 1.4s ease-in-out infinite; }
+    @keyframes bounceSm {
+        0%, 100% { transform: translateY(0);    }
+        50%       { transform: translateY(-4px); }
+    }
+
+    /* Fade out */
+    .fade-out { animation: fadeOut 0.28s var(--ease-out-expo) forwards; }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to   { opacity: 0; pointer-events: none; }
+    }
+
+    /* Reveal from left */
+    .reveal-left { animation: revealLeft 0.4s var(--ease-out-expo) forwards; }
+    @keyframes revealLeft {
+        from { opacity: 0; transform: translateX(12px); }
+        to   { opacity: 1; transform: translateX(0);    }
+    }
+
+    /* Count pulse — highlight a value on enter */
+    .count-pulse { animation: countPulse 0.5s var(--ease-spring) both; }
+    @keyframes countPulse {
+        0%   { transform: scale(0.85); opacity: 0; }
+        60%  { transform: scale(1.06); opacity: 1; }
+        100% { transform: scale(1);    opacity: 1; }
+    }
+
+    /* Page enter — smoother than current */
+    .page-enter-smooth { animation: pageEnterSmooth 0.42s var(--ease-out-expo) forwards; }
+    @keyframes pageEnterSmooth {
+        from { opacity: 0; transform: translateY(10px) scale(0.995); }
+        to   { opacity: 1; transform: translateY(0)    scale(1);     }
+    }
+
+    /* Underline grow — for link hover */
+    .underline-grow {
+        position: relative;
+        text-decoration: none !important;
+    }
+    .underline-grow::after {
+        content: '';
+        position: absolute;
+        left: 0; bottom: -1px;
+        width: 0; height: 1px;
+        background: var(--color-primary);
+        transition: width 0.22s var(--ease-out-expo);
+    }
+    .underline-grow:hover::after { width: 100%; }
+
+    /* Icon spin on hover */
+    .icon-spin-hover { transition: transform 0.4s var(--ease-spring); }
+    .icon-spin-hover:hover { transform: rotate(15deg) scale(1.1); }
 }

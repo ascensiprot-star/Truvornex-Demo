@@ -66,7 +66,7 @@ export default function IntroFlow({ onComplete }) {
         if (idx === current || idx < 0 || idx >= SLIDES.length) return;
         setDirection(idx > current ? 1 : -1);
         setExiting(true);
-        setTimeout(() => { setCurrent(idx); setExiting(false); }, 180);
+        setTimeout(() => { setCurrent(idx); setExiting(false); }, 220);
     };
 
     const next = () => isLast ? finish() : goTo(current + 1);

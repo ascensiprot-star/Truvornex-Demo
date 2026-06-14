@@ -58,7 +58,7 @@ export default function Services() {
     return (
         <div className="pb-8 space-y-6">
             {/* Header */}
-            <div>
+            <div className="fade-in">
                 <h1 className="text-2xl font-black tracking-tight mb-1" style={{ color: 'var(--color-primary)' }}>
                     Explore Services
                 </h1>
@@ -68,7 +68,7 @@ export default function Services() {
             </div>
 
             {/* Search + filter row */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 fade-in-delay-1">
                 <form onSubmit={handleSearch} className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
                         style={{ color: 'var(--color-text-subtle)' }} />
@@ -113,13 +113,13 @@ export default function Services() {
                         style={{ color: 'var(--color-text-subtle)' }}>
                         {activeCategory === 'All' ? 'All Categories' : activeCategory} ({filteredCategories.length})
                     </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {filteredCategories.map(cat => {
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 stagger">
+                        {filteredCategories.map((cat, i) => {
                             const Icon = cat.icon;
                             return (
                                 <Link key={cat.id} to={`/category/${cat.slug}`}
-                                    className="group flex items-center gap-3 p-4 rounded-2xl hover-lift transition-all"
-                                    style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                                    className="group flex items-center gap-3 p-4 rounded-2xl hover-lift transition-all fade-in"
+                                    style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', animationDelay: `${i * 0.035}s` }}>
                                     <div className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110"
                                         style={{ backgroundColor: `${cat.color}18` }}>
                                         <Icon style={{ width: 20, height: 20, color: cat.color }} />

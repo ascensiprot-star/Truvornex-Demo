@@ -164,7 +164,7 @@ export default function CustomerLayout() {
                 {/* Nav */}
                 <nav className="flex-1 overflow-y-auto py-2 no-scrollbar" style={{ padding: slim ? '8px 6px' : '8px 6px' }}>
                     <div className="space-y-0.5">
-                        {NAV_ITEMS.map(item => {
+                        {NAV_ITEMS.map((item, i) => {
                             const active = isActive(item);
                             return (
                                 <Link key={item.path} to={item.path} onClick={onClose}
@@ -178,6 +178,7 @@ export default function CustomerLayout() {
                                         backgroundColor: active ? 'var(--color-surface-high)' : 'transparent',
                                         fontSize: 13,
                                         fontWeight: active ? 600 : 450,
+                                        animation: `navSlideIn 0.32s cubic-bezier(0.19,1,0.22,1) ${i * 0.045}s both`,
                                     }}
                                     onMouseEnter={e => !active && (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                                     onMouseLeave={e => !active && (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -196,10 +197,10 @@ export default function CustomerLayout() {
                                 <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>More</span>
                             </div>
                             <div className="space-y-0.5">
-                                {MORE_ITEMS.map(item => (
+                                {MORE_ITEMS.map((item, i) => (
                                     <Link key={item.path} to={item.path} onClick={onClose}
                                         className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[12px] transition-all"
-                                        style={{ color: 'var(--color-text-muted)', letterSpacing: '-0.01em' }}
+                                        style={{ color: 'var(--color-text-muted)', letterSpacing: '-0.01em', animation: `navSlideIn 0.3s cubic-bezier(0.19,1,0.22,1) ${(NAV_ITEMS.length + i) * 0.03}s both` }}
                                         onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
                                         <item.icon style={{ width: 12, height: 12, flexShrink: 0, opacity: 0.5 }} />
@@ -403,7 +404,7 @@ export default function CustomerLayout() {
             <main className="pt-14 md:pt-0 pb-20 md:pb-6 transition-all"
                 style={{ minHeight: '100vh' }}>
                 <div style={{ marginLeft: isDesktop ? sidebarW : 0, transition: 'margin-left 0.22s cubic-bezier(0.25,1,0.5,1)' }}>
-                    <div className="max-w-4xl mx-auto px-3 md:px-7 py-4 md:py-7 page-enter">
+                    <div key={pathname} className="max-w-4xl mx-auto px-3 md:px-7 py-4 md:py-7 page-enter">
                         <Outlet />
                     </div>
                 </div>
@@ -416,12 +417,14 @@ export default function CustomerLayout() {
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
                     borderTop: '1px solid var(--color-border)',
+                    animation: 'slideInBottom 0.42s cubic-bezier(0.19,1,0.22,1) 0.05s both',
                 }}>
-                {NAV_ITEMS.map(item => {
+                {NAV_ITEMS.map((item, i) => {
                     const active = isActive(item);
                     return (
                         <Link key={item.path} to={item.path}
-                            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-all duration-150">
+                            className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-all duration-150"
+                            style={{ animation: `fadeInUp 0.38s cubic-bezier(0.19,1,0.22,1) ${i * 0.05}s both` }}>
                             <div className="h-7 w-7 flex items-center justify-center rounded-lg"
                                 style={{ backgroundColor: active ? 'var(--color-surface-high)' : 'transparent' }}>
                                 <item.icon style={{ width: 17, height: 17, color: active ? 'var(--color-primary)' : 'var(--color-text-subtle)', strokeWidth: active ? 2.2 : 1.7 }} />

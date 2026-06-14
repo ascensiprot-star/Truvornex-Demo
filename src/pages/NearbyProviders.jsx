@@ -42,7 +42,7 @@ export default function NearbyProviders() {
 
     return (
         <div className="pb-20 md:pb-0">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4 fade-in">
                 <div>
                     <h1 className="font-inter font-bold text-2xl">Nearby Providers</h1>
                     {permissionDenied ? (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/lib/ThemeContext';
 import {
@@ -25,9 +25,18 @@ const PROVIDER_PERKS = [
 export default function Onboarding() {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [visible, setVisible] = useState(false);
     const navigate = useNavigate();
     const { theme } = useTheme();
     const isDark = theme === 'dark';
+
+    useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
+    const anim = (d = 0) => ({
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(12px)',
+        transition: `opacity 0.5s cubic-bezier(0.19,1,0.22,1) ${d}s, transform 0.5s cubic-bezier(0.19,1,0.22,1) ${d}s`,
+        willChange: 'opacity, transform',
+    });
 
     const confirm = async () => {
         if (!selected) return;
@@ -92,6 +101,7 @@ export default function Onboarding() {
                     {/* Simon pill */}
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-5"
                         style={{
+                            ...anim(0),
                             fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
                             backgroundColor: 'var(--color-surface-high)',
                             color: 'var(--color-text-subtle)',
@@ -102,11 +112,11 @@ export default function Onboarding() {
                     </div>
 
                     <h1 className="font-black mb-3"
-                        style={{ fontSize: 'clamp(1.6rem, 6vw, 2.4rem)', letterSpacing: '-0.04em', lineHeight: 1.1, color: 'var(--color-primary)' }}>
+                        style={{ ...anim(0.05), fontSize: 'clamp(1.6rem, 6vw, 2.4rem)', letterSpacing: '-0.04em', lineHeight: 1.1, color: 'var(--color-primary)' }}>
                         How will you use<br />
                         <span className="hero-gradient-text">Truvornex?</span>
                     </h1>
-                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                    <p style={{ ...anim(0.09), fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                         Simon will personalise your entire experience based on your role.
                     </p>
                 </div>
@@ -117,7 +127,7 @@ export default function Onboarding() {
                     {/* Customer card */}
                     <button
                         onClick={() => setSelected('customer')}
-                        style={selected === 'customer' ? cardSelected : cardUnselected}
+                        style={{ ...(selected === 'customer' ? cardSelected : cardUnselected), ...anim(0.14) }}
                         onMouseEnter={e => { if (selected !== 'customer') { e.currentTarget.style.borderColor = 'var(--color-border-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'; } }}
                         onMouseLeave={e => { if (selected !== 'customer') { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; } }}>
 
@@ -176,7 +186,7 @@ export default function Onboarding() {
                     {/* Provider card */}
                     <button
                         onClick={() => setSelected('provider')}
-                        style={selected === 'provider' ? cardSelected : cardUnselected}
+                        style={{ ...(selected === 'provider' ? cardSelected : cardUnselected), ...anim(0.19) }}
                         onMouseEnter={e => { if (selected !== 'provider') { e.currentTarget.style.borderColor = 'var(--color-border-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'; } }}
                         onMouseLeave={e => { if (selected !== 'provider') { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; } }}>
 
@@ -235,6 +245,7 @@ export default function Onboarding() {
                     onClick={confirm}
                     disabled={!selected || loading}
                     style={{
+                        ...anim(0.24),
                         width: '100%', height: 48, borderRadius: 14, fontSize: 13, fontWeight: 600,
                         letterSpacing: '-0.01em', border: 'none', cursor: selected ? 'pointer' : 'not-allowed',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -260,7 +271,7 @@ export default function Onboarding() {
                 </button>
 
                 {/* Footer trust row */}
-                <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
+                <div className="flex items-center justify-center gap-4 mt-5 flex-wrap" style={anim(0.3)}>
                     {[
                         { icon: Shield,  label: 'Secure & private'   },
                         { icon: Globe,   label: 'Switch roles anytime'},

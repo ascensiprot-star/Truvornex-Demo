@@ -444,7 +444,7 @@ export default function Home() {
             </section>
 
             {/* ── Service Bundles ───────────────────────────────────────── */}
-            <section>
+            <section style={anim(0.1)}>
                 <SectionHeader title="Service Bundles" href="/bundles" label="All bundles" />
                 <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                     <div className="flex items-center gap-2 px-3.5 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
@@ -487,7 +487,7 @@ export default function Home() {
             </section>
 
             {/* ── Marketplace ───────────────────────────────────────────── */}
-            <section>
+            <section style={anim(0.14)}>
                 <SectionHeader title="Marketplace" href="/services" label="Explore" />
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {[
@@ -519,7 +519,7 @@ export default function Home() {
             </section>
 
             {/* ── Community ─────────────────────────────────────────────── */}
-            <section>
+            <section style={anim(0.18)}>
                 <SectionHeader title={city ? `Community · ${city}` : 'Community'} href="/community" label="Open board" />
                 <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                     {COMMUNITY.map((post, i) => (
@@ -557,7 +557,7 @@ export default function Home() {
             </section>
 
             {/* ── Financial Overview ────────────────────────────────────── */}
-            <section>
+            <section style={anim(0.22)}>
                 <SectionHeader title="Financial Overview" href="/spending" label="Full report" />
                 <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                     {/* 2-col mobile / 4-col desktop grid with inner dividers */}
@@ -598,13 +598,14 @@ export default function Home() {
 
             {/* ── How it Works ──────────────────────────────────────────── */}
             <section className="rounded-xl relative overflow-hidden"
-                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '18px 20px' }}>
+                style={{ ...anim(0.26), backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '18px 20px' }}>
                 <div className="absolute top-0 right-0 w-40 h-40 pointer-events-none"
                     style={{ background: isDark ? 'radial-gradient(circle at top right,rgba(255,255,255,0.02) 0%,transparent 65%)' : 'radial-gradient(circle at top right,rgba(0,0,0,0.02) 0%,transparent 65%)' }} />
                 <h2 className="text-sm font-bold mb-4" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>How Truvornex Works</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {HOW_IT_WORKS.map((step, i) => (
-                        <div key={i} className="flex gap-2.5">
+                        <div key={i} className="flex gap-2.5"
+                            style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(10px)', transition: `opacity 0.5s cubic-bezier(0.19,1,0.22,1) ${0.26 + i * 0.08}s, transform 0.5s cubic-bezier(0.19,1,0.22,1) ${0.26 + i * 0.08}s` }}>
                             <div className="flex items-center justify-center rounded-lg shrink-0"
                                 style={{ width: 30, height: 30, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)' }}>
                                 <step.icon style={{ width: 13, height: 13, color: 'var(--color-text-muted)' }} />
@@ -665,7 +666,7 @@ export default function Home() {
             </section>
 
             {/* ── Quick Links ───────────────────────────────────────────── */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <section className="grid grid-cols-1 sm:grid-cols-2 gap-2" style={anim(0.32)}>
                 <Link to="/nearby"
                     className="flex items-center justify-between rounded-xl transition-all duration-200 group"
                     style={{ padding: '14px 16px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}
@@ -705,7 +706,7 @@ export default function Home() {
 
             {/* ── Provider CTA ──────────────────────────────────────────── */}
             <section className="rounded-xl relative overflow-hidden"
-                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', padding: '18px 20px' }}>
+                style={{ ...anim(0.38), backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', padding: '18px 20px' }}>
                 <div className="absolute inset-0 pointer-events-none"
                     style={{ background: 'radial-gradient(ellipse at 80% 0%,rgba(255,255,255,0.07) 0%,transparent 60%)' }} />
                 <div className="relative flex flex-col sm:flex-row items-start gap-4">
