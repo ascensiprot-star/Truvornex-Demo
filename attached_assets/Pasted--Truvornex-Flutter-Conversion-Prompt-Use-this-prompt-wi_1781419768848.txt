@@ -1,0 +1,424 @@
+# Truvornex Flutter Conversion Prompt
+> Use this prompt with Claude, Cursor, or any AI coding agent capable of generating a full Flutter workspace.
+
+---
+
+## MISSION
+
+Convert the existing Truvornex React web app into a **production-grade Flutter mobile application** for Android and iOS. This is not a rebuild from scratch — it is a faithful 1:1 structural conversion that preserves every screen, every route, every design token, and every interaction. The output must look and feel like it was engineered by a world-class research institution — not a startup, not a freelancer. Think: the organization that built the foundational models powering the AI industry decided to build a hyperlocal super-app. That is the energy this app must carry.
+
+---
+
+## SOURCE REFERENCE
+
+The React codebase has the following structure:
+
+**Three user roles:**
+- Customer (default)
+- Provider
+- Admin (accessed via obfuscated route)
+
+**Pages — Customer:**
+Home, Services, NearbyProviders, ProviderDetail, BookService, CustomerDashboard, CustomerProfile, NotificationCenter, NeighborhoodDashboard, ServiceBundles, AIAssistant, SmartRecommendations, WishlistFavorites, SpendingAnalytics, Chat, LoyaltyProgram, ReferralProgram, BookingHistory, SavedAddresses, ServiceHistory, ProviderReviews, HelpCenter, SupportTickets, NotificationSettings, PaymentMethods, PrivacySettings, TrackService, Invoices, RecurringServices, EmergencyServices, GiftCards, Events, Transport, Community
+
+**Pages — Neighborhood OS:**
+EmergencyRequest, GroupBuy, SkillSwap, Jury
+
+**Pages — Provider:**
+Dashboard, ManageServices, Bookings, Availability, Earnings, ServiceVariants, Profile, ProviderCopilot, AIInsights, CustomerInsights, Chat
+
+**Pages — Admin:**
+Dashboard, UsersAdmin, ProvidersAdmin, BookingsAdmin, ServicesAdmin, Analytics, Settings, Reports, AIControl, PlatformConfig, FinancialDashboard, CustomerManagement, InvoiceManagement, ReviewModeration, NotificationCenter, AuditLogs, CategoryManagement, ProviderPayouts, SystemHealth, ContentManagement
+
+**Auth:** Login, Signup (same screen), Onboarding, SplashScreen
+
+**Backend:** Supabase (Postgres + Auth + Realtime + Edge Functions)
+
+---
+
+## DESIGN SYSTEM — DO NOT CHANGE
+
+Preserve the exact design identity. Every color, every spacing rhythm, every font must match.
+
+### Color Tokens (Dark Mode — Default)
+```
+bg:               #080808
+surface:          #111111
+surface-low:      #0c0c0c
+surface-high:     #1a1a1a
+surface-highest:  #222222
+surface-lowest:   #050505
+primary:          #ffffff
+on-primary:       #080808
+accent:           #ffffff
+accent-2:         #d4d4d4
+accent-3:         #a3a3a3
+text:             #e8e8e8
+text-muted:       #888888
+text-subtle:      #444444
+border:           rgba(255,255,255,0.07)
+border-strong:    rgba(255,255,255,0.12)
+success:          #6ee7b7
+warning:          #fcd34d
+error:            #fca5a5
+info:             #93c5fd
+```
+
+### Color Tokens (Light Mode)
+```
+bg:               #ffffff
+surface:          #f7f7f7
+surface-low:      #efefef
+primary:          #080808
+on-primary:       #ffffff
+text:             #111111
+text-muted:       #555555
+```
+
+### Typography
+- **Primary font:** Inter (Google Fonts)
+- **Monospace:** JetBrains Mono (for data, codes, IDs)
+- **Type scale:** Display 32px / H1 24px / H2 20px / H3 16px / Body 14px / Caption 12px / Label 11px
+- **Letter spacing:** Headings use `0.02em`, labels use `0.08em` (uppercase tracking)
+- **Weight:** 300 (light body), 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+
+### Motion
+- Spring easing for interactive elements: `Curves.elasticOut` equivalent
+- Expo out for transitions: fast entry, slow settle
+- Page transitions: slide from right (standard), fade+scale for modals
+- Micro-animations on tap: slight scale down (0.97) then back
+
+### Elevation / Shadows
+Cards and surfaces use layered box shadows with deep blacks — not Material elevation grays. Borders are `rgba(255,255,255,0.07)` hairlines.
+
+---
+
+## FLUTTER PROJECT STRUCTURE
+
+```
+truvornex_flutter/
+├── lib/
+│   ├── main.dart
+│   ├── app.dart                          # Root widget, theme, routing
+│   ├── core/
+│   │   ├── theme/
+│   │   │   ├── app_theme.dart            # ThemeData light + dark
+│   │   │   ├── app_colors.dart           # All color tokens as constants
+│   │   │   ├── app_typography.dart       # TextTheme, TextStyles
+│   │   │   └── app_spacing.dart          # Spacing scale (4, 8, 12, 16, 20, 24, 32, 48)
+│   │   ├── routing/
+│   │   │   ├── app_router.dart           # GoRouter config
+│   │   │   └── route_names.dart          # Named route constants
+│   │   ├── supabase/
+│   │   │   ├── supabase_client.dart      # Supabase init
+│   │   │   └── realtime_service.dart     # Realtime subscriptions
+│   │   ├── auth/
+│   │   │   ├── auth_provider.dart        # Riverpod auth state
+│   │   │   └── auth_guard.dart           # Route guard
+│   │   └── utils/
+│   │       ├── formatters.dart
+│   │       └── validators.dart
+│   ├── features/
+│   │   ├── splash/
+│   │   ├── auth/
+│   │   │   ├── login_screen.dart
+│   │   │   └── onboarding_screen.dart
+│   │   ├── customer/
+│   │   │   ├── home/
+│   │   │   ├── services/
+│   │   │   ├── booking/
+│   │   │   ├── profile/
+│   │   │   ├── neighborhood/
+│   │   │   │   ├── dashboard/
+│   │   │   │   ├── emergency/
+│   │   │   │   ├── group_buy/
+│   │   │   │   ├── skill_swap/
+│   │   │   │   └── jury/
+│   │   │   ├── financial/
+│   │   │   ├── loyalty/
+│   │   │   ├── transport/
+│   │   │   ├── events/
+│   │   │   └── community/
+│   │   ├── provider/
+│   │   │   ├── dashboard/
+│   │   │   ├── services/
+│   │   │   ├── bookings/
+│   │   │   ├── earnings/
+│   │   │   ├── availability/
+│   │   │   ├── copilot/
+│   │   │   └── insights/
+│   │   ├── admin/
+│   │   │   └── [all admin screens]
+│   │   └── shared/
+│   │       ├── widgets/
+│   │       │   ├── tx_card.dart           # Base card widget
+│   │       │   ├── tx_button.dart         # Primary/secondary/ghost buttons
+│   │       │   ├── tx_input.dart          # Text input with Truvornex styling
+│   │       │   ├── tx_badge.dart          # Status badges
+│   │       │   ├── tx_stat_card.dart      # Stat display card
+│   │       │   ├── tx_provider_card.dart  # Provider list card
+│   │       │   ├── tx_category_card.dart  # Service category grid card
+│   │       │   ├── tx_bottom_nav.dart     # Bottom navigation bar
+│   │       │   ├── tx_app_bar.dart        # Custom app bar
+│   │       │   ├── tx_loading.dart        # Skeleton loaders
+│   │       │   └── tx_avatar.dart         # Avatar with reputation ring
+│   │       └── models/
+│   │           ├── booking.dart
+│   │           ├── provider.dart
+│   │           ├── service.dart
+│   │           ├── review.dart
+│   │           └── [all entity models]
+├── pubspec.yaml
+└── assets/
+    └── fonts/
+```
+
+---
+
+## PUBSPEC.YAML DEPENDENCIES
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State management
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  
+  # Routing
+  go_router: ^14.0.0
+  
+  # Backend
+  supabase_flutter: ^2.5.0
+  
+  # Fonts
+  google_fonts: ^6.2.1
+  
+  # UI
+  flutter_animate: ^4.5.0        # Micro-animations
+  shimmer: ^3.0.0                 # Skeleton loading
+  cached_network_image: ^3.3.1   # Image caching
+  flutter_svg: ^2.0.10           # SVG icons
+  
+  # Maps (for NearbyProviders, TrackService)
+  google_maps_flutter: ^2.6.1
+  
+  # Storage
+  shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.0.0
+  
+  # Utils
+  intl: ^0.19.0
+  url_launcher: ^6.2.6
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  build_runner: ^2.4.9
+  riverpod_generator: ^2.4.0
+  custom_lint: ^0.6.4
+  riverpod_lint: ^2.3.10
+```
+
+---
+
+## NAVIGATION ARCHITECTURE
+
+Use **GoRouter** with shell routes to match the web app's layout structure:
+
+```dart
+// Three shell routes:
+// 1. CustomerShell — bottom nav with: Home, Explore, Simon AI, Spending, Profile
+// 2. ProviderShell — bottom nav with: Dashboard, Bookings, Services, Earnings, Profile
+// 3. AdminShell — drawer navigation (all admin routes)
+
+// Auth redirect:
+// - Unauthenticated → /login
+// - Authenticated + no role → /onboarding
+// - Customer → /
+// - Provider → /provider
+// - Admin → /admin (obfuscated in production: /x7k9m2q4p8w1n5v3r6t0y/admin)
+```
+
+**Bottom Navigation — Customer:**
+- Home (`/`)
+- Explore (`/services`)
+- Simon AI (`/ai`)
+- Spending (`/spending`)
+- Profile (`/profile`)
+
+**Bottom Navigation — Provider:**
+- Dashboard (`/provider`)
+- Bookings (`/provider/bookings`)
+- Services (`/provider/services`)
+- Earnings (`/provider/earnings`)
+- Profile (`/provider/profile`)
+
+---
+
+## SCREEN-BY-SCREEN CONVERSION RULES
+
+### Home Screen
+Exact layout from web:
+1. Hero section: "Every service, at your fingertips." — large bold headline, subtitle, search bar
+2. Quick filter chips: Cleaning, Plumbing, Chef, Moving, Fitness
+3. Stats row: 2,400+ Verified Providers | 98% Satisfaction | 15K+ Jobs | 4.9★
+4. Browse by Category — 2-column grid of `TxCategoryCard`
+5. Events Near You horizontal scroll
+6. Transport section
+7. Community section
+
+Search bar opens a bottom sheet with search + results. Not a new screen.
+
+### Splash Screen
+Full black screen. TRUVORNEX wordmark center-fades in. Subtle pulse animation. 2.5 seconds then fade to auth or home.
+
+### Auth / Login
+Single screen with Customer / Provider toggle at top. Email + password fields. Sign in / Sign up toggle. Supabase auth. No social login unless already present in web app.
+
+### Provider Cards
+Show: avatar, name, category, rating (star + number), verified badge, distance, price starting from, quick book button.
+
+### Category Cards
+Square dark cards with icon (use Lucide icons or equivalent Flutter icons) + label below. Subtle border, on tap scale animation.
+
+### Neighborhood OS Screens
+These are special — treat them with premium UI. EmergencyRequest gets a red accent pulse animation. GroupBuy shows a progress bar toward deal threshold. SkillSwap has a time-credit balance chip. Jury has a verdict card with voting progress.
+
+### Admin Screens
+Drawer navigation. Data-dense tables using `DataTable` or custom `TxDataTable`. Charts using `fl_chart`. All screens in dark mode only — admin panel never switches to light.
+
+---
+
+## SUPABASE INTEGRATION
+
+```dart
+// supabase_client.dart
+await Supabase.initialize(
+  url: const String.fromEnvironment('SUPABASE_URL'),
+  anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
+);
+
+// All entity repos follow this pattern:
+class BookingRepository {
+  final SupabaseClient _client;
+  
+  Future<List<Booking>> getMyBookings(String userId) async {
+    final data = await _client
+      .from('bookings')
+      .select('*, provider:providers(*), service:services(*)')
+      .eq('customer_id', userId)
+      .order('created_at', ascending: false);
+    return data.map(Booking.fromJson).toList();
+  }
+  
+  Stream<List<Booking>> watchMyBookings(String userId) {
+    return _client
+      .from('bookings')
+      .stream(primaryKey: ['id'])
+      .eq('customer_id', userId)
+      .map((data) => data.map(Booking.fromJson).toList());
+  }
+}
+```
+
+Realtime subscriptions for: Chat, TrackService, NotificationCenter, EmergencyRequest.
+
+---
+
+## STATE MANAGEMENT — RIVERPOD
+
+```dart
+// Auth state
+@riverpod
+Stream<AuthState> authState(AuthStateRef ref) {
+  return Supabase.instance.client.auth.onAuthStateChange;
+}
+
+// Each feature has its own provider file
+// Example: home_providers.dart
+@riverpod
+Future<List<ServiceCategory>> serviceCategories(ServiceCategoriesRef ref) async {
+  return ref.watch(serviceCategoryRepositoryProvider).getAll();
+}
+```
+
+Use `AsyncValue` for all async states. Show skeleton loaders (`ShimmerLoading`) while loading, error widgets on error.
+
+---
+
+## WHAT "LAB-GRADE" MEANS IN FLUTTER
+
+Every detail must signal precision engineering:
+
+1. **No default Material widgets visible** — override everything. No blue ripples, no default AppBar shadows, no standard SnackBar styling. Every widget is custom-skinned.
+
+2. **Haptic feedback** everywhere meaningful — `HapticFeedback.lightImpact()` on taps, `HapticFeedback.mediumImpact()` on confirmations, `HapticFeedback.heavyImpact()` on destructive actions.
+
+3. **Skeleton loaders not spinners** — every list, card, and stat uses `Shimmer` while loading. The spinner only appears on full-screen blocking operations.
+
+4. **Pull-to-refresh** on every scrollable list — with custom refresh indicator styled to match the monochrome theme.
+
+5. **Empty states are designed** — not "No data found". Each empty state has a minimal icon, a headline, and a CTA. Example: empty bookings → "Nothing booked yet" → "Browse services" button.
+
+6. **Error states are designed** — inline, not crashes. Retry button. Network error shows an offline indicator in the app bar.
+
+7. **Transitions are intentional** — hero animations on provider cards → provider detail. Shared element transitions on service images.
+
+8. **Typography is tight** — no default Flutter font sizes. Every `Text` widget uses a named style from `AppTypography`. Zero inline `fontSize` scattered through widgets.
+
+9. **Bottom sheets over new screens** — search, filters, quick actions, confirmations all use `showModalBottomSheet` with custom drag handle, rounded top corners (`BorderRadius.vertical(top: Radius.circular(20))`), dark background.
+
+10. **Safe area and notch handling** — all screens use `SafeArea`. Bottom nav accounts for home indicator on iPhone.
+
+---
+
+## SIMON AI INTEGRATION
+
+The `/ai` screen (AIAssistant) becomes a full chat UI:
+- Messages list with bubble design (customer: right, Simon: left)
+- Input bar pinned to bottom with send button
+- Simon's messages appear with a typing indicator (three dots animation) before content streams in
+- If Simon AI uses an LLM API: route through Supabase Edge Function, never call the model directly from the client
+- Streaming responses supported via chunked HTTP or Supabase Realtime channel
+
+---
+
+## PLATFORM-SPECIFIC
+
+### Android
+- `minSdkVersion 21`
+- Target SDK 34
+- Adaptive icons (dark background, white wordmark)
+- Edge-to-edge display enabled
+- Splash screen via `flutter_native_splash`
+
+### iOS
+- Minimum iOS 14
+- Dark mode as default, respects system preference
+- Status bar: light content on dark screens
+- Large title navigation: disabled (custom app bars only)
+
+---
+
+## WHAT TO GENERATE FIRST
+
+Generate in this order:
+
+1. `pubspec.yaml`
+2. `core/theme/` — all four files (colors, typography, spacing, theme)
+3. `core/routing/app_router.dart`
+4. `core/supabase/supabase_client.dart`
+5. `core/auth/auth_provider.dart`
+6. `features/shared/widgets/` — all `tx_*.dart` base widgets
+7. `features/splash/splash_screen.dart`
+8. `features/auth/login_screen.dart`
+9. `features/customer/home/home_screen.dart`
+10. All remaining screens in order: Customer → Provider → Neighborhood → Admin
+
+---
+
+## FINAL STANDARD
+
+When this app is running on a device, someone picking it up should feel it was built by people who have shipped operating systems, inference engines, and security platforms — not people who followed a tutorial. Every pixel, every animation, every interaction should carry that weight. That is the bar.
