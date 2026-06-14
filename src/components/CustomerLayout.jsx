@@ -64,7 +64,9 @@ export default function CustomerLayout() {
                 style={{ borderBottom: '1px solid var(--color-border)' }}>
                 <Link to="/" onClick={onClose} className="flex items-center gap-2.5">
                     <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: 'var(--color-primary)' }}>
+                        style={{ backgroundColor: 'var(--color-primary)', transition: 'transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s', boxShadow: 'var(--shadow-xs)' }}
+                        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.08)', e.currentTarget.style.boxShadow = 'var(--shadow-sm)')}
+                        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)',    e.currentTarget.style.boxShadow = 'var(--shadow-xs)')}>
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <path d="M3 4h10M3 8h7M3 12h8" stroke="var(--color-on-primary)" strokeWidth="1.8" strokeLinecap="round"/>
                             <circle cx="13" cy="12" r="2.5" fill="var(--color-on-primary)" fillOpacity="0.8"/>
@@ -102,10 +104,10 @@ export default function CustomerLayout() {
             {/* Search */}
             <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
                 <button onClick={() => { setSearchOpen(true); if (onClose) onClose(); }}
-                    className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-all"
-                    style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+                    className="w-full flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs"
+                    style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)', transition: 'border-color 0.18s, box-shadow 0.18s' }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)', e.currentTarget.style.boxShadow = 'var(--shadow-xs)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.boxShadow = 'none')}>
                     <Search className="h-3 w-3 shrink-0" />
                     <span>Search services…</span>
                     <span className="ml-auto text-[10px] px-1 py-0.5 rounded font-mono"
@@ -124,7 +126,7 @@ export default function CustomerLayout() {
                                 style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-muted)', backgroundColor: active ? 'var(--color-surface-high)' : 'transparent' }}
                                 onMouseEnter={e => !active && (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                                 onMouseLeave={e => !active && (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
-                                {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-4 rounded-full" style={{ backgroundColor: 'var(--color-primary)', marginLeft: -1 }} />}
+                                {active && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-full" style={{ backgroundColor: 'var(--color-primary)', marginLeft: -1, boxShadow: '0 0 8px rgba(255,255,255,0.35)' }} />}
                                 <item.icon style={{ width: 14, height: 14, flexShrink: 0, opacity: active ? 1 : 0.6 }} />
                                 <span style={{ fontWeight: active ? 600 : 450, letterSpacing: '-0.01em' }}>{item.label}</span>
                             </Link>
@@ -169,7 +171,7 @@ export default function CustomerLayout() {
 
             {/* Desktop Sidebar */}
             <aside className="hidden md:flex fixed left-0 top-0 h-full w-56 flex-col z-40"
-                style={{ backgroundColor: 'var(--color-surface)', borderRight: '1px solid var(--color-border)' }}>
+                style={{ backgroundColor: 'var(--color-surface)', borderRight: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
                 <SidebarInner />
             </aside>
 

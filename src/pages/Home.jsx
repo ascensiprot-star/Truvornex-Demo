@@ -121,8 +121,9 @@ export default function Home() {
 
     const anim = (d = 0) => ({
         opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(8px)',
-        transition: `all 0.55s cubic-bezier(0.19,1,0.22,1) ${d}s`,
+        transform: visible ? 'translateY(0)' : 'translateY(10px)',
+        transition: `opacity 0.5s cubic-bezier(0.19,1,0.22,1) ${d}s, transform 0.5s cubic-bezier(0.19,1,0.22,1) ${d}s`,
+        willChange: 'opacity, transform',
     });
 
     const gradientText = isDark
@@ -136,8 +137,8 @@ export default function Home() {
     };
 
     const cardHover = {
-        onMouseEnter: e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.transform = 'translateY(-1px)'),
-        onMouseLeave: e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.transform = 'translateY(0)'),
+        onMouseEnter: e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.transform = 'translateY(-1px)', e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'),
+        onMouseLeave: e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.transform = 'translateY(0)',    e.currentTarget.style.boxShadow = 'none'),
     };
 
     return (
@@ -146,8 +147,8 @@ export default function Home() {
             {/* ── Hero ──────────────────────────────────────────────────── */}
             <section className="pt-1 relative">
                 {/* ambient */}
-                <div className="absolute -top-12 -left-12 w-56 h-56 rounded-full pointer-events-none"
-                    style={{ background: 'radial-gradient(circle,rgba(255,255,255,0.018) 0%,transparent 70%)', filter: 'blur(28px)' }} />
+                <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle,rgba(255,255,255,0.028) 0%,transparent 70%)', filter: 'blur(32px)' }} />
 
                 {/* pill */}
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold mb-3"
@@ -190,11 +191,11 @@ export default function Home() {
                         onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
                         className="w-full outline-none"
                         style={{
-                            height: 40, paddingLeft: 36, paddingRight: 80, fontSize: 13,
+                            height: 42, paddingLeft: 36, paddingRight: 80, fontSize: 13,
                             backgroundColor: 'var(--color-surface)', color: 'var(--color-text)',
                             border: `1px solid ${searchFocused ? 'var(--color-border-accent)' : 'var(--color-border-strong)'}`,
-                            borderRadius: 9, boxShadow: searchFocused ? 'var(--shadow-glow)' : 'var(--shadow-sm)',
-                            transition: 'all 0.18s', fontFamily: 'Inter,sans-serif', letterSpacing: '-0.01em',
+                            borderRadius: 10, boxShadow: searchFocused ? 'var(--shadow-glow), 0 0 0 3px rgba(255,255,255,0.05)' : 'var(--shadow-sm)',
+                            transition: 'all 0.2s cubic-bezier(0.25,1,0.5,1)', fontFamily: 'Inter,sans-serif', letterSpacing: '-0.011em',
                         }} />
                     <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 text-xs font-semibold px-3 rounded-lg transition-opacity"
                         style={{ height: 30, backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', letterSpacing: '-0.01em' }}
@@ -221,12 +222,12 @@ export default function Home() {
             {/* ── Stats ─────────────────────────────────────────────────── */}
             <section className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {STATS.map((s, i) => (
-                    <div key={s.label} className="rounded-xl relative overflow-hidden"
-                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '12px 14px', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.05}s both` }}>
-                        <div className="absolute top-0 right-0 w-12 h-12 pointer-events-none"
-                            style={{ background: isDark ? 'radial-gradient(circle at top right,rgba(255,255,255,0.04) 0%,transparent 70%)' : 'radial-gradient(circle at top right,rgba(0,0,0,0.03) 0%,transparent 70%)' }} />
-                        <div className="text-lg font-black mb-0.5" style={{ letterSpacing: '-0.04em', color: 'var(--color-primary)' }}>{s.value}</div>
-                        <div className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{s.label}</div>
+                    <div key={s.label} className="rounded-xl relative overflow-hidden shimmer"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '12px 14px', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.05}s both`, boxShadow: 'var(--shadow-sm)' }}>
+                        <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
+                            style={{ background: isDark ? 'radial-gradient(circle at top right,rgba(255,255,255,0.055) 0%,transparent 70%)' : 'radial-gradient(circle at top right,rgba(0,0,0,0.04) 0%,transparent 70%)' }} />
+                        <div className="text-lg font-black mb-0.5" style={{ letterSpacing: '-0.045em', color: 'var(--color-primary)' }}>{s.value}</div>
+                        <div className="text-[10px]" style={{ color: 'var(--color-text-muted)', letterSpacing: '0.005em' }}>{s.label}</div>
                     </div>
                 ))}
             </section>
@@ -237,12 +238,12 @@ export default function Home() {
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5">
                     {CATEGORIES.map((cat, i) => (
                         <Link key={cat.slug} to={`/category/${cat.slug}`}
-                            className="flex flex-col items-center gap-1.5 rounded-xl text-center transition-all duration-200"
-                            style={{ padding: '10px 6px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.022}s both` }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.transform = 'translateY(-2px)')}
-                            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.backgroundColor = 'var(--color-surface)',      e.currentTarget.style.transform = 'translateY(0)')}>
+                            className="flex flex-col items-center gap-1.5 rounded-xl text-center"
+                            style={{ padding: '10px 6px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.022}s both`, transition: 'all 0.22s cubic-bezier(0.25,1,0.5,1)', willChange: 'transform' }}
+                            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.transform = 'translateY(-2px)', e.currentTarget.style.boxShadow = 'var(--shadow-md)')}
+                            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.backgroundColor = 'var(--color-surface)',      e.currentTarget.style.transform = 'translateY(0)',    e.currentTarget.style.boxShadow = 'none')}>
                             <div className="flex items-center justify-center rounded-lg"
-                                style={{ width: 30, height: 30, backgroundColor: 'var(--color-surface-high)' }}>
+                                style={{ width: 30, height: 30, backgroundColor: 'var(--color-surface-high)', transition: 'background-color 0.2s' }}>
                                 <cat.icon style={{ width: 14, height: 14, color: 'var(--color-text-muted)' }} />
                             </div>
                             <span className="text-[10px] font-semibold leading-tight" style={{ color: 'var(--color-text-muted)' }}>{cat.label}</span>
@@ -349,9 +350,9 @@ export default function Home() {
                         { icon: Star,       title: 'Top Rated',        desc: 'Providers with 4.8+ ratings nearby',     href: '/services?sort=rating',   badge: 'Premium' },
                     ].map((item, i) => (
                         <div key={i} onClick={() => navigate(item.href)}
-                            className="rounded-xl cursor-pointer relative overflow-hidden transition-all duration-200"
-                            style={{ padding: '14px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-                            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.transform = 'translateY(-1px)', e.currentTarget.style.boxShadow = 'var(--shadow-sm)')}
+                            className="rounded-xl cursor-pointer relative overflow-hidden"
+                            style={{ padding: '14px', backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', transition: 'all 0.22s cubic-bezier(0.25,1,0.5,1)', willChange: 'transform' }}
+                            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.transform = 'translateY(-2px)', e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)')}
                             onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.transform = 'translateY(0)',    e.currentTarget.style.boxShadow = 'none')}>
                             <div className="absolute top-0 right-0 w-14 h-14 pointer-events-none"
                                 style={{ background: isDark ? 'radial-gradient(circle at top right,rgba(255,255,255,0.03) 0%,transparent 70%)' : 'radial-gradient(circle at top right,rgba(0,0,0,0.02) 0%,transparent 70%)' }} />
@@ -480,10 +481,10 @@ export default function Home() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     {PROVIDERS.map((p, i) => (
                         <Link key={p.id} to={`/providers/${p.id}`}
-                            className="rounded-xl overflow-hidden block transition-all duration-200"
-                            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.06}s both` }}
-                            onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-3px)', e.currentTarget.style.boxShadow = 'var(--shadow-md)', e.currentTarget.style.borderColor = 'var(--color-border-strong)')}
-                            onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)',    e.currentTarget.style.boxShadow = 'none',            e.currentTarget.style.borderColor = 'var(--color-border)')}>
+                            className="rounded-xl overflow-hidden block"
+                            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none', animation: `fadeInUp 0.45s cubic-bezier(0.19,1,0.22,1) ${i * 0.06}s both`, transition: 'transform 0.24s cubic-bezier(0.25,1,0.5,1), box-shadow 0.24s cubic-bezier(0.25,1,0.5,1), border-color 0.24s', willChange: 'transform' }}
+                            onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-3px)', e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)', e.currentTarget.style.borderColor = 'var(--color-border-strong)')}
+                            onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)',    e.currentTarget.style.boxShadow = 'none',                     e.currentTarget.style.borderColor = 'var(--color-border)')}>
                             <div className="relative overflow-hidden" style={{ height: 100 }}>
                                 <img src={p.image} alt={p.name}
                                     className="w-full h-full object-cover transition-all duration-700"
