@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
 
 const AuthContext = createContext();
 
@@ -12,40 +11,23 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         checkUserAuth();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (session?.user) {
-                setUser(session.user);
-                setIsAuthenticated(true);
-            } else {
-                setUser(null);
-                setIsAuthenticated(false);
-            }
-        });
-
-        return () => subscription.unsubscribe();
     }, []);
 
     const checkUserAuth = async () => {
         try {
             setIsLoadingAuth(true);
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error) throw error;
-            
-            if (session?.user) {
-                setUser(session.user);
+            const res = await fetch('/api/auth/user');
+            const data = await res.json();
+            if (data.user) {
+                setUser(data.user);
                 setIsAuthenticated(true);
             } else {
                 setUser(null);
                 setIsAuthenticated(false);
             }
         } catch (error) {
-            console.error('User auth check failed:', error);
-            setAuthError({
-                type: 'auth_error',
-                message: error.message
-            });
+            console.error('Auth check failed:', error);
+            setAuthError({ type: 'auth_error', message: error.message });
             setUser(null);
             setIsAuthenticated(false);
         } finally {
@@ -55,7 +37,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async (shouldRedirect = true) => {
-        await supabase.auth.signOut();
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (_) {}
         setUser(null);
         setIsAuthenticated(false);
         if (shouldRedirect) {
@@ -76,7 +60,9 @@ export const AuthProvider = ({ children }) => {
             authChecked,
             logout,
             navigateToLogin,
-            checkUserAuth
+            checkUserAuth,
+            setUser,
+            setIsAuthenticated,
         }}>
             {children}
         </AuthContext.Provider>

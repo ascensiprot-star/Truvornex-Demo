@@ -50,7 +50,7 @@ export default function AIControl() {
             if (!simonConfigured) {
                 setResults(r => ({
                     ...r,
-                    [action.id]: `**Demo Mode — Simon AI not configured.**\n\nTo enable autonomous admin actions, add \`VITE_DEEPSEEK_API_KEY\` to your Replit Secrets.\n\n**Task**: ${action.title}\n\n${action.desc}`,
+                    [action.id]: `**Demo Mode — Simon AI not configured.**\n\nTo enable autonomous admin actions, add \`DEEPSEEK_API_KEY\` to your Replit Secrets.\n\n**Task**: ${action.title}\n\n${action.desc}`,
                 }));
                 toast.success(`${action.title} (demo)`);
             } else {
@@ -97,7 +97,7 @@ export default function AIControl() {
                     <div>
                         <p className="font-bold text-sm" style={{ color: 'var(--color-warning)' }}>Simon AI Not Configured</p>
                         <p className="text-xs mt-0.5" style={{ color: 'var(--color-warning)', opacity: 0.8 }}>
-                            Add <code style={{ backgroundColor: 'rgba(245,158,11,0.15)', padding: '1px 5px', borderRadius: 4 }}>VITE_DEEPSEEK_API_KEY</code> to your Replit Secrets to activate autonomous AI actions. Actions will run in demo mode until configured.
+                            Add <code style={{ backgroundColor: 'rgba(245,158,11,0.15)', padding: '1px 5px', borderRadius: 4 }}>DEEPSEEK_API_KEY</code> to your Replit Secrets to activate autonomous AI actions. Actions will run in demo mode until configured.
                         </p>
                     </div>
                 </div>

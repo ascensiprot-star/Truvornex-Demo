@@ -143,7 +143,7 @@ Be precise, data-driven, use markdown formatting with headers and bullet points.
         if (!isConfigured()) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: '**Simon needs DeepSeek to be configured.** Your `VITE_DEEPSEEK_API_KEY` secret powers this AI. Add it in Replit Secrets and restart the server.',
+                content: '**Simon needs DeepSeek to be configured.** Your `DEEPSEEK_API_KEY` secret powers this AI. Add it in Replit Secrets and restart the server.',
             }]);
             setLoading(false);
             return;
@@ -233,7 +233,7 @@ Be precise, data-driven, use markdown formatting with headers and bullet points.
                         <p className="text-xs max-w-xs mx-auto mb-5 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                             {isConfigured()
                                 ? 'Powered by DeepSeek · Ask me anything about services, providers, or your neighborhood'
-                                : 'Demo mode — add VITE_DEEPSEEK_API_KEY to unlock full AI'}
+                                : 'Demo mode — add DEEPSEEK_API_KEY to unlock full AI'}
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto text-left">
                             {QUICK_PROMPTS.map(({ icon: Icon, label, prompt }) => (

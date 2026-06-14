@@ -119,7 +119,7 @@ export default function Earnings() {
 
     const getAiInsight = async () => {
         if (!isConfigured()) {
-            setAiInsight('**DeepSeek not configured** — Add `VITE_DEEPSEEK_API_KEY` to unlock AI earning insights.');
+            setAiInsight('**DeepSeek not configured** — Add `DEEPSEEK_API_KEY` to unlock AI earning insights.');
             return;
         }
         setAiLoading(true);

@@ -71,7 +71,7 @@ export default function FinancialDashboard() {
 
     const runSimonRevenue = async () => {
         if (!simonStatus().configured) {
-            setSimonInsight('**Simon AI not configured.** Add `VITE_DEEPSEEK_API_KEY` to Replit Secrets to get AI revenue intelligence.');
+            setSimonInsight('**Simon AI not configured.** Add `DEEPSEEK_API_KEY` to Replit Secrets to get AI revenue intelligence.');
             return;
         }
         setSimonLoading(true);

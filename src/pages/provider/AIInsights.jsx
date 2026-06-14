@@ -58,7 +58,7 @@ export default function AIInsights() {
 
     const getInsight = async (type) => {
         if (!isConfigured()) {
-            setInsights(i => ({ ...i, [type.id]: '**DeepSeek not configured** — Add `VITE_DEEPSEEK_API_KEY` to unlock Simon AI insights.' }));
+            setInsights(i => ({ ...i, [type.id]: '**DeepSeek not configured** — Add `DEEPSEEK_API_KEY` to unlock Simon AI insights.' }));
             return;
         }
         setLoading(l => ({ ...l, [type.id]: true }));
