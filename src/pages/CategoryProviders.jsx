@@ -90,7 +90,7 @@ export default function CategoryProviders() {
                                 </span>
                             )}
                             {permissionDenied && (
-                                <span className="text-xs text-orange-500">📍 Enable location for distance sorting</span>
+                                <span className="text-xs text-orange-500">Enable location for distance sorting</span>
                             )}
                         </div>
                     </div>

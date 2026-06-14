@@ -46,7 +46,7 @@ export default function NearbyProviders() {
                 <div>
                     <h1 className="font-inter font-bold text-2xl">Nearby Providers</h1>
                     {permissionDenied ? (
-                        <p className="text-xs text-destructive mt-0.5">📍 Location blocked — please allow access in your browser settings</p>
+                        <p className="text-xs text-destructive mt-0.5">Location blocked — please allow access in your browser settings</p>
                     ) : locError ? (
                         <p className="text-xs text-muted-foreground mt-0.5">{locError}</p>
                     ) : locLoading ? (

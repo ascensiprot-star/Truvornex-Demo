@@ -1,13 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Ticket, ArrowRight, Users, Plus } from 'lucide-react';
+import { Calendar, MapPin, Ticket, ArrowRight, Users, Plus, Music2, Wrench, Handshake, Trophy, Sparkles, ImageIcon, UtensilsCrossed, Building2, TreePine, Sun, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
-const CATEGORY_ICONS = { concert: '🎵', workshop: '🛠️', meetup: '🤝', sports: '⚽', festival: '🎉', exhibition: '🖼️', food: '🍽️', other: '📅' };
+const CATEGORY_ICONS = {
+    concert:    Music2,
+    workshop:   Wrench,
+    meetup:     Handshake,
+    sports:     Trophy,
+    festival:   Sparkles,
+    exhibition: ImageIcon,
+    food:       UtensilsCrossed,
+    other:      Calendar,
+};
+
+const VENUE_SPOTS = [
+    { icon: Building2, name: 'Grand Hall'   },
+    { icon: Layers,    name: 'Rooftop'      },
+    { icon: TreePine,  name: 'Open Ground'  },
+    { icon: Building2, name: 'The Loft'     },
+    { icon: Sun,       name: 'Terrace'      },
+    { icon: Sparkles,  name: 'Ballroom'     },
+];
+
 const VENUE_TYPES = { hall: 'Community Hall', rooftop: 'Rooftop', open_ground: 'Open Ground', indoor: 'Indoor', online: 'Online', other: 'Other' };
 
 export default function EventsSection({ user }) {
@@ -68,9 +87,15 @@ export default function EventsSection({ user }) {
 
             {/* Category quick-filters */}
             <div className="flex gap-2 flex-wrap mb-4">
-                {[['🎵', 'Concerts', '/events?cat=concert'], ['🛠️', 'Workshops', '/events?cat=workshop'], ['🤝', 'Meetups', '/events?cat=meetup'], ['🎉', 'Festivals', '/events?cat=festival'], ['🍽️', 'Food', '/events?cat=food']].map(([icon, label, to]) => (
+                {[
+                    [Music2,      'Concerts',  '/events?cat=concert'  ],
+                    [Wrench,      'Workshops', '/events?cat=workshop' ],
+                    [Handshake,   'Meetups',   '/events?cat=meetup'   ],
+                    [Sparkles,    'Festivals', '/events?cat=festival' ],
+                    [UtensilsCrossed, 'Food',  '/events?cat=food'     ],
+                ].map(([Icon, label, to]) => (
                     <Link key={to} to={to} className="flex items-center gap-1.5 h-8 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-900 hover:text-white dark:hover:bg-zinc-100 dark:hover:text-zinc-900 transition-all">
-                        {icon} {label}
+                        <Icon className="h-3.5 w-3.5" /> {label}
                     </Link>
                 ))}
             </div>
@@ -90,12 +115,13 @@ export default function EventsSection({ user }) {
                     {events.map(event => {
                         const soldOut = (event.tickets_sold || 0) >= (event.total_tickets || 1);
                         const pct = Math.min(100, Math.round((event.tickets_sold || 0) / (event.total_tickets || 1) * 100));
+                        const CatIcon = CATEGORY_ICONS[event.category] || Calendar;
                         return (
                             <div key={event.id} className="card-premium overflow-hidden group hover:-translate-y-0.5 transition-transform">
-                                <div className="h-32 bg-gradient-to-br from-zinc-800 to-zinc-600 flex items-center justify-center text-5xl relative">
+                                <div className="h-32 bg-gradient-to-br from-zinc-800 to-zinc-600 flex items-center justify-center relative">
                                     {event.image_url
                                         ? <img src={event.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                                        : <span>{CATEGORY_ICONS[event.category] || '📅'}</span>
+                                        : <CatIcon className="h-10 w-10 text-zinc-400" />
                                     }
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                                     <span className="absolute top-2.5 left-2.5 bg-white/90 dark:bg-zinc-900/90 text-[10px] font-bold px-2 py-0.5 rounded-full capitalize">{event.category}</span>
@@ -117,7 +143,7 @@ export default function EventsSection({ user }) {
                                         </div>
                                     )}
                                     <div className="flex items-center justify-between mt-1">
-                                        <span className="font-bold text-sm">{event.is_free || !event.ticket_price ? '🆓 Free' : `$${event.ticket_price}`}</span>
+                                        <span className="font-bold text-sm">{event.is_free || !event.ticket_price ? 'Free' : `$${event.ticket_price}`}</span>
                                         <Button size="sm" className="rounded-xl h-7 text-xs gap-1" disabled={soldOut} onClick={() => setTicketDialog(event)}>
                                             <Ticket className="h-3 w-3" /> {soldOut ? 'Full' : 'Get Ticket'}
                                         </Button>
@@ -131,10 +157,12 @@ export default function EventsSection({ user }) {
 
             {/* Venue spotlight strip */}
             <div className="mt-4 grid grid-cols-3 md:grid-cols-6 gap-2">
-                {[['🏛️', 'Grand Hall'], ['🌆', 'Rooftop'], ['🌿', 'Open Ground'], ['🏢', 'The Loft'], ['🌅', 'Terrace'], ['✨', 'Ballroom']].map(([emoji, name]) => (
+                {VENUE_SPOTS.map(({ icon: VIcon, name }) => (
                     <Link key={name} to="/events?tab=venues"
                         className="glass rounded-xl p-2.5 text-center hover:shadow-premium transition-all group">
-                        <div className="text-2xl mb-1">{emoji}</div>
+                        <div className="flex justify-center mb-1">
+                            <VIcon className="h-5 w-5 text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
+                        </div>
                         <p className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">{name}</p>
                     </Link>
                 ))}
@@ -183,7 +211,7 @@ export default function EventsSection({ user }) {
                         <div className="grid grid-cols-2 gap-3">
                             <Select value={form.category} onValueChange={v => setForm(p => ({ ...p, category: v }))}>
                                 <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                                <SelectContent>{Object.entries(CATEGORY_ICONS).map(([k, v]) => <SelectItem key={k} value={k}>{v} {k}</SelectItem>)}</SelectContent>
+                                <SelectContent>{Object.keys(CATEGORY_ICONS).map(k => <SelectItem key={k} value={k} className="capitalize">{k}</SelectItem>)}</SelectContent>
                             </Select>
                             <Input type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className="rounded-xl" />
                         </div>

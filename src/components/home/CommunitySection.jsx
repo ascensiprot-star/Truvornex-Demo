@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/api/supabaseClient';
 import { Link } from 'react-router-dom';
-import { Megaphone, Search, ThumbsUp, HelpCircle, Briefcase, RefreshCw, MessageCircle, ArrowRight, Plus, Send, ChevronRight } from 'lucide-react';
+import { Megaphone, Search, ThumbsUp, HelpCircle, Briefcase, RefreshCw, MessageCircle, ArrowRight, Plus, Send, ChevronRight, MapPin, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,13 +10,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { toast } from 'sonner';
 
 const POST_TYPES = {
-    announcement: { icon: Megaphone, label: 'Announcement', color: 'bg-blue-100 text-blue-700', emoji: '📢' },
-    lost_found: { icon: Search, label: 'Lost & Found', color: 'bg-amber-100 text-amber-700', emoji: '🔍' },
-    recommendation: { icon: ThumbsUp, label: 'Recommend', color: 'bg-emerald-100 text-emerald-700', emoji: '👍' },
-    question: { icon: HelpCircle, label: 'Question', color: 'bg-violet-100 text-violet-700', emoji: '❓' },
-    job: { icon: Briefcase, label: 'Job', color: 'bg-rose-100 text-rose-700', emoji: '💼' },
-    skill_exchange: { icon: RefreshCw, label: 'Skill Swap', color: 'bg-teal-100 text-teal-700', emoji: '🔄' },
-    general: { icon: MessageCircle, label: 'General', color: 'bg-zinc-100 text-zinc-600', emoji: '💬' },
+    announcement:  { icon: Megaphone,     label: 'Announcement', color: 'bg-blue-100 text-blue-700'    },
+    lost_found:    { icon: Search,         label: 'Lost & Found',  color: 'bg-amber-100 text-amber-700'  },
+    recommendation:{ icon: ThumbsUp,       label: 'Recommend',     color: 'bg-emerald-100 text-emerald-700' },
+    question:      { icon: HelpCircle,     label: 'Question',      color: 'bg-violet-100 text-violet-700' },
+    job:           { icon: Briefcase,      label: 'Job',           color: 'bg-rose-100 text-rose-700'    },
+    skill_exchange:{ icon: RefreshCw,      label: 'Skill Swap',    color: 'bg-teal-100 text-teal-700'    },
+    general:       { icon: MessageCircle,  label: 'General',       color: 'bg-zinc-100 text-zinc-600'    },
 };
 
 export default function CommunitySection({ user }) {
@@ -82,12 +82,15 @@ export default function CommunitySection({ user }) {
                     className={`h-7 px-3 rounded-full text-xs font-bold transition-all ${activeType === 'all' ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:bg-zinc-200'}`}>
                     All ({counts.all})
                 </button>
-                {Object.entries(POST_TYPES).map(([key, cfg]) => (
-                    <button key={key} onClick={() => setActiveType(key === activeType ? 'all' : key)}
-                        className={`h-7 px-3 rounded-full text-xs font-bold transition-all ${activeType === key ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:bg-zinc-200'}`}>
-                        {cfg.emoji} {cfg.label} {counts[key] > 0 && `(${counts[key]})`}
-                    </button>
-                ))}
+                {Object.entries(POST_TYPES).map(([key, cfg]) => {
+                    const Icon = cfg.icon;
+                    return (
+                        <button key={key} onClick={() => setActiveType(key === activeType ? 'all' : key)}
+                            className={`h-7 px-3 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${activeType === key ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:bg-zinc-200'}`}>
+                            <Icon className="h-3 w-3" /> {cfg.label} {counts[key] > 0 && `(${counts[key]})`}
+                        </button>
+                    );
+                })}
             </div>
 
             {loading ? (
@@ -114,17 +117,29 @@ export default function CommunitySection({ user }) {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap mb-1">
                                                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${cfg.color}`}>{cfg.label}</span>
-                                                    {post.neighborhood && <span className="text-[10px] text-zinc-400">📍 {post.neighborhood}</span>}
-                                                    {post.is_resolved && <span className="text-[10px] text-emerald-600">✓ Resolved</span>}
+                                                    {post.neighborhood && (
+                                                        <span className="text-[10px] text-zinc-400 flex items-center gap-0.5">
+                                                            <MapPin className="h-2.5 w-2.5" /> {post.neighborhood}
+                                                        </span>
+                                                    )}
+                                                    {post.is_resolved && <span className="text-[10px] text-emerald-600">Resolved</span>}
                                                     {post.type === 'job' && post.job_salary && <span className="text-[10px] text-emerald-600 font-semibold">{post.job_salary}</span>}
                                                 </div>
                                                 <p className="font-semibold text-sm line-clamp-1">{post.title}</p>
                                                 <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">{post.body}</p>
                                                 {post.type === 'skill_exchange' && (
                                                     <div className="flex items-center gap-1.5 mt-1.5 text-xs">
-                                                        {post.skill_offer && <span className="bg-teal-50 dark:bg-teal-900/20 text-teal-700 px-1.5 py-0.5 rounded-full">🎓 {post.skill_offer}</span>}
-                                                        <span className="text-zinc-300">⇄</span>
-                                                        {post.skill_want && <span className="bg-violet-50 dark:bg-violet-900/20 text-violet-700 px-1.5 py-0.5 rounded-full">🔍 {post.skill_want}</span>}
+                                                        {post.skill_offer && (
+                                                            <span className="bg-teal-50 dark:bg-teal-900/20 text-teal-700 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                                                <GraduationCap className="h-2.5 w-2.5" /> {post.skill_offer}
+                                                            </span>
+                                                        )}
+                                                        <span className="text-zinc-300">&#8644;</span>
+                                                        {post.skill_want && (
+                                                            <span className="bg-violet-50 dark:bg-violet-900/20 text-violet-700 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                                                <Search className="h-2.5 w-2.5" /> {post.skill_want}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -158,7 +173,7 @@ export default function CommunitySection({ user }) {
                     <div className="space-y-3 pt-1">
                         <Select value={form.type} onValueChange={v => setForm(p => ({ ...p, type: v }))}>
                             <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                            <SelectContent>{Object.entries(POST_TYPES).map(([k, v]) => <SelectItem key={k} value={k}>{v.emoji} {v.label}</SelectItem>)}</SelectContent>
+                            <SelectContent>{Object.entries(POST_TYPES).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}</SelectContent>
                         </Select>
                         <Input placeholder="Title *" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className="rounded-xl" />
                         <Textarea placeholder="What's on your mind? *" value={form.body} onChange={e => setForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none" rows={3} />

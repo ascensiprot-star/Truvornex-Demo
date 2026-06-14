@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
-import { ArrowRight, Zap, Shield, Users, Cpu, Star, Globe, CheckCircle2, Sparkles, Briefcase, MapPin, Clock } from 'lucide-react';
-import { useTheme } from '@/lib/ThemeContext';
+import { ArrowRight, Zap, Shield, Users, Cpu, Star, Globe, CheckCircle2, Sparkles, Briefcase, MapPin, Clock, Building2, Home, Handshake, Rocket } from 'lucide-react';
 
 const SLIDES = [
     {
@@ -8,56 +7,48 @@ const SLIDES = [
         badge: 'Welcome',
         title: 'Your Neighborhood\nOS Has Arrived',
         subtitle: 'Truvornex connects you with trusted local service providers — powered by Simon AI, built for your community.',
-        accent: '#7c6fcd',
-        accentLight: 'rgba(124,111,205,0.12)',
+        Visual: Building2,
         features: [
-            { icon: Zap,     text: '2,400+ verified providers in your area' },
-            { icon: Shield,  text: 'Every booking is insured & guaranteed'   },
-            { icon: Cpu,     text: 'Simon AI personalises your experience'   },
+            { icon: Zap,    text: '2,400+ verified providers in your area' },
+            { icon: Shield, text: 'Every booking is insured & guaranteed'  },
+            { icon: Cpu,    text: 'Simon AI personalises your experience'  },
         ],
-        visual: '🏙️',
     },
     {
         id: 1,
         badge: 'What It Is',
         title: 'One App for\nEvery Home Need',
         subtitle: 'From emergency plumbing at 2am to weekly cleaning — book any local service in 60 seconds, 24/7.',
-        accent: '#10b981',
-        accentLight: 'rgba(16,185,129,0.12)',
+        Visual: Home,
         features: [
-            { icon: Clock,   text: 'Same-day & emergency bookings'           },
-            { icon: MapPin,  text: 'Hyperlocal providers in your street'     },
-            { icon: Star,    text: '4.9★ average — 15,000+ reviews'          },
+            { icon: Clock,  text: 'Same-day & emergency bookings'      },
+            { icon: MapPin, text: 'Hyperlocal providers in your street' },
+            { icon: Star,   text: '4.9 avg across 15,000+ reviews'     },
         ],
-        visual: '⚡',
     },
     {
         id: 2,
         badge: 'Why It Exists',
         title: 'Community-First\nService Platform',
-        subtitle: 'We built Truvornex because finding trustworthy help shouldn\'t take hours of Googling, calling, and hoping.',
-        accent: '#f59e0b',
-        accentLight: 'rgba(245,158,11,0.12)',
+        subtitle: "We built Truvornex because finding trustworthy help shouldn't take hours of Googling, calling, and hoping.",
+        Visual: Handshake,
         features: [
-            { icon: Users,    text: 'Neighbors vouching for every provider'  },
-            { icon: Globe,    text: 'Group buy deals — save up to 35%'        },
-            { icon: Sparkles, text: 'Skill swaps & community time credits'   },
+            { icon: Users,    text: 'Neighbors vouching for every provider' },
+            { icon: Globe,    text: 'Group buy deals — save up to 35%'       },
+            { icon: Sparkles, text: 'Skill swaps & community time credits'  },
         ],
-        visual: '🤝',
     },
     {
         id: 3,
         badge: 'Get Started',
         title: 'Ready to Transform\nYour Neighborhood?',
         subtitle: 'Join 2,400+ households already using Truvornex. It only takes 30 seconds to get started.',
-        accent: '#7c6fcd',
-        accentLight: 'rgba(124,111,205,0.12)',
+        Visual: Rocket,
         features: [
-            { icon: CheckCircle2, text: 'Free to join — no hidden fees'      },
-            { icon: Briefcase,    text: 'Providers earn more, stress less'   },
-            { icon: Shield,       text: 'Your data is always private'        },
+            { icon: CheckCircle2, text: 'Free to join — no hidden fees'  },
+            { icon: Briefcase,    text: 'Providers earn more, stress less' },
+            { icon: Shield,       text: 'Your data is always private'     },
         ],
-        visual: '🚀',
         isCta: true,
     },
 ];
@@ -67,8 +58,6 @@ export default function IntroFlow({ onComplete }) {
     const [exiting, setExiting] = useState(false);
     const [direction, setDirection] = useState(1);
     const touchStartX = useRef(null);
-    const { theme } = useTheme();
-    const isDark = theme !== 'light';
 
     const slide = SLIDES[current];
     const isLast = current === SLIDES.length - 1;
@@ -77,19 +66,10 @@ export default function IntroFlow({ onComplete }) {
         if (idx === current || idx < 0 || idx >= SLIDES.length) return;
         setDirection(idx > current ? 1 : -1);
         setExiting(true);
-        setTimeout(() => {
-            setCurrent(idx);
-            setExiting(false);
-        }, 180);
+        setTimeout(() => { setCurrent(idx); setExiting(false); }, 180);
     };
 
-    const next = () => {
-        if (isLast) {
-            finish();
-        } else {
-            goTo(current + 1);
-        }
-    };
+    const next = () => isLast ? finish() : goTo(current + 1);
 
     const finish = () => {
         localStorage.setItem('truvornex-intro-seen', '1');
@@ -105,73 +85,64 @@ export default function IntroFlow({ onComplete }) {
         else if (delta > 50 && current > 0) goTo(current - 1);
     };
 
-    const bg = isDark ? '#080808' : '#ffffff';
-    const cardBg = isDark ? '#111111' : '#f7f7f7';
-    const textPrimary = isDark ? '#ffffff' : '#080808';
-    const textMuted = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)';
-    const textBody = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.6)';
-    const borderColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+    const VisualIcon = slide.Visual;
 
     return (
         <div
             className="fixed inset-0 z-[9998] flex flex-col overflow-hidden"
-            style={{ backgroundColor: bg }}
+            style={{ backgroundColor: 'var(--color-bg)' }}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
         >
-            {/* Background grid */}
+            {/* Background grid — identical to home page */}
             <div className="absolute inset-0 pointer-events-none" style={{
-                backgroundImage: `linear-gradient(${isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.03)'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.03)'} 1px, transparent 1px)`,
+                backgroundImage: 'linear-gradient(var(--color-border) 1px, transparent 1px), linear-gradient(90deg, var(--color-border) 1px, transparent 1px)',
                 backgroundSize: '48px 48px',
             }} />
 
-            {/* Accent glow behind content */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none transition-all duration-700" style={{
-                width: 500, height: 400,
-                background: `radial-gradient(ellipse 60% 50% at 50% 0%, ${slide.accentLight} 0%, transparent 70%)`,
-            }} />
-
-            {/* Skip button */}
-            <div className="absolute top-5 right-5 z-10">
-                <button
-                    onClick={finish}
-                    style={{
-                        fontSize: 11, fontWeight: 600, letterSpacing: '0.04em',
-                        color: textMuted, background: 'none', border: 'none',
-                        cursor: 'pointer', padding: '6px 10px', borderRadius: 8,
-                        touchAction: 'manipulation',
-                    }}>
+            {/* Skip */}
+            <div className="absolute top-4 right-4 z-10">
+                <button onClick={finish} style={{
+                    fontSize: 11, fontWeight: 600, letterSpacing: '0.04em',
+                    color: 'var(--color-text-subtle)', background: 'none', border: 'none',
+                    cursor: 'pointer', padding: '5px 8px', borderRadius: 7,
+                    touchAction: 'manipulation',
+                }}>
                     Skip
                 </button>
             </div>
 
-            {/* Main content */}
-            <div className="flex-1 flex flex-col items-center justify-center px-6 pb-4 relative z-10">
-                <div
-                    style={{
-                        width: '100%', maxWidth: 420,
-                        opacity: exiting ? 0 : 1,
-                        transform: exiting
-                            ? `translateX(${direction > 0 ? '-32px' : '32px'})`
-                            : 'translateX(0)',
-                        transition: 'opacity 0.18s ease, transform 0.18s ease',
-                    }}
-                >
-                    {/* Emoji visual */}
-                    <div style={{ fontSize: 52, textAlign: 'center', marginBottom: 20, lineHeight: 1 }}>
-                        {slide.visual}
+            {/* Content */}
+            <div className="flex-1 flex flex-col items-center justify-center px-5 pb-2 relative z-10">
+                <div style={{
+                    width: '100%', maxWidth: 380,
+                    opacity: exiting ? 0 : 1,
+                    transform: exiting ? `translateX(${direction > 0 ? '-28px' : '28px'})` : 'translateX(0)',
+                    transition: 'opacity 0.18s ease, transform 0.18s ease',
+                }}>
+                    {/* Icon */}
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
+                        <div style={{
+                            width: 44, height: 44, borderRadius: 14,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            backgroundColor: 'var(--color-surface-high)',
+                            border: '1px solid var(--color-border-strong)',
+                            boxShadow: 'var(--shadow-sm)',
+                        }}>
+                            <VisualIcon style={{ width: 20, height: 20, color: 'var(--color-primary)' }} />
+                        </div>
                     </div>
 
                     {/* Badge */}
-                    <div style={{ textAlign: 'center', marginBottom: 14 }}>
+                    <div style={{ textAlign: 'center', marginBottom: 10 }}>
                         <span style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 5,
-                            fontSize: 10, fontWeight: 700, letterSpacing: '0.12em',
+                            display: 'inline-block',
+                            fontSize: 9, fontWeight: 700, letterSpacing: '0.1em',
                             textTransform: 'uppercase',
-                            color: slide.accent,
-                            backgroundColor: slide.accentLight,
-                            border: `1px solid ${slide.accent}30`,
-                            padding: '4px 12px', borderRadius: 999,
+                            color: 'var(--color-text-subtle)',
+                            backgroundColor: 'var(--color-surface-high)',
+                            border: '1px solid var(--color-border-strong)',
+                            padding: '3px 10px', borderRadius: 999,
                         }}>
                             {slide.badge}
                         </span>
@@ -179,13 +150,13 @@ export default function IntroFlow({ onComplete }) {
 
                     {/* Title */}
                     <h1 style={{
-                        fontSize: 'clamp(1.7rem, 7vw, 2.4rem)',
-                        fontWeight: 900,
+                        fontSize: 'clamp(1.15rem, 4.5vw, 1.5rem)',
+                        fontWeight: 800,
                         letterSpacing: '-0.04em',
-                        lineHeight: 1.08,
-                        color: textPrimary,
+                        lineHeight: 1.1,
+                        color: 'var(--color-primary)',
                         textAlign: 'center',
-                        marginBottom: 14,
+                        marginBottom: 10,
                         whiteSpace: 'pre-line',
                     }}>
                         {slide.title}
@@ -193,35 +164,45 @@ export default function IntroFlow({ onComplete }) {
 
                     {/* Subtitle */}
                     <p style={{
-                        fontSize: 13, lineHeight: 1.65, color: textBody,
-                        textAlign: 'center', marginBottom: 28, maxWidth: 360, margin: '0 auto 28px',
+                        fontSize: 12, lineHeight: 1.6,
+                        color: 'var(--color-text-muted)',
+                        textAlign: 'center',
+                        margin: '0 auto 20px',
+                        maxWidth: 320,
+                        letterSpacing: '-0.01em',
                     }}>
                         {slide.subtitle}
                     </p>
 
-                    {/* Feature list */}
+                    {/* Feature list card */}
                     <div style={{
-                        background: cardBg,
-                        border: `1px solid ${borderColor}`,
-                        borderRadius: 18, padding: '16px 18px',
-                        marginBottom: 28,
+                        backgroundColor: 'var(--color-surface)',
+                        border: '1px solid var(--color-border-strong)',
+                        borderRadius: 14,
+                        padding: '2px 0',
+                        boxShadow: 'var(--shadow-sm)',
+                        marginBottom: 22,
                     }}>
                         {slide.features.map(({ icon: Icon, text }, i) => (
                             <div key={i} style={{
-                                display: 'flex', alignItems: 'center', gap: 12,
-                                paddingTop: i === 0 ? 0 : 12,
-                                marginTop: i === 0 ? 0 : 12,
-                                borderTop: i === 0 ? 'none' : `1px solid ${borderColor}`,
+                                display: 'flex', alignItems: 'center', gap: 10,
+                                padding: '10px 14px',
+                                borderTop: i === 0 ? 'none' : '1px solid var(--color-border)',
                             }}>
                                 <div style={{
-                                    width: 32, height: 32, borderRadius: 10, flexShrink: 0,
+                                    width: 28, height: 28, borderRadius: 9, flexShrink: 0,
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    backgroundColor: slide.accentLight,
-                                    border: `1px solid ${slide.accent}25`,
+                                    backgroundColor: 'var(--color-surface-high)',
+                                    border: '1px solid var(--color-border-strong)',
                                 }}>
-                                    <Icon style={{ width: 15, height: 15, color: slide.accent }} />
+                                    <Icon style={{ width: 13, height: 13, color: 'var(--color-text-muted)' }} />
                                 </div>
-                                <span style={{ fontSize: 13, color: textBody, fontWeight: 500, lineHeight: 1.4 }}>
+                                <span style={{
+                                    fontSize: 12, lineHeight: 1.45,
+                                    color: 'var(--color-text-muted)',
+                                    fontWeight: 500,
+                                    letterSpacing: '-0.01em',
+                                }}>
                                     {text}
                                 </span>
                             </div>
@@ -231,58 +212,36 @@ export default function IntroFlow({ onComplete }) {
             </div>
 
             {/* Bottom nav */}
-            <div style={{ padding: '0 24px 36px', position: 'relative', zIndex: 10 }}>
+            <div style={{ padding: '0 20px 32px', position: 'relative', zIndex: 10 }}>
                 {/* Dots */}
-                <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 5, marginBottom: 14 }}>
                     {SLIDES.map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => goTo(i)}
-                            style={{
-                                height: 6, width: i === current ? 22 : 6,
-                                borderRadius: 99, border: 'none', cursor: 'pointer', padding: 0,
-                                backgroundColor: i === current ? slide.accent : (isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.15)'),
-                                transition: 'all 0.28s cubic-bezier(0.34,1.56,0.64,1)',
-                                touchAction: 'manipulation',
-                            }}
-                        />
+                        <button key={i} onClick={() => goTo(i)} style={{
+                            height: 5, width: i === current ? 18 : 5,
+                            borderRadius: 99, border: 'none', cursor: 'pointer', padding: 0,
+                            backgroundColor: i === current ? 'var(--color-primary)' : 'var(--color-border-strong)',
+                            transition: 'all 0.25s var(--ease-spring)',
+                            touchAction: 'manipulation',
+                        }} />
                     ))}
                 </div>
 
-                {/* CTA button */}
-                <button
-                    onClick={next}
-                    style={{
-                        width: '100%', height: 52, borderRadius: 16,
-                        fontSize: 14, fontWeight: 700, letterSpacing: '-0.01em',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        border: 'none', cursor: 'pointer',
-                        backgroundColor: slide.accent,
-                        color: '#ffffff',
-                        boxShadow: `0 4px 24px ${slide.accent}50`,
-                        transition: 'all 0.2s ease',
-                        touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                >
-                    {isLast ? (
-                        <>
-                            Get Started
-                            <ArrowRight style={{ width: 16, height: 16 }} />
-                        </>
-                    ) : (
-                        <>
-                            Next
-                            <ArrowRight style={{ width: 15, height: 15 }} />
-                        </>
-                    )}
+                {/* CTA */}
+                <button onClick={next} className="btn-primary" style={{
+                    width: '100%', height: 44,
+                    borderRadius: 10, fontSize: 13, fontWeight: 700,
+                    letterSpacing: '-0.02em',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                    boxShadow: 'var(--shadow-md)',
+                    touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                }}>
+                    {isLast ? <>Get Started <ArrowRight style={{ width: 14, height: 14 }} /></> : <>Next <ArrowRight style={{ width: 13, height: 13 }} /></>}
                 </button>
 
-                {/* Page counter */}
                 <p style={{
-                    textAlign: 'center', fontSize: 11, marginTop: 14,
-                    color: textMuted, fontWeight: 500,
+                    textAlign: 'center', fontSize: 10, marginTop: 10,
+                    color: 'var(--color-text-subtle)', fontWeight: 500,
+                    letterSpacing: '0.02em',
                 }}>
                     {current + 1} of {SLIDES.length}
                 </p>

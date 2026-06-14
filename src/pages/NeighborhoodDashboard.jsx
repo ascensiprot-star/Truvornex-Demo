@@ -267,7 +267,7 @@ export default function NeighborhoodDashboard() {
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <span className="text-[10px] text-zinc-400">{p.author_name}</span>
                                     {p.upvotes > 0 && <span className="text-[10px] text-rose-400">♥ {p.upvotes}</span>}
-                                    {p.reply_count > 0 && <span className="text-[10px] text-zinc-400">💬 {p.reply_count}</span>}
+                                    {p.reply_count > 0 && <span className="text-[10px] text-zinc-400">{p.reply_count} replies</span>}
                                 </div>
                             </div>
                         ))}

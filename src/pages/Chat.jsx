@@ -166,7 +166,7 @@ export default function Chat() {
                                 {msgLoading ? (
                                     <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-zinc-300" /></div>
                                 ) : messages.length === 0 ? (
-                                    <p className="text-center text-sm text-zinc-400 py-8">No messages yet. Say hello! 👋</p>
+                                    <p className="text-center text-sm text-zinc-400 py-8">No messages yet. Start the conversation.</p>
                                 ) : messages.map(msg => {
                                     const isMe = msg.sender_email === user.email;
                                     return (
