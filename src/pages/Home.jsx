@@ -145,9 +145,9 @@ export default function Home() {
         <div className="w-full flex flex-col gap-7">
 
             {/* ── Hero ──────────────────────────────────────────────────── */}
-            <section className="pt-1 relative">
+            <section className="pt-1 relative flex flex-col items-center text-center">
                 {/* ambient */}
-                <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full pointer-events-none"
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full pointer-events-none"
                     style={{ background: 'radial-gradient(circle,rgba(255,255,255,0.028) 0%,transparent 70%)', filter: 'blur(32px)' }} />
 
                 {/* pill */}
@@ -206,7 +206,7 @@ export default function Home() {
                 </form>
 
                 {/* tags */}
-                <div className="flex flex-wrap gap-1.5 mt-2.5" style={anim(0.16)}>
+                <div className="flex flex-wrap justify-center gap-1.5 mt-2.5" style={anim(0.16)}>
                     {['Cleaning', 'Plumbing', 'Chef', 'Moving', 'Fitness'].map(tag => (
                         <button key={tag} onClick={() => navigate(`/services?q=${encodeURIComponent(tag)}`)}
                             className="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all"
