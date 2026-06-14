@@ -166,9 +166,47 @@ export default function Home() {
                     </span>
                 </h1>
 
+                {/* short subtitle */}
+                <p className="text-[14px] leading-relaxed mb-3 max-w-xs"
+                    style={{ ...anim(0.06), color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                    Real people, real skills — ready when you need them most.
+                </p>
+
+                {/* trust row */}
+                <div className="flex items-center justify-center gap-3 mb-4" style={anim(0.08)}>
+                    {['Verified', 'Insured', 'Instant Booking'].map((label) => (
+                        <div key={label} className="flex items-center gap-1">
+                            <CheckCircle2 style={{ width: 12, height: 12, color: '#22c55e', flexShrink: 0 }} />
+                            <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* CTA buttons */}
+                <div className="flex items-center gap-2.5 mb-5" style={anim(0.1)}>
+                    <button
+                        onClick={() => navigate('/services')}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', letterSpacing: '-0.01em' }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                        <Zap style={{ width: 13, height: 13 }} />
+                        Book a Service
+                    </button>
+                    <button
+                        onClick={() => navigate('/provider/register')}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[13px] font-semibold transition-all"
+                        style={{ backgroundColor: 'transparent', color: 'var(--color-primary)', border: '1.5px solid var(--color-primary)', cursor: 'pointer', letterSpacing: '-0.01em' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--color-surface-high)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}>
+                        <Users style={{ width: 13, height: 13 }} />
+                        Become a Provider
+                    </button>
+                </div>
+
                 {/* subtitle */}
                 <p className="text-[13px] leading-relaxed mb-3 max-w-sm"
-                    style={{ ...anim(0.08), color: 'var(--color-text-muted)' }}>
+                    style={{ ...anim(0.12), color: 'var(--color-text-muted)' }}>
                     {city
                         ? <>Connect with trusted providers in{' '}<strong style={{ color: 'var(--color-primary)', fontWeight: 600 }}>{city}</strong>{' '}— available right now.</>
                         : <>Connect with trusted, verified providers in your neighborhood — instantly.</>}
