@@ -150,11 +150,24 @@ export default function Onboarding() {
                             Book local services with AI guidance
                         </div>
 
-                        <ul className="space-y-1.5">
+                        <ul className="space-y-2">
                             {CUSTOMER_PERKS.map(({ icon: Icon, text }, i) => (
-                                <li key={i} className="flex items-start gap-2">
-                                    <Icon style={{ width: 9, height: 9, marginTop: 3, flexShrink: 0, opacity: selected === 'customer' ? 0.6 : 0.35, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
-                                    <span style={{ fontSize: 10, lineHeight: 1.5, color: selected === 'customer' ? (isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)') : 'var(--color-text-muted)' }}>{text}</span>
+                                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                                    <div style={{
+                                        width: 18, height: 18, borderRadius: 6, flexShrink: 0, marginTop: 1,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: selected === 'customer'
+                                            ? 'rgba(0,0,0,0.18)'
+                                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
+                                    }}>
+                                        <Icon style={{ width: 10, height: 10, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text)' }} />
+                                    </div>
+                                    <span style={{
+                                        fontSize: 11, lineHeight: 1.5, flex: 1,
+                                        color: selected === 'customer'
+                                            ? (isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)')
+                                            : (isDark ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.65)'),
+                                    }}>{text}</span>
                                 </li>
                             ))}
                         </ul>
@@ -193,11 +206,24 @@ export default function Onboarding() {
                             Offer services, managed by AI
                         </div>
 
-                        <ul className="space-y-1.5">
+                        <ul className="space-y-2">
                             {PROVIDER_PERKS.map(({ icon: Icon, text }, i) => (
-                                <li key={i} className="flex items-start gap-2">
-                                    <Icon style={{ width: 9, height: 9, marginTop: 3, flexShrink: 0, opacity: selected === 'provider' ? 0.6 : 0.35, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
-                                    <span style={{ fontSize: 10, lineHeight: 1.5, color: selected === 'provider' ? (isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)') : 'var(--color-text-muted)' }}>{text}</span>
+                                <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                                    <div style={{
+                                        width: 18, height: 18, borderRadius: 6, flexShrink: 0, marginTop: 1,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        backgroundColor: selected === 'provider'
+                                            ? 'rgba(0,0,0,0.18)'
+                                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
+                                    }}>
+                                        <Icon style={{ width: 10, height: 10, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text)' }} />
+                                    </div>
+                                    <span style={{
+                                        fontSize: 11, lineHeight: 1.5, flex: 1,
+                                        color: selected === 'provider'
+                                            ? (isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)')
+                                            : (isDark ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.65)'),
+                                    }}>{text}</span>
                                 </li>
                             ))}
                         </ul>
