@@ -440,6 +440,14 @@
         background-clip: text;
     }
 
+    /* ── Theme switch — kill all transitions to prevent flash ── */
+    .theme-switching *,
+    .theme-switching *::before,
+    .theme-switching *::after {
+        transition: none !important;
+        animation-duration: 0.001ms !important;
+    }
+
     /* Hero gradient — theme-adaptive, no JS re-render glitch */
     .hero-gradient-text {
         background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-2) 100%);

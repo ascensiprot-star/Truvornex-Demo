@@ -1,132 +1,261 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { User, Briefcase, ArrowRight, Cpu, CheckCircle, Star, Shield, Zap, Globe } from 'lucide-react';
+import { useTheme } from '@/lib/ThemeContext';
+import {
+    User, Briefcase, ArrowRight, Cpu, CheckCircle2,
+    Star, Shield, Zap, Globe, Sparkles, ChevronRight,
+} from 'lucide-react';
 
 const CUSTOMER_PERKS = [
-    'AI-powered service recommendations by Simon',
-    'Real-time neighborhood demand intelligence',
-    'Group bundle deals — save up to 35%',
-    'Instant booking with verified providers',
-    'Predictive maintenance scheduling',
+    { icon: Star,    text: 'AI-powered service recommendations by Simon' },
+    { icon: Zap,     text: 'Real-time neighborhood demand intelligence'   },
+    { icon: Shield,  text: 'Group bundle deals — save up to 35%'         },
+    { icon: Globe,   text: 'Instant booking with verified providers'      },
+    { icon: Sparkles,text: 'Predictive maintenance scheduling'            },
 ];
 
 const PROVIDER_PERKS = [
-    'AI Copilot to manage bookings & revenue',
-    'Intelligent customer matching & routing',
-    'Automated scheduling & calendar sync',
-    'Real-time earnings analytics dashboard',
-    'Priority placement in neighborhood searches',
+    { icon: Cpu,     text: 'AI Copilot to manage bookings & revenue'     },
+    { icon: Zap,     text: 'Intelligent customer matching & routing'      },
+    { icon: Star,    text: 'Automated scheduling & calendar sync'         },
+    { icon: Shield,  text: 'Real-time earnings analytics dashboard'       },
+    { icon: Globe,   text: 'Priority placement in neighborhood searches'  },
 ];
 
 export default function Onboarding() {
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     const confirm = async () => {
         if (!selected) return;
         setLoading(true);
-        navigate(selected === 'provider' ? '/provider' : '/');
+        setTimeout(() => navigate(selected === 'provider' ? '/provider' : '/'), 600);
+    };
+
+    const cardBase = {
+        borderRadius: 20,
+        padding: '20px',
+        border: '1.5px solid var(--color-border-strong)',
+        backgroundColor: 'var(--color-surface)',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'all 0.22s cubic-bezier(0.25,1,0.5,1)',
+        position: 'relative',
+        overflow: 'hidden',
+        touchAction: 'manipulation',
+        WebkitTapHighlightColor: 'transparent',
+    };
+
+    const cardSelected = {
+        ...cardBase,
+        backgroundColor: 'var(--color-primary)',
+        borderColor: 'var(--color-primary)',
+        boxShadow: isDark
+            ? '0 0 0 1px rgba(255,255,255,0.2), 0 8px 32px rgba(255,255,255,0.12)'
+            : '0 0 0 1px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.15)',
+    };
+
+    const cardUnselected = {
+        ...cardBase,
+        boxShadow: 'var(--shadow-sm)',
     };
 
     return (
-        <div className="min-h-screen bg-black font-inter flex flex-col items-center justify-center px-4 relative overflow-hidden">
+        <div
+            className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden"
+            style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
+
             {/* Background grid */}
-            <div className="absolute inset-0 opacity-[0.04]" style={{
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-                backgroundSize: '48px 48px'
-            }} />
+            <div className="absolute inset-0 pointer-events-none"
+                style={{
+                    backgroundImage: `linear-gradient(${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} 1px, transparent 1px), linear-gradient(90deg, ${isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} 1px, transparent 1px)`,
+                    backgroundSize: '48px 48px',
+                }} />
 
             {/* Ambient glow */}
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full opacity-5"
-                style={{ background: 'radial-gradient(circle, white 0%, transparent 70%)' }} />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+                style={{
+                    width: 600, height: 300,
+                    background: isDark
+                        ? 'radial-gradient(ellipse, rgba(255,255,255,0.04) 0%, transparent 70%)'
+                        : 'radial-gradient(ellipse, rgba(0,0,0,0.03) 0%, transparent 70%)',
+                    filter: 'blur(40px)',
+                }} />
 
-            <div className="relative z-10 w-full max-w-2xl">
+            <div className="relative z-10 w-full max-w-xl">
+
                 {/* Header */}
-                <div className="text-center mb-10">
-                    <div className="flex items-center justify-center gap-2 mb-4">
-                        <Cpu className="h-5 w-5 text-white/40" />
-                        <span className="text-white/40 text-xs tracking-[0.25em] uppercase font-mono-premium">Simon AI · Welcome</span>
+                <div className="text-center mb-8">
+                    {/* Simon pill */}
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-5"
+                        style={{
+                            fontSize: 10, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+                            backgroundColor: 'var(--color-surface-high)',
+                            color: 'var(--color-text-subtle)',
+                            border: '1px solid var(--color-border-strong)',
+                        }}>
+                        <Cpu style={{ width: 9, height: 9 }} />
+                        Simon AI · Welcome
                     </div>
-                    <h1 className="font-display text-4xl md:text-5xl font-bold text-white tracking-tight mb-3">
-                        How will you use<br />Truvornex?
+
+                    <h1 className="font-black mb-3"
+                        style={{ fontSize: 'clamp(1.6rem, 6vw, 2.4rem)', letterSpacing: '-0.04em', lineHeight: 1.1, color: 'var(--color-primary)' }}>
+                        How will you use<br />
+                        <span className="hero-gradient-text">Truvornex?</span>
                     </h1>
-                    <p className="text-white/40 text-base">Simon will personalize your entire experience based on your role.</p>
+                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                        Simon will personalise your entire experience based on your role.
+                    </p>
                 </div>
 
-                {/* Role selection */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                    {/* Customer */}
-                    <button onClick={() => setSelected('customer')}
-                        className={`relative border rounded-2xl p-6 text-left transition-all focus:outline-none group overflow-hidden ${selected === 'customer'
-                                ? 'border-white bg-white text-zinc-900'
-                                : 'border-white/10 bg-white/3 hover:border-white/25 text-white'
-                            }`}>
+                {/* Role cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+
+                    {/* Customer card */}
+                    <button
+                        onClick={() => setSelected('customer')}
+                        style={selected === 'customer' ? cardSelected : cardUnselected}
+                        onMouseEnter={e => { if (selected !== 'customer') { e.currentTarget.style.borderColor = 'var(--color-border-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'; } }}
+                        onMouseLeave={e => { if (selected !== 'customer') { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; } }}>
+
+                        {/* Subtle corner glow when selected */}
                         {selected === 'customer' && (
-                            <CheckCircle className="absolute top-4 right-4 h-5 w-5 text-zinc-900" />
+                            <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+                                style={{ background: 'radial-gradient(circle at top right, rgba(0,0,0,0.12) 0%, transparent 70%)' }} />
                         )}
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 ${selected === 'customer' ? 'bg-zinc-900' : 'bg-white/8'}`}>
-                            <User className={`h-6 w-6 ${selected === 'customer' ? 'text-white' : 'text-white/70'}`} />
+
+                        {/* Selected check */}
+                        {selected === 'customer' && (
+                            <div className="absolute top-3 right-3">
+                                <CheckCircle2 style={{ width: 16, height: 16, color: 'var(--color-on-primary)' }} />
+                            </div>
+                        )}
+
+                        {/* Icon */}
+                        <div className="flex items-center justify-center rounded-xl mb-3"
+                            style={{
+                                width: 40, height: 40,
+                                backgroundColor: selected === 'customer' ? 'rgba(0,0,0,0.15)' : 'var(--color-surface-high)',
+                                border: '1px solid',
+                                borderColor: selected === 'customer' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)',
+                            }}>
+                            <User style={{ width: 18, height: 18, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
                         </div>
-                        <h2 className="font-display font-bold text-xl mb-1">Customer</h2>
-                        <p className={`text-sm mb-4 ${selected === 'customer' ? 'text-zinc-500' : 'text-white/40'}`}>
+
+                        <div className="mb-1" style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-primary)' }}>Customer</div>
+                        <div className="mb-3" style={{ fontSize: 11, color: selected === 'customer' ? 'rgba(0,0,0,0.5)' : 'var(--color-text-muted)', ...(isDark && selected === 'customer' ? { color: 'rgba(255,255,255,0.55)' } : {}) }}>
                             Book local services with AI guidance
-                        </p>
+                        </div>
+
                         <ul className="space-y-1.5">
-                            {CUSTOMER_PERKS.map((perk, i) => (
-                                <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Star className={`h-3 w-3 mt-0.5 shrink-0 ${selected === 'customer' ? 'text-zinc-400' : 'text-white/30'}`} />
-                                    <span className={selected === 'customer' ? 'text-zinc-600' : 'text-white/40'}>{perk}</span>
+                            {CUSTOMER_PERKS.map(({ icon: Icon, text }, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                    <Icon style={{ width: 9, height: 9, marginTop: 3, flexShrink: 0, opacity: selected === 'customer' ? 0.6 : 0.35, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
+                                    <span style={{ fontSize: 10, lineHeight: 1.5, color: selected === 'customer' ? (isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)') : 'var(--color-text-muted)' }}>{text}</span>
                                 </li>
                             ))}
                         </ul>
                     </button>
 
-                    {/* Provider */}
-                    <button onClick={() => setSelected('provider')}
-                        className={`relative border rounded-2xl p-6 text-left transition-all focus:outline-none group overflow-hidden ${selected === 'provider'
-                                ? 'border-white bg-white text-zinc-900'
-                                : 'border-white/10 bg-white/3 hover:border-white/25 text-white'
-                            }`}>
+                    {/* Provider card */}
+                    <button
+                        onClick={() => setSelected('provider')}
+                        style={selected === 'provider' ? cardSelected : cardUnselected}
+                        onMouseEnter={e => { if (selected !== 'provider') { e.currentTarget.style.borderColor = 'var(--color-border-accent)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-card-hover)'; } }}
+                        onMouseLeave={e => { if (selected !== 'provider') { e.currentTarget.style.borderColor = 'var(--color-border-strong)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; } }}>
+
                         {selected === 'provider' && (
-                            <CheckCircle className="absolute top-4 right-4 h-5 w-5 text-zinc-900" />
+                            <div className="absolute top-0 right-0 w-24 h-24 pointer-events-none"
+                                style={{ background: 'radial-gradient(circle at top right, rgba(0,0,0,0.12) 0%, transparent 70%)' }} />
                         )}
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 ${selected === 'provider' ? 'bg-zinc-900' : 'bg-white/8'}`}>
-                            <Briefcase className={`h-6 w-6 ${selected === 'provider' ? 'text-white' : 'text-white/70'}`} />
+
+                        {selected === 'provider' && (
+                            <div className="absolute top-3 right-3">
+                                <CheckCircle2 style={{ width: 16, height: 16, color: 'var(--color-on-primary)' }} />
+                            </div>
+                        )}
+
+                        <div className="flex items-center justify-center rounded-xl mb-3"
+                            style={{
+                                width: 40, height: 40,
+                                backgroundColor: selected === 'provider' ? 'rgba(0,0,0,0.15)' : 'var(--color-surface-high)',
+                                border: '1px solid',
+                                borderColor: selected === 'provider' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)',
+                            }}>
+                            <Briefcase style={{ width: 18, height: 18, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
                         </div>
-                        <h2 className="font-display font-bold text-xl mb-1">Provider</h2>
-                        <p className={`text-sm mb-4 ${selected === 'provider' ? 'text-zinc-500' : 'text-white/40'}`}>
+
+                        <div className="mb-1" style={{ fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em', color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-primary)' }}>Provider</div>
+                        <div className="mb-3" style={{ fontSize: 11, color: selected === 'provider' ? (isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)') : 'var(--color-text-muted)' }}>
                             Offer services, managed by AI
-                        </p>
+                        </div>
+
                         <ul className="space-y-1.5">
-                            {PROVIDER_PERKS.map((perk, i) => (
-                                <li key={i} className="flex items-start gap-2 text-xs">
-                                    <Zap className={`h-3 w-3 mt-0.5 shrink-0 ${selected === 'provider' ? 'text-zinc-400' : 'text-white/30'}`} />
-                                    <span className={selected === 'provider' ? 'text-zinc-600' : 'text-white/40'}>{perk}</span>
+                            {PROVIDER_PERKS.map(({ icon: Icon, text }, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                    <Icon style={{ width: 9, height: 9, marginTop: 3, flexShrink: 0, opacity: selected === 'provider' ? 0.6 : 0.35, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
+                                    <span style={{ fontSize: 10, lineHeight: 1.5, color: selected === 'provider' ? (isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)') : 'var(--color-text-muted)' }}>{text}</span>
                                 </li>
                             ))}
                         </ul>
                     </button>
                 </div>
 
-                <Button
-                    className={`w-full h-12 text-base font-semibold rounded-xl transition-all ${selected ? 'bg-white text-zinc-900 hover:bg-zinc-100' : 'bg-white/10 text-white/30 cursor-not-allowed'
-                        }`}
-                    disabled={!selected || loading}
+                {/* CTA */}
+                <button
                     onClick={confirm}
-                >
+                    disabled={!selected || loading}
+                    style={{
+                        width: '100%', height: 48, borderRadius: 14, fontSize: 13, fontWeight: 600,
+                        letterSpacing: '-0.01em', border: 'none', cursor: selected ? 'pointer' : 'not-allowed',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        transition: 'all 0.2s cubic-bezier(0.25,1,0.5,1)',
+                        backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                        color: selected ? 'var(--color-on-primary)' : 'var(--color-text-subtle)',
+                        boxShadow: selected ? (isDark ? '0 4px 20px rgba(255,255,255,0.12)' : '0 4px 20px rgba(0,0,0,0.15)') : 'none',
+                        touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                    }}
+                    onMouseEnter={e => { if (selected) { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                     {loading ? (
-                        <span className="flex items-center gap-2"><Cpu className="h-4 w-4 animate-spin" /> Simon is setting up your experience…</span>
+                        <>
+                            <Cpu style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} />
+                            Simon is setting up your experience…
+                        </>
                     ) : (
-                        <span className="flex items-center gap-2">Continue to Truvornex <ArrowRight className="h-4 w-4" /></span>
+                        <>
+                            Continue to Truvornex
+                            <ArrowRight style={{ width: 14, height: 14 }} />
+                        </>
                     )}
-                </Button>
+                </button>
 
-                <div className="flex items-center justify-center gap-4 mt-5 text-xs text-white/20">
-                    <div className="flex items-center gap-1"><Shield className="h-3 w-3" /> Secure & private</div>
-                    <div className="flex items-center gap-1"><Globe className="h-3 w-3" /> Switch roles anytime</div>
-                    <div className="flex items-center gap-1"><Cpu className="h-3 w-3" /> Powered by Simon AI</div>
+                {/* Footer trust row */}
+                <div className="flex items-center justify-center gap-4 mt-5 flex-wrap">
+                    {[
+                        { icon: Shield,  label: 'Secure & private'   },
+                        { icon: Globe,   label: 'Switch roles anytime'},
+                        { icon: Cpu,     label: 'Powered by Simon AI' },
+                    ].map(({ icon: Icon, label }) => (
+                        <div key={label} className="flex items-center gap-1"
+                            style={{ fontSize: 10, color: 'var(--color-text-subtle)' }}>
+                            <Icon style={{ width: 10, height: 10 }} />
+                            {label}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Back link */}
+                <div className="text-center mt-4">
+                    <button onClick={() => navigate('/')}
+                        style={{ fontSize: 11, color: 'var(--color-text-subtle)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}
+                        onMouseEnter={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
+                        onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-subtle)'}>
+                        ← Back to home
+                    </button>
                 </div>
             </div>
         </div>

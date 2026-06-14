@@ -267,21 +267,21 @@ export default function CustomerLayout() {
             </aside>
 
             {/* Mobile Header */}
-            <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-2"
+            <header className="md:hidden fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-1"
                 style={scrolled ? {
                     backgroundColor: 'var(--color-glass)',
                     backdropFilter: 'blur(24px)',
                     WebkitBackdropFilter: 'blur(24px)',
                     borderBottom: '1px solid var(--color-border)',
                 } : { backgroundColor: 'transparent' }}>
-                <div className="flex items-center gap-1">
-                    {/* Hamburger — 44×44 tap target */}
-                    <button onClick={() => setSidebarOpen(true)}
-                        className="h-11 w-11 rounded-xl flex items-center justify-center"
-                        style={{ color: 'var(--color-text-muted)' }}>
-                        <Menu className="h-5 w-5" />
+                <div className="flex items-center">
+                    {/* Hamburger — full 44×44 tap target */}
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer', borderRadius: 12 }}>
+                        <Menu style={{ width: 20, height: 20 }} />
                     </button>
-                    <Link to="/" className="flex items-center gap-1.5">
+                    <Link to="/" className="flex items-center gap-1.5 ml-1" style={{ touchAction: 'manipulation' }}>
                         <div className="h-5 w-5 rounded-md flex items-center justify-center"
                             style={{ backgroundColor: 'var(--color-primary)' }}>
                             <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
@@ -292,24 +292,26 @@ export default function CustomerLayout() {
                     </Link>
                 </div>
                 <div className="flex items-center">
-                    {/* Search — 44×44 tap target */}
-                    <button onClick={() => setSearchOpen(true)}
-                        className="h-11 w-11 flex items-center justify-center"
-                        style={{ color: 'var(--color-text-muted)' }}>
+                    {/* Search — 44×44 */}
+                    <button
+                        onClick={() => setSearchOpen(true)}
+                        style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer' }}>
                         <Search style={{ width: 18, height: 18 }} />
                     </button>
-                    {/* Theme — 44×44 tap target */}
-                    <button onClick={toggleTheme}
-                        className="h-11 w-11 flex items-center justify-center"
-                        style={{ color: 'var(--color-text-muted)' }}>
+                    {/* Theme — 44×44 */}
+                    <button
+                        onClick={toggleTheme}
+                        style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer' }}>
                         {theme === 'dark' ? <Sun style={{ width: 18, height: 18 }} /> : <Moon style={{ width: 18, height: 18 }} />}
                     </button>
-                    {/* Provider switcher — proper tap target */}
-                    <button onClick={() => navigate('/provider')}
-                        className="h-9 px-3 rounded-full text-[11px] font-semibold flex items-center gap-1 ml-0.5"
-                        style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', minWidth: 44 }}>
-                        <Briefcase style={{ width: 10, height: 10 }} />
-                        Provider
+                    {/* Provider — 44×44 tap area with pill label */}
+                    <button
+                        onClick={() => navigate('/provider')}
+                        style={{ height: 44, paddingLeft: 10, paddingRight: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text-muted)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer' }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 999, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                            <Briefcase style={{ width: 9, height: 9 }} />
+                            Provider
+                        </span>
                     </button>
                 </div>
             </header>

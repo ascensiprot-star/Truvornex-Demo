@@ -19,7 +19,16 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem('truvornex-theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
+    const toggleTheme = () => {
+        const root = document.documentElement;
+        root.classList.add('theme-switching');
+        setTheme(t => t === 'dark' ? 'light' : 'dark');
+        requestAnimationFrame(() =>
+            requestAnimationFrame(() =>
+                setTimeout(() => root.classList.remove('theme-switching'), 50)
+            )
+        );
+    };
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
