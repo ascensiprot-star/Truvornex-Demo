@@ -1,14 +1,129 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/lib/ThemeContext';
+import { useAuthModal } from '@/lib/AuthModalContext';
 import {
     Search, Sparkles, MapPin, ChevronRight, Star,
     Sparkle, Zap, Wrench, Droplets, ChefHat, Truck,
     Heart, GraduationCap, Camera, Monitor, PawPrint, Dumbbell,
     CalendarDays, Leaf, ArrowRight, CheckCircle2, Shield,
     Navigation, Users, Ticket, Layers, Package, MessageSquare,
-    ThumbsUp, Tag, BarChart3, TrendingUp
+    ThumbsUp, Tag, BarChart3, TrendingUp,
+    Cpu, Brain, TrendingDown, Bell, X, ChevronRight as Chevron,
+    Activity, AlertCircle, Lightbulb,
 } from 'lucide-react';
+
+// ── Simon proactive insight data ──────────────────────────────────────────────
+
+const SIMON_INSIGHTS = [
+    { icon: Activity, color: '#22c55e', tag: 'Demand Spike',    msg: 'Cleaning requests in your area are 3× higher than normal this weekend. Book early to lock in your usual provider.' },
+    { icon: Lightbulb,color: '#f59e0b', tag: 'Simon Suggests',  msg: 'Based on seasonal patterns, it\'s the ideal week for a home HVAC tune-up — before summer demand peaks.' },
+    { icon: Bell,     color: '#7c6fcd', tag: 'Smart Reminder',  msg: 'It\'s been ~3 weeks since your last deep clean. Simon has Maria R. available Thursday at 10 AM — want to rebook?' },
+    { icon: TrendingUp,color:'#06b6d4', tag: 'Bundle Deal',     msg: '4 of your neighbors are booking movers the same week. Join the group bundle and save up to 30% on your move.' },
+    { icon: Shield,   color: '#f43f5e', tag: 'Trust Alert',     msg: 'New in your area: Alex P. just became verified with 98% on-time rate. Simon thinks you\'ll love them for plumbing.' },
+];
+
+// ── Simon Proactive Widget ─────────────────────────────────────────────────────
+
+function SimonInsightsWidget() {
+    const navigate = useNavigate();
+    const [idx, setIdx]           = useState(0);
+    const [dismissed, setDismiss] = useState(false);
+    const [animating, setAnimating] = useState(false);
+    const intervalRef = useRef(null);
+
+    const rotate = (next) => {
+        setAnimating(true);
+        setTimeout(() => {
+            setIdx(next);
+            setAnimating(false);
+        }, 220);
+    };
+
+    useEffect(() => {
+        intervalRef.current = setInterval(() => {
+            setIdx(prev => { const n = (prev + 1) % SIMON_INSIGHTS.length; rotate(n); return prev; });
+        }, 5000);
+        return () => clearInterval(intervalRef.current);
+    }, []);
+
+    const goTo = (n) => {
+        clearInterval(intervalRef.current);
+        rotate(n);
+        intervalRef.current = setInterval(() => {
+            setIdx(prev => { const n2 = (prev + 1) % SIMON_INSIGHTS.length; rotate(n2); return prev; });
+        }, 5000);
+    };
+
+    if (dismissed) return null;
+
+    const ins = SIMON_INSIGHTS[idx];
+    const Icon = ins.icon;
+
+    return (
+        <section style={{
+            borderRadius: 14, overflow: 'hidden',
+            border: '1px solid var(--color-border-strong)',
+            backgroundColor: 'var(--color-surface)',
+            boxShadow: 'var(--shadow-sm)',
+        }}>
+            {/* top bar */}
+            <div className="flex items-center justify-between px-3 py-2"
+                style={{ borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-high)' }}>
+                <div className="flex items-center gap-1.5">
+                    <div className="h-4 w-4 rounded-md flex items-center justify-center"
+                        style={{ background: 'rgba(124,111,205,0.2)' }}>
+                        <Cpu style={{ width: 9, height: 9, color: '#7c6fcd' }} />
+                    </div>
+                    <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-subtle)' }}>
+                        Simon AI · Live Intelligence
+                    </span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
+                </div>
+                <button onClick={() => setDismiss(true)}
+                    style={{ width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-subtle)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', borderRadius: 6 }}>
+                    <X style={{ width: 10, height: 10 }} />
+                </button>
+            </div>
+
+            {/* insight body */}
+            <div className="flex items-start gap-3 px-3 py-3"
+                style={{ opacity: animating ? 0 : 1, transform: animating ? 'translateY(4px)' : 'translateY(0)', transition: 'opacity 0.22s ease, transform 0.22s ease' }}>
+                <div className="flex items-center justify-center rounded-xl shrink-0"
+                    style={{ width: 34, height: 34, backgroundColor: `${ins.color}18`, border: `1px solid ${ins.color}30`, marginTop: 1 }}>
+                    <Icon style={{ width: 15, height: 15, color: ins.color }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                        <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: ins.color }}>{ins.tag}</span>
+                    </div>
+                    <p style={{ fontSize: 11.5, lineHeight: 1.55, color: 'var(--color-text-muted)' }}>{ins.msg}</p>
+                    <button onClick={() => navigate('/ai')}
+                        className="flex items-center gap-1 mt-2"
+                        style={{ fontSize: 10, fontWeight: 600, color: '#7c6fcd', background: 'none', border: 'none', cursor: 'pointer', padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.75'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+                        Ask Simon about this <ArrowRight style={{ width: 9, height: 9 }} />
+                    </button>
+                </div>
+            </div>
+
+            {/* dot nav */}
+            <div className="flex items-center justify-center gap-1.5 pb-2.5">
+                {SIMON_INSIGHTS.map((_, i) => (
+                    <button key={i} onClick={() => goTo(i)}
+                        style={{
+                            width: i === idx ? 14 : 5, height: 5, borderRadius: 99, border: 'none', cursor: 'pointer',
+                            transition: 'width 0.25s ease, background-color 0.2s',
+                            backgroundColor: i === idx ? '#7c6fcd' : 'var(--color-border-strong)',
+                            padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
+                        }}
+                    />
+                ))}
+            </div>
+        </section>
+    );
+}
 
 // ── Static data ───────────────────────────────────────────────────────────────
 
@@ -246,6 +361,9 @@ export default function Home() {
                     ))}
                 </div>
             </section>
+
+            {/* ── Simon Proactive Intelligence ───────────────────────────── */}
+            <SimonInsightsWidget />
 
             {/* ── Stats ─────────────────────────────────────────────────── */}
             <section className="grid grid-cols-2 md:grid-cols-4 gap-2">

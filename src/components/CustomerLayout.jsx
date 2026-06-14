@@ -1,12 +1,14 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from '@/lib/ThemeContext';
+import { useAuth } from '@/lib/AuthContext';
+import { useAuthModal } from '@/lib/AuthModalContext';
 import {
     Home, Compass, Sparkles, BarChart3, User, Moon, Sun,
     Bell, Search, Menu, X, Briefcase,
     Heart, MapPin, Clock, Star, Settings, HelpCircle,
     MessageSquare, Repeat, Gift, Zap, ChevronRight,
-    PanelLeftClose, PanelLeftOpen,
+    PanelLeftClose, PanelLeftOpen, LogIn, LogOut,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -35,6 +37,8 @@ export default function CustomerLayout() {
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
+    const { isAuthenticated, logout } = useAuth();
+    const { openModal } = useAuthModal();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(() =>
         localStorage.getItem('truvornex-sidebar-collapsed') === 'true'
@@ -225,6 +229,28 @@ export default function CustomerLayout() {
 
                 {/* Bottom row */}
                 <div className="py-2" style={{ borderTop: '1px solid var(--color-border)', flexShrink: 0, padding: slim ? '8px 6px' : '8px 6px' }}>
+                    {/* Sign In / Sign Out */}
+                    {!isAuthenticated ? (
+                        <button onClick={() => { openModal('login'); onClose?.(); }}
+                            className="w-full flex items-center rounded-lg transition-all mb-0.5"
+                            title={slim ? 'Sign In' : undefined}
+                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-primary)', fontSize: 12, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)')}
+                            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
+                            <LogIn style={{ width: 13, height: 13, flexShrink: 0 }} />
+                            {!slim && <span>Sign In</span>}
+                        </button>
+                    ) : (
+                        <button onClick={() => { logout(); onClose?.(); }}
+                            className="w-full flex items-center rounded-lg transition-all mb-0.5"
+                            title={slim ? 'Sign Out' : undefined}
+                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-text-muted)', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
+                            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
+                            <LogOut style={{ width: 13, height: 13, flexShrink: 0 }} />
+                            {!slim && <span>Sign Out</span>}
+                        </button>
+                    )}
                     <button onClick={toggleTheme}
                         className="w-full flex items-center rounded-lg transition-all"
                         title={slim ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}

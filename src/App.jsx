@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
+import { AuthModalProvider } from '@/lib/AuthModalContext';
+import AuthModal from '@/components/AuthModal';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import SplashScreen from './components/SplashScreen';
 import CustomerLayout from './components/CustomerLayout';
@@ -208,13 +210,16 @@ function App() {
     return (
         <ThemeProvider>
             <AuthProvider>
-                <QueryClientProvider client={queryClientInstance}>
-                    {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
-                    <Router>
-                        <AuthenticatedApp />
-                    </Router>
-                    <Toaster />
-                </QueryClientProvider>
+                <AuthModalProvider>
+                    <QueryClientProvider client={queryClientInstance}>
+                        {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
+                        <Router>
+                            <AuthenticatedApp />
+                            <AuthModal />
+                        </Router>
+                        <Toaster />
+                    </QueryClientProvider>
+                </AuthModalProvider>
             </AuthProvider>
         </ThemeProvider>
     );
