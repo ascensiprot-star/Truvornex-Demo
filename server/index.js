@@ -7,12 +7,16 @@ import pg from 'pg';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import * as simon from './simon.js';
-import { initNewTables, initExtendedTables, writeAuditLog, createNotification } from './db.js';
+import { initNewTables, initExtendedTables, initNeighborhoodTables, writeAuditLog, createNotification } from './db.js';
 import financialRouter from './financial.js';
 import notificationsRouter, { broadcastNotification } from './notifications-routes.js';
 import { buildCredential, verifyCredential, recordSkillActivity, refreshIncomeSnapshots } from './identity.js';
 import zoneRouter from './zone-economy.js';
 import careBridgeRouter from './care-bridge.js';
+import chatRouter from './chat.js';
+import committeeRouter from './committee.js';
+import marketplaceRouter from './marketplace.js';
+import neighborhoodExtRouter from './neighborhood-ext.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -70,6 +74,7 @@ async function initDb() {
         `);
         await initNewTables();
         await initExtendedTables();
+        await initNeighborhoodTables();
         try {
             await pool.query(`
                 CREATE TABLE IF NOT EXISTS neighborhood_zones (
@@ -205,6 +210,10 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 app.use('/api/financial', requireAuth, financialRouter);
 app.use('/api/notifications', requireAuth, notificationsRouter);
 app.use('/api/zones', zoneRouter);
+app.use('/api/chat', requireAuth, chatRouter);
+app.use('/api/committees', requireAuth, committeeRouter);
+app.use('/api/marketplace', requireAuth, marketplaceRouter);
+app.use('/api/neighborhood', requireAuth, neighborhoodExtRouter);
 app.get('/api/care-bridge/meta/rates', (req, res) => {
     res.json({
         base_currency: 'PKR',

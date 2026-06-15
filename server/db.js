@@ -279,6 +279,340 @@ export async function ensureWallet(userId) {
     );
 }
 
+export async function initNeighborhoodTables() {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS chat_messages (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                sender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                receiver_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                thread_key TEXT NOT NULL,
+                content TEXT NOT NULL,
+                type TEXT NOT NULL DEFAULT 'text' CHECK (type IN ('text','image','voice','location')),
+                read BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_chat_thread ON chat_messages(thread_key, created_at DESC)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_chat_receiver ON chat_messages(receiver_id, read)`);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS ride_shares (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                driver_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                type TEXT NOT NULL DEFAULT 'carpool' CHECK (type IN ('carpool','delivery','moving','car_rental')),
+                from_location TEXT NOT NULL,
+                to_location TEXT NOT NULL,
+                departure_at TIMESTAMPTZ,
+                seats_total INT NOT NULL DEFAULT 1,
+                seats_available INT NOT NULL DEFAULT 1,
+                price_pkr NUMERIC(10,2) NOT NULL DEFAULT 0,
+                vehicle TEXT,
+                notes TEXT,
+                contact_phone TEXT,
+                recurring BOOLEAN DEFAULT FALSE,
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','full','completed','cancelled')),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS ride_passengers (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                ride_id UUID NOT NULL REFERENCES ride_shares(id) ON DELETE CASCADE,
+                passenger_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','cancelled')),
+                joined_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(ride_id, passenger_id)
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS committees (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                name TEXT NOT NULL,
+                description TEXT,
+                organizer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                monthly_amount_pkr NUMERIC(12,2) NOT NULL,
+                member_limit INT NOT NULL DEFAULT 12,
+                total_rounds INT NOT NULL DEFAULT 12,
+                current_round INT NOT NULL DEFAULT 0,
+                payout_day INT NOT NULL DEFAULT 1 CHECK (payout_day BETWEEN 1 AND 28),
+                status TEXT NOT NULL DEFAULT 'recruiting' CHECK (status IN ('recruiting','active','completed','cancelled')),
+                next_payout_at DATE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS committee_members (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                committee_id UUID NOT NULL REFERENCES committees(id) ON DELETE CASCADE,
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                payout_position INT,
+                contributed_rounds INT NOT NULL DEFAULT 0,
+                has_received_payout BOOLEAN DEFAULT FALSE,
+                joined_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(committee_id, user_id)
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS committee_contributions (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                committee_id UUID NOT NULL REFERENCES committees(id),
+                member_id UUID NOT NULL REFERENCES users(id),
+                round_number INT NOT NULL,
+                amount_pkr NUMERIC(12,2) NOT NULL,
+                paid_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS marketplace_listings (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                seller_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                title TEXT NOT NULL,
+                description TEXT,
+                price_pkr NUMERIC(12,2) NOT NULL,
+                category TEXT NOT NULL DEFAULT 'other',
+                condition TEXT NOT NULL DEFAULT 'good' CHECK (condition IN ('new','like_new','good','fair','for_parts')),
+                images TEXT[] DEFAULT '{}',
+                negotiable BOOLEAN DEFAULT TRUE,
+                status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','sold','reserved','removed')),
+                views INT DEFAULT 0,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_marketplace_zone ON marketplace_listings(zone_id, status, created_at DESC)`);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS marketplace_orders (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                listing_id UUID NOT NULL REFERENCES marketplace_listings(id),
+                buyer_id UUID NOT NULL REFERENCES users(id),
+                seller_id UUID NOT NULL REFERENCES users(id),
+                amount_pkr NUMERIC(12,2) NOT NULL,
+                message TEXT,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','completed','cancelled')),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS blood_donors (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                blood_type TEXT NOT NULL CHECK (blood_type IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
+                available BOOLEAN DEFAULT TRUE,
+                last_donation_at DATE,
+                contact_phone TEXT,
+                notes TEXT,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(user_id)
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS blood_requests (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                blood_type TEXT NOT NULL,
+                urgency TEXT NOT NULL DEFAULT 'urgent' CHECK (urgency IN ('emergency','urgent','planned')),
+                hospital TEXT,
+                notes TEXT,
+                units_needed INT DEFAULT 1,
+                fulfilled BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS notice_board (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                type TEXT NOT NULL CHECK (type IN ('lost','found','sell','free','room','job','announcement','other')),
+                title TEXT NOT NULL,
+                body TEXT,
+                price_pkr NUMERIC(12,2),
+                contact_phone TEXT,
+                images TEXT[] DEFAULT '{}',
+                active BOOLEAN DEFAULT TRUE,
+                expires_at DATE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS tool_items (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL DEFAULT 'general',
+                description TEXT,
+                deposit_pkr NUMERIC(10,2) DEFAULT 0,
+                available BOOLEAN DEFAULT TRUE,
+                images TEXT[] DEFAULT '{}',
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS tool_loans (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                item_id UUID NOT NULL REFERENCES tool_items(id) ON DELETE CASCADE,
+                borrower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                return_by DATE NOT NULL,
+                returned_at TIMESTAMPTZ,
+                status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','returned','overdue','cancelled')),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS job_posts (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                poster_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                title TEXT NOT NULL,
+                description TEXT,
+                category TEXT NOT NULL DEFAULT 'general',
+                wage_pkr NUMERIC(10,2),
+                duration TEXT,
+                job_type TEXT NOT NULL DEFAULT 'gig' CHECK (job_type IN ('gig','part_time','full_time','apprenticeship','volunteer')),
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','filled','cancelled')),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS job_applications (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                job_id UUID NOT NULL REFERENCES job_posts(id) ON DELETE CASCADE,
+                applicant_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                message TEXT,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','shortlisted','hired','rejected')),
+                applied_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(job_id, applicant_id)
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS food_shares (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                title TEXT NOT NULL,
+                description TEXT,
+                quantity TEXT NOT NULL,
+                is_free BOOLEAN DEFAULT TRUE,
+                price_pkr NUMERIC(10,2) DEFAULT 0,
+                available_until TIMESTAMPTZ,
+                claimed_by UUID REFERENCES users(id),
+                claimed_at TIMESTAMPTZ,
+                active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS watch_reports (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
+                zone_id UUID,
+                type TEXT NOT NULL CHECK (type IN ('theft','suspicious','hazard','infrastructure','noise','other')),
+                title TEXT NOT NULL,
+                description TEXT,
+                location_text TEXT,
+                anonymous BOOLEAN DEFAULT FALSE,
+                upvotes INT DEFAULT 0,
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','investigating','resolved','dismissed')),
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS local_businesses (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                description TEXT,
+                address TEXT,
+                phone TEXT,
+                hours TEXT,
+                payment_methods TEXT[] DEFAULT '{"cash"}',
+                verified BOOLEAN DEFAULT FALSE,
+                rating_avg NUMERIC(3,2) DEFAULT 0,
+                rating_count INT DEFAULT 0,
+                open_now BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS event_requests (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                requester_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                title TEXT NOT NULL,
+                description TEXT,
+                category TEXT DEFAULT 'community',
+                proposed_date DATE,
+                venue TEXT,
+                expected_attendees INT DEFAULT 50,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected','cancelled')),
+                admin_notes TEXT,
+                approved_event_id UUID,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS religious_events (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                organizer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                type TEXT NOT NULL CHECK (type IN ('prayer','ramzan','eid','funeral','nikah','aqeeqa','other')),
+                title TEXT NOT NULL,
+                description TEXT,
+                event_date TIMESTAMPTZ,
+                location TEXT,
+                open_to_all BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS load_shedding_reports (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
+                zone_id UUID,
+                area_name TEXT,
+                started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                restored_at TIMESTAMPTZ,
+                duration_hours NUMERIC(5,2),
+                notes TEXT,
+                upvotes INT DEFAULT 0,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query('COMMIT');
+        console.log('Neighborhood tables initialized');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        console.error('initNeighborhoodTables error:', err.message);
+        throw err;
+    } finally {
+        client.release();
+    }
+}
+
 export async function initExtendedTables() {
     const client = await pool.connect();
     try {

@@ -1,184 +1,223 @@
 import { useState, useEffect } from 'react';
-import { Car, Package, Truck, Key, Plus, MapPin, Calendar, Users, Clock, ShieldCheck, ArrowLeftRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Car, Package, Truck, Key, Plus, MapPin, Calendar, Users, Clock, ArrowRight, Search, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SEGMENTS = [
-    { key: 'carpool', label: 'Rides', icon: Car },
-    { key: 'delivery', label: 'Courier', icon: Package },
-    { key: 'moving', label: 'Moving', icon: Truck },
-    { key: 'car_rental', label: 'Car Rental', icon: Key },
+    { key: 'carpool', label: 'Rides', icon: Car, color: '#3B82F6' },
+    { key: 'delivery', label: 'Courier', icon: Package, color: '#8B5CF6' },
+    { key: 'moving', label: 'Moving', icon: Truck, color: '#F59E0B' },
+    { key: 'car_rental', label: 'Car Rental', icon: Key, color: '#10B981' },
 ];
 
-const EMPTY = { type: 'carpool', from_location: '', to_location: '', date: '', departure_time: '', seats_available: 3, price_per_seat: 0, vehicle: '', description: '', contact_phone: '', recurring: false };
+const EMPTY = { type: 'carpool', from_location: '', to_location: '', departure_at: '', seats_total: 3, price_pkr: 0, vehicle: '', notes: '', contact_phone: '', recurring: false };
 
 export default function Transport() {
+    const [user, setUser] = useState(null);
     const [rides, setRides] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(null);
     const [tab, setTab] = useState('carpool');
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
-    const [createDialog, setCreateDialog] = useState(false);
+    const [createOpen, setCreateOpen] = useState(false);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
-    const [requestDialog, setRequestDialog] = useState(null);
+    const [joiningId, setJoiningId] = useState(null);
+
+    const fetchRides = async (type = tab, fromQ = from, toQ = to) => {
+        setLoading(true);
+        try {
+            let url = `/api/neighborhood/transport?type=${type}`;
+            if (fromQ) url += `&from_location=${encodeURIComponent(fromQ)}`;
+            if (toQ) url += `&to_location=${encodeURIComponent(toQ)}`;
+            const r = await fetch(url);
+            const d = await r.json();
+            setRides(d.rides || []);
+        } catch (_) { setRides([]); }
+        setLoading(false);
+    };
 
     useEffect(() => {
+        const init = async () => {
+            const r = await fetch('/api/auth/user');
+            const d = await r.json();
+            setUser(d.user);
+            await fetchRides();
+        };
+        init();
     }, []);
 
-    const filtered = rides.filter(r => {
-        const matchType = r.type === tab;
-        const matchFrom = !from || r.from_location?.toLowerCase().includes(from.toLowerCase());
-        const matchTo = !to || r.to_location?.toLowerCase().includes(to.toLowerCase());
-        return matchType && matchFrom && matchTo;
-    });
+    useEffect(() => {
+        fetchRides(tab, from, to);
+    }, [tab]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        fetchRides(tab, from, to);
+    };
 
     const create = async () => {
-        if (!form.from_location || !form.to_location || !form.date) { toast.error('From, to and date required'); return; }
+        if (!form.from_location || !form.to_location) { toast.error('From and To are required'); return; }
         setSaving(true);
-        toast.success('Listing posted!');
+        try {
+            const r = await fetch('/api/neighborhood/transport', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...form, type: tab }),
+            });
+            const d = await r.json();
+            if (d.ride) {
+                setRides(prev => [d.ride, ...prev]);
+                toast.success('Listing posted!');
+                setCreateOpen(false);
+                setForm(EMPTY);
+            } else { toast.error(d.error || 'Failed'); }
+        } catch (_) { toast.error('Network error'); }
         setSaving(false);
-        setCreateDialog(false);
-        setForm(EMPTY);
     };
 
-    const requestSeat = async (ride) => {
+    const joinRide = async (ride) => {
         if (!user) { toast.error('Please log in'); return; }
-        if (ride.seats_taken >= ride.seats_available) { toast.error('No seats available'); return; }
-        setRides(prev => prev.map(r => r.id === ride.id ? { ...r, seats_taken: (r.seats_taken || 0) + 1 } : r));
-        toast.success('Seat reserved! Contact the driver to confirm.');
-        setRequestDialog(null);
+        setJoiningId(ride.id);
+        try {
+            const r = await fetch(`/api/neighborhood/transport/${ride.id}/join`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            const d = await r.json();
+            if (d.success) {
+                toast.success('Seat reserved! Driver will confirm.');
+                setRides(prev => prev.map(r => r.id === ride.id ? { ...r, seats_available: r.seats_available - 1, status: r.seats_available - 1 <= 0 ? 'full' : 'open' } : r));
+            } else { toast.error(d.error || 'Failed'); }
+        } catch (_) { toast.error('Network error'); }
+        setJoiningId(null);
     };
 
-    const PACKAGE_SIZES = [
-        { key: 'small', label: 'Small', desc: 'Envelope / box < 5kg', icon: '📦' },
-        { key: 'medium', label: 'Medium', desc: 'Up to 20kg', icon: '🗃️' },
-        { key: 'large', label: 'Large', desc: 'Furniture / bulky', icon: '📫' },
-    ];
+    const fmtDate = (dt) => {
+        if (!dt) return null;
+        return new Date(dt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    };
 
     return (
-        <div className="pb-8 space-y-6">
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-5">
                 <div>
-                    <h1 className="font-mono-premium font-bold text-2xl tracking-tight text-zinc-900 dark:text-white">Transport Hub</h1>
-                    <p className="text-zinc-400 dark:text-zinc-500 text-sm mt-0.5">Rides, courier, moving & car rentals nearby</p>
+                    <h1 className="font-display font-bold text-2xl tracking-tight" style={{ color: 'var(--color-text)' }}>
+                        Transport
+                    </h1>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                        Rideshare, courier, moving & rentals in your neighborhood
+                    </p>
                 </div>
                 {user && (
-                    <Button
-                        className="rounded-xl gap-2 h-9 text-sm bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:opacity-80"
-                        onClick={() => { setForm({ ...EMPTY, type: tab }); setCreateDialog(true); }}
-                    >
+                    <button onClick={() => { setForm({ ...EMPTY, type: tab }); setCreateOpen(true); }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                         <Plus className="h-3.5 w-3.5" /> Post Listing
-                    </Button>
+                    </button>
                 )}
             </div>
 
-            {/* Segmented control */}
-            <div className="flex bg-zinc-100 dark:bg-zinc-900 rounded-xl p-1 gap-1">
-                {SEGMENTS.map(({ key, label, icon: Icon }) => (
-                    <button key={key} onClick={() => setTab(key)}
-                        className={`flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg text-xs font-semibold transition-all ${tab === key
-                                ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
-                                : 'text-zinc-500 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-                            }`}>
-                        <Icon className="h-3.5 w-3.5" strokeWidth={1.8} />
-                        <span className="hidden sm:inline">{label}</span>
-                    </button>
-                ))}
+            {/* Segment tabs */}
+            <div className="flex gap-2 mb-4 flex-wrap">
+                {SEGMENTS.map(s => {
+                    const active = tab === s.key;
+                    return (
+                        <button key={s.key} onClick={() => setTab(s.key)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+                            style={{
+                                backgroundColor: active ? s.color : 'var(--color-surface)',
+                                color: active ? '#fff' : 'var(--color-text-muted)',
+                                border: `1px solid ${active ? s.color : 'var(--color-border)'}`,
+                            }}>
+                            <s.icon className="h-3.5 w-3.5" /> {s.label}
+                        </button>
+                    );
+                })}
             </div>
 
-            {/* Rides view */}
-            {tab === 'carpool' && (
-                <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 bg-zinc-50 dark:bg-zinc-900/50">
-                    <div className="flex items-center gap-3">
-                        <div className="flex-1 space-y-2">
-                            <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" strokeWidth={1.8} />
-                                <Input value={from} onChange={e => setFrom(e.target.value)} placeholder="From…" className="pl-9 h-10 rounded-lg bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-sm" />
-                            </div>
-                            <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-300" strokeWidth={1.8} />
-                                <Input value={to} onChange={e => setTo(e.target.value)} placeholder="To…" className="pl-9 h-10 rounded-lg bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-sm" />
-                            </div>
-                        </div>
-                        <button onClick={() => { const tmp = from; setFrom(to); setTo(tmp); }}
-                            className="h-10 w-10 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 flex items-center justify-center hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors text-zinc-400">
-                            <ArrowLeftRight className="h-4 w-4" strokeWidth={1.8} />
-                        </button>
-                    </div>
+            {/* Search */}
+            <form onSubmit={handleSearch} className="flex gap-2 mb-5">
+                <div className="flex-1 relative">
+                    <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
+                    <input value={from} onChange={e => setFrom(e.target.value)} placeholder="From…"
+                        className="w-full pl-8 pr-3 py-2 rounded-xl text-sm outline-none"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                 </div>
-            )}
-
-            {/* Courier package size selector */}
-            {tab === 'delivery' && (
-                <div className="grid grid-cols-3 gap-3">
-                    {PACKAGE_SIZES.map(s => (
-                        <div key={s.key} className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 text-center bg-white dark:bg-zinc-900 hover:border-zinc-400 dark:hover:border-zinc-600 cursor-pointer transition-all">
-                            <div className="text-3xl mb-2">{s.icon}</div>
-                            <p className="font-semibold text-sm text-zinc-900 dark:text-white">{s.label}</p>
-                            <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-0.5">{s.desc}</p>
-                        </div>
-                    ))}
+                <div className="flex-1 relative">
+                    <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
+                    <input value={to} onChange={e => setTo(e.target.value)} placeholder="To…"
+                        className="w-full pl-8 pr-3 py-2 rounded-xl text-sm outline-none"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                 </div>
-            )}
+                <button type="submit" className="px-3 py-2 rounded-xl"
+                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                    <Search className="h-4 w-4" />
+                </button>
+            </form>
 
             {/* Listings */}
             {loading ? (
-                <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-24 rounded-xl" />)}</div>
-            ) : filtered.length === 0 ? (
-                <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-12 text-center bg-zinc-50 dark:bg-zinc-900/50">
-                    <Car className="h-8 w-8 mx-auto mb-3 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />
-                    <p className="text-zinc-400 dark:text-zinc-500 text-sm">No listings found</p>
-                    {user && <Button variant="outline" size="sm" className="rounded-xl mt-3 text-xs" onClick={() => { setForm({ ...EMPTY, type: tab }); setCreateDialog(true); }}>Post First Listing</Button>}
+                <div className="flex justify-center py-16">
+                    <div className="h-6 w-6 rounded-full animate-spin" style={{ border: '2px solid var(--color-border)', borderTopColor: 'var(--color-primary)' }} />
+                </div>
+            ) : rides.length === 0 ? (
+                <div className="text-center py-16" style={{ color: 'var(--color-text-subtle)' }}>
+                    <Car className="h-10 w-10 mx-auto mb-3 opacity-20" />
+                    <p className="text-sm">No listings yet</p>
+                    {user && <button onClick={() => setCreateOpen(true)} className="text-xs mt-2 font-semibold" style={{ color: 'var(--color-primary)' }}>Be the first to post →</button>}
                 </div>
             ) : (
-                <div className="space-y-2.5">
-                    {filtered.map(ride => {
-                        const seatsLeft = (ride.seats_available || 0) - (ride.seats_taken || 0);
-                        const isFull = seatsLeft <= 0;
-                        const SegIcon = SEGMENTS.find(s => s.key === ride.type)?.icon || Car;
+                <div className="space-y-3">
+                    {rides.map(ride => {
+                        const seg = SEGMENTS.find(s => s.key === ride.type) || SEGMENTS[0];
+                        const isDriver = ride.driver_id === user?.id;
+                        const isFull = ride.status === 'full';
+                        const seatsLeft = ride.seats_available;
                         return (
-                            <div key={ride.id} className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all">
-                                <div className="flex items-start justify-between gap-4">
+                            <div key={ride.id} className="rounded-2xl p-4"
+                                style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                                <div className="flex items-start justify-between gap-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <div className="h-8 w-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center shrink-0">
-                                                <span className="text-[11px] font-bold text-white dark:text-zinc-900">
-                                                    {ride.driver_name?.charAt(0)?.toUpperCase() || '?'}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <p className="font-semibold text-sm text-zinc-900 dark:text-white">{ride.driver_name || ride.driver_email?.split('@')[0]}</p>
-                                                {ride.vehicle && <p className="text-[10px] text-zinc-400 dark:text-zinc-500">{ride.vehicle}</p>}
-                                            </div>
-                                            <ShieldCheck className="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-600 ml-1" strokeWidth={1.5} />
+                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                                style={{ backgroundColor: seg.color + '20', color: seg.color }}>
+                                                {seg.label}
+                                            </span>
+                                            {isDriver && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>Your listing</span>}
                                         </div>
-                                        <div className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 mb-1.5">
-                                            <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-                                            <span>{ride.from_location}</span>
-                                            <span className="text-zinc-300 dark:text-zinc-700 mx-1">→</span>
-                                            <span>{ride.to_location}</span>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text)' }}>
+                                                {ride.from_location}
+                                            </p>
+                                            <ArrowRight className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--color-text-subtle)' }} />
+                                            <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text)' }}>
+                                                {ride.to_location}
+                                            </p>
                                         </div>
-                                        <div className="flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-500">
-                                            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" strokeWidth={1.5} />{ride.date}</span>
-                                            {ride.departure_time && <span className="flex items-center gap-1"><Clock className="h-3 w-3" strokeWidth={1.5} />{ride.departure_time}</span>}
-                                            {ride.type === 'carpool' && <span className="flex items-center gap-1"><Users className="h-3 w-3" strokeWidth={1.5} />{seatsLeft} left</span>}
+                                        <div className="flex flex-wrap gap-3 text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                            {ride.departure_at && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{fmtDate(ride.departure_at)}</span>}
+                                            {ride.type === 'carpool' && <span className="flex items-center gap-1"><Users className="h-3 w-3" />{seatsLeft}/{ride.seats_total} seats</span>}
+                                            {ride.vehicle && <span className="flex items-center gap-1"><Car className="h-3 w-3" />{ride.vehicle}</span>}
+                                            <span className="font-semibold" style={{ color: 'var(--color-text)' }}>
+                                                {ride.price_pkr > 0 ? `PKR ${ride.price_pkr}` : 'Free'}
+                                            </span>
                                         </div>
+                                        {ride.notes && <p className="text-[11px] mt-1.5" style={{ color: 'var(--color-text-subtle)' }}>{ride.notes}</p>}
+                                        <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                            Posted by {ride.driver_name || 'Unknown'}
+                                        </p>
                                     </div>
-                                    <div className="text-right shrink-0">
-                                        <p className="font-bold text-base text-zinc-900 dark:text-white">{ride.price_per_seat > 0 ? `$${ride.price_per_seat}` : 'Free'}</p>
-                                        {ride.type === 'carpool' && <p className="text-[10px] text-zinc-400 dark:text-zinc-500">/seat</p>}
-                                        <Button size="sm" className="rounded-lg h-8 text-xs mt-2" disabled={isFull}
-                                            variant={isFull ? 'outline' : 'default'}
-                                            onClick={() => setRequestDialog(ride)}>
-                                            {isFull ? 'Full' : ride.type === 'carpool' ? 'Request' : 'Contact'}
-                                        </Button>
-                                    </div>
+                                    {!isDriver && (
+                                        <button
+                                            onClick={() => joinRide(ride)}
+                                            disabled={isFull || joiningId === ride.id}
+                                            className="px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-opacity"
+                                            style={{
+                                                backgroundColor: isFull ? 'var(--color-surface-high)' : 'var(--color-primary)',
+                                                color: isFull ? 'var(--color-text-subtle)' : 'var(--color-on-primary)',
+                                                opacity: joiningId === ride.id ? 0.7 : 1,
+                                            }}>
+                                            {joiningId === ride.id ? '…' : isFull ? 'Full' : ride.type === 'carpool' ? 'Book Seat' : 'Contact'}
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -187,61 +226,107 @@ export default function Transport() {
             )}
 
             {/* Create Dialog */}
-            <Dialog open={createDialog} onOpenChange={setCreateDialog}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader><DialogTitle className="font-semibold">Post Transport Listing</DialogTitle></DialogHeader>
-                    <div className="space-y-3 pt-1">
-                        <Select value={form.type} onValueChange={v => setForm(p => ({ ...p, type: v }))}>
-                            <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                            <SelectContent>{SEGMENTS.map(s => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}</SelectContent>
-                        </Select>
-                        <div className="grid grid-cols-2 gap-3">
-                            <Input placeholder="From *" value={form.from_location} onChange={e => setForm(p => ({ ...p, from_location: e.target.value }))} className="rounded-xl" />
-                            <Input placeholder="To *" value={form.to_location} onChange={e => setForm(p => ({ ...p, to_location: e.target.value }))} className="rounded-xl" />
+            {createOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    onClick={e => e.target === e.currentTarget && setCreateOpen(false)}>
+                    <div className="rounded-2xl p-5 w-full max-w-md shadow-xl overflow-y-auto max-h-[90vh]"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="font-bold text-base" style={{ color: 'var(--color-text)' }}>Post Transport Listing</h2>
+                            <button onClick={() => setCreateOpen(false)} style={{ color: 'var(--color-text-subtle)' }}><X className="h-4 w-4" /></button>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <Input type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className="rounded-xl" />
-                            <Input type="time" value={form.departure_time} onChange={e => setForm(p => ({ ...p, departure_time: e.target.value }))} className="rounded-xl" />
+
+                        {/* Type selector */}
+                        <div className="flex gap-1.5 mb-4 flex-wrap">
+                            {SEGMENTS.map(s => (
+                                <button key={s.key} onClick={() => setForm(f => ({ ...f, type: s.key }))}
+                                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                                    style={{ backgroundColor: form.type === s.key ? s.color : 'var(--color-surface-high)', color: form.type === s.key ? '#fff' : 'var(--color-text-muted)' }}>
+                                    <s.icon className="h-3 w-3" /> {s.label}
+                                </button>
+                            ))}
                         </div>
-                        {form.type === 'carpool' && (
-                            <div className="grid grid-cols-2 gap-3">
-                                <Input type="number" placeholder="Seats" value={form.seats_available} onChange={e => setForm(p => ({ ...p, seats_available: Number(e.target.value) }))} className="rounded-xl" min={1} />
-                                <Input type="number" placeholder="Price/seat" value={form.price_per_seat} onChange={e => setForm(p => ({ ...p, price_per_seat: Number(e.target.value) }))} className="rounded-xl" />
+
+                        <div className="space-y-3">
+                            {[
+                                { key: 'from_location', label: 'From', placeholder: 'Pickup location' },
+                                { key: 'to_location', label: 'To', placeholder: 'Drop-off location' },
+                            ].map(f => (
+                                <div key={f.key}>
+                                    <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>{f.label}</label>
+                                    <input value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))}
+                                        placeholder={f.placeholder}
+                                        className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                        style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                                </div>
+                            ))}
+
+                            {form.type === 'carpool' && (
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Seats</label>
+                                        <input type="number" min={1} max={8} value={form.seats_total}
+                                            onChange={e => setForm(p => ({ ...p, seats_total: parseInt(e.target.value) || 1 }))}
+                                            className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                            style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Price/seat (PKR)</label>
+                                        <input type="number" min={0} value={form.price_pkr}
+                                            onChange={e => setForm(p => ({ ...p, price_pkr: parseFloat(e.target.value) || 0 }))}
+                                            className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                            style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                                    </div>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Departure date & time</label>
+                                <input type="datetime-local" value={form.departure_at}
+                                    onChange={e => setForm(p => ({ ...p, departure_at: e.target.value }))}
+                                    className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                    style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                             </div>
-                        )}
-                        {form.type !== 'carpool' && (
-                            <Input type="number" placeholder="Price ($)" value={form.price_per_seat} onChange={e => setForm(p => ({ ...p, price_per_seat: Number(e.target.value) }))} className="rounded-xl" />
-                        )}
-                        <Input placeholder="Vehicle (optional)" value={form.vehicle} onChange={e => setForm(p => ({ ...p, vehicle: e.target.value }))} className="rounded-xl" />
-                        <Input placeholder="Contact phone" value={form.contact_phone} onChange={e => setForm(p => ({ ...p, contact_phone: e.target.value }))} className="rounded-xl" />
-                        <div className="flex gap-2 pt-1">
-                            <Button variant="outline" className="flex-1 h-10 rounded-xl text-sm" onClick={() => setCreateDialog(false)}>Cancel</Button>
-                            <Button className="flex-1 h-10 rounded-xl text-sm" onClick={create} disabled={saving}>{saving ? 'Posting…' : 'Publish'}</Button>
+
+                            <div>
+                                <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Vehicle / details</label>
+                                <input value={form.vehicle} onChange={e => setForm(p => ({ ...p, vehicle: e.target.value }))}
+                                    placeholder="e.g. Honda Civic, White"
+                                    className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                    style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Contact phone</label>
+                                <input value={form.contact_phone} onChange={e => setForm(p => ({ ...p, contact_phone: e.target.value }))}
+                                    placeholder="03XX-XXXXXXX"
+                                    className="w-full px-3 py-2 rounded-xl text-sm outline-none"
+                                    style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-semibold block mb-1" style={{ color: 'var(--color-text-subtle)' }}>Notes</label>
+                                <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
+                                    placeholder="Additional details…" rows={2}
+                                    className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
+                                    style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-4">
+                            <button onClick={() => setCreateOpen(false)} className="flex-1 py-2 rounded-xl text-sm font-semibold"
+                                style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
+                                Cancel
+                            </button>
+                            <button onClick={create} disabled={saving}
+                                className="flex-1 py-2 rounded-xl text-sm font-semibold transition-opacity"
+                                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', opacity: saving ? 0.7 : 1 }}>
+                                {saving ? 'Posting…' : 'Post Listing'}
+                            </button>
                         </div>
                     </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* Request Dialog */}
-            <Dialog open={!!requestDialog} onOpenChange={() => setRequestDialog(null)}>
-                {requestDialog && (
-                    <DialogContent className="max-w-sm">
-                        <DialogHeader><DialogTitle className="font-semibold">Confirm Request</DialogTitle></DialogHeader>
-                        <div className="space-y-3 pt-1">
-                            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-4 space-y-1.5 text-sm">
-                                <p className="text-zinc-500 dark:text-zinc-400"><span className="text-zinc-900 dark:text-white font-medium">Route:</span> {requestDialog.from_location} → {requestDialog.to_location}</p>
-                                <p className="text-zinc-500 dark:text-zinc-400"><span className="text-zinc-900 dark:text-white font-medium">Date:</span> {requestDialog.date} {requestDialog.departure_time && `at ${requestDialog.departure_time}`}</p>
-                                <p className="text-zinc-500 dark:text-zinc-400"><span className="text-zinc-900 dark:text-white font-medium">Driver:</span> {requestDialog.driver_name || requestDialog.driver_email}</p>
-                                {requestDialog.contact_phone && <p className="text-zinc-500 dark:text-zinc-400"><span className="text-zinc-900 dark:text-white font-medium">Phone:</span> {requestDialog.contact_phone}</p>}
-                                <p className="text-zinc-500 dark:text-zinc-400"><span className="text-zinc-900 dark:text-white font-medium">Price:</span> {requestDialog.price_per_seat > 0 ? `$${requestDialog.price_per_seat} per seat` : 'Free'}</p>
-                            </div>
-                            <Button className="w-full h-11 rounded-xl" onClick={() => requestDialog.type === 'carpool' ? requestSeat(requestDialog) : (toast.success('Request sent!'), setRequestDialog(null))}>
-                                {requestDialog.type === 'carpool' ? 'Confirm Seat Request' : 'Send Request'}
-                            </Button>
-                        </div>
-                    </DialogContent>
-                )}
-            </Dialog>
+                </div>
+            )}
         </div>
     );
 }

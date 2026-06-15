@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MessageCircle, Loader2, Users, Send, Search } from 'lucide-react';
+import { MessageCircle, Loader2, Users, Send, Search, Plus, X, Check, CheckCheck, Phone, MoreVertical } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function Chat() {
     const [user, setUser] = useState(null);
@@ -14,61 +15,103 @@ export default function Chat() {
     const [msgLoading, setMsgLoading] = useState(false);
     const [sending, setSending] = useState(false);
     const [search, setSearch] = useState('');
+    const [newChatOpen, setNewChatOpen] = useState(false);
+    const [userSearch, setUserSearch] = useState('');
+    const [userResults, setUserResults] = useState([]);
+    const [userSearching, setUserSearching] = useState(false);
     const bottomRef = useRef(null);
+    const pollRef = useRef(null);
     const location = useLocation();
 
     const params = new URLSearchParams(location.search);
-    const directProviderId = params.get('provider_id');
-    const directCustomerEmail = params.get('customer_email');
+    const deepLinkUserId = params.get('user_id');
 
-    useEffect(() => {
-        const u = null;
-        const msgs = [];
-        const provs = [];
-        if (u) {
-            setUser(u);
-            const role = u.user_type || 'customer';
-
-            if (role === 'provider') {
-                if (!provs[0]) { setLoading(false); return; }
-                const byCustomer = {};
-                msgs.forEach(m => {
-                    if (!byCustomer[m.customer_email]) byCustomer[m.customer_email] = { provider_id: provs[0].id, customer_email: m.customer_email, last_text: '', unread: 0 };
-                    if (!byCustomer[m.customer_email].last_text) byCustomer[m.customer_email].last_text = m.text;
-                    if (!m.is_read && m.sender_role === 'customer') byCustomer[m.customer_email].unread++;
-                });
-                const convos = Object.values(byCustomer);
-                setConversations(convos);
-                if (directCustomerEmail) {
-                    const match = byCustomer[directCustomerEmail] || { provider_id: provs[0].id, customer_email: directCustomerEmail, last_text: '', unread: 0 };
-                    setSelected(match);
-                } else if (convos.length) setSelected(convos[0]);
-            } else {
-                const byProvider = {};
-                msgs.forEach(m => {
-                    if (!byProvider[m.provider_id]) byProvider[m.provider_id] = { provider_id: m.provider_id, customer_email: u.email, last_text: '', unread: 0 };
-                    if (!byProvider[m.provider_id].last_text) byProvider[m.provider_id].last_text = m.text;
-                    if (!m.is_read && m.sender_role === 'provider') byProvider[m.provider_id].unread++;
-                });
-                const convos = Object.values(byProvider);
-                setConversations(convos);
-                if (directProviderId) {
-                    const match = byProvider[directProviderId] || { provider_id: directProviderId, customer_email: u.email, last_text: '', unread: 0 };
-                    setSelected(match);
-                } else if (convos.length) setSelected(convos[0]);
-            }
-            setLoading(false);
-        }
-        setLoading(false);
+    const fetchConversations = useCallback(async () => {
+        try {
+            const r = await fetch('/api/chat/conversations');
+            const data = await r.json();
+            if (data.conversations) setConversations(data.conversations);
+        } catch (_) {}
     }, []);
 
-    // Load messages when selected changes
+    const loadMessages = useCallback(async (conv) => {
+        if (!conv?.thread_key) return;
+        setMsgLoading(true);
+        try {
+            const r = await fetch(`/api/chat/messages/${encodeURIComponent(conv.thread_key)}`);
+            const data = await r.json();
+            if (data.messages) {
+                setMessages(data.messages);
+                setConversations(prev => prev.map(c => c.thread_key === conv.thread_key ? { ...c, unread_count: '0' } : c));
+            }
+        } catch (_) {}
+        setMsgLoading(false);
+    }, []);
+
+    useEffect(() => {
+        const init = async () => {
+            try {
+                const r = await fetch('/api/auth/user');
+                const d = await r.json();
+                if (!d.user) { setLoading(false); return; }
+                setUser(d.user);
+                const cr = await fetch('/api/chat/conversations');
+                const cd = await cr.json();
+                const convos = cd.conversations || [];
+                setConversations(convos);
+                if (deepLinkUserId) {
+                    // Make thread_key and find/create conversation
+                    const [a, b] = [d.user.id, deepLinkUserId].sort();
+                    const threadKey = `${a}::${b}`;
+                    const existing = convos.find(c => c.thread_key === threadKey);
+                    if (existing) {
+                        setSelected(existing);
+                    } else {
+                        const ur = await fetch(`/api/chat/users?q=`);
+                        const ud = await ur.json();
+                        const other = ud.users?.find(u => u.id === deepLinkUserId);
+                        if (other) {
+                            const pseudoConv = { thread_key: threadKey, other_id: deepLinkUserId, other_name: other.full_name || other.email, other_email: other.email, unread_count: 0, last_message: '' };
+                            setSelected(pseudoConv);
+                        }
+                    }
+                } else if (convos.length) {
+                    setSelected(convos[0]);
+                }
+            } catch (_) {}
+            setLoading(false);
+        };
+        init();
+    }, [deepLinkUserId]);
+
+    // Load messages when conversation selected
     useEffect(() => {
         if (!selected) return;
-        setMsgLoading(true);
-        setMessages([]);
-        setMsgLoading(false);
-    }, [selected?.provider_id, selected?.customer_email]);
+        loadMessages(selected);
+    }, [selected?.thread_key, loadMessages]);
+
+    // Real-time polling every 3s
+    useEffect(() => {
+        if (!selected || !user) return;
+        const poll = async () => {
+            try {
+                const r = await fetch(`/api/chat/messages/${encodeURIComponent(selected.thread_key)}`);
+                const d = await r.json();
+                if (d.messages && d.messages.length !== messages.length) {
+                    setMessages(d.messages);
+                }
+            } catch (_) {}
+        };
+        pollRef.current = setInterval(poll, 3000);
+        return () => clearInterval(pollRef.current);
+    }, [selected?.thread_key, user, messages.length]);
+
+    // Poll conversations for unread count
+    useEffect(() => {
+        if (!user) return;
+        const pollConvos = setInterval(fetchConversations, 8000);
+        return () => clearInterval(pollConvos);
+    }, [user, fetchConversations]);
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -79,69 +122,161 @@ export default function Chat() {
         if (!trimmed || sending || !selected || !user) return;
         setSending(true);
         setText('');
-        const role = user.user_type || 'customer';
-        const _msgData = {
-            provider_id: selected.provider_id,
-            customer_email: selected.customer_email,
-            sender_email: user.email,
-            sender_role: role,
-            text: trimmed,
-            is_read: false,
-        };
-        setMessages(prev => [...prev, { id: Date.now(), ..._msgData }]);
+        // Optimistic
+        const optimistic = { id: `opt-${Date.now()}`, sender_id: user.id, receiver_id: selected.other_id, thread_key: selected.thread_key, content: trimmed, type: 'text', read: false, created_at: new Date().toISOString() };
+        setMessages(prev => [...prev, optimistic]);
+        try {
+            const r = await fetch('/api/chat/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ receiver_id: selected.other_id, content: trimmed }),
+            });
+            const d = await r.json();
+            if (d.message) {
+                setMessages(prev => prev.map(m => m.id === optimistic.id ? d.message : m));
+                fetchConversations();
+            } else {
+                toast.error(d.error || 'Failed to send');
+                setMessages(prev => prev.filter(m => m.id !== optimistic.id));
+            }
+        } catch (_) {
+            toast.error('Network error');
+            setMessages(prev => prev.filter(m => m.id !== optimistic.id));
+        }
         setSending(false);
     };
 
+    const searchUsers = async (q) => {
+        setUserSearch(q);
+        if (!q.trim()) { setUserResults([]); return; }
+        setUserSearching(true);
+        try {
+            const r = await fetch(`/api/chat/users?q=${encodeURIComponent(q)}`);
+            const d = await r.json();
+            setUserResults(d.users || []);
+        } catch (_) {}
+        setUserSearching(false);
+    };
+
+    const startChat = (otherUser) => {
+        const [a, b] = [user.id, otherUser.id].sort();
+        const threadKey = `${a}::${b}`;
+        const existing = conversations.find(c => c.thread_key === threadKey);
+        if (existing) {
+            setSelected(existing);
+        } else {
+            const newConv = { thread_key: threadKey, other_id: otherUser.id, other_name: otherUser.full_name || otherUser.email, other_email: otherUser.email, unread_count: 0, last_message: '' };
+            setConversations(prev => [newConv, ...prev]);
+            setSelected(newConv);
+        }
+        setNewChatOpen(false);
+        setUserSearch('');
+        setUserResults([]);
+    };
+
     const filteredConvos = conversations.filter(c => {
-        const label = user?.user_type === 'provider' ? c.customer_email : `Provider ${c.provider_id?.slice(-6)}`;
+        const label = c.other_name || c.other_email || '';
         return !search || label.toLowerCase().includes(search.toLowerCase());
     });
 
-    if (loading) return <div className="flex justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-zinc-400" /></div>;
-    if (!user) return <p className="text-center py-20 text-zinc-400">Please log in to use chat.</p>;
+    const formatTime = (ts) => {
+        if (!ts) return '';
+        const d = new Date(ts);
+        const now = new Date();
+        const isToday = d.toDateString() === now.toDateString();
+        return isToday ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    };
 
-    const role = user.user_type || 'customer';
+    const getInitial = (name, email) => ((name || email || '?').charAt(0).toUpperCase());
+
+    if (loading) return (
+        <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'var(--color-text-subtle)' }} />
+        </div>
+    );
+    if (!user) return (
+        <div className="text-center py-20" style={{ color: 'var(--color-text-subtle)' }}>
+            <MessageCircle className="h-12 w-12 mx-auto mb-3 opacity-30" />
+            <p>Please log in to use messages</p>
+        </div>
+    );
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <h1 className="font-display font-bold text-2xl tracking-tight mb-5 flex items-center gap-2">
-                <MessageCircle className="h-6 w-6" /> Messages
-            </h1>
+        <div style={{ maxWidth: 960, margin: '0 auto' }}>
+            <div className="flex items-center justify-between mb-5">
+                <h1 className="font-display font-bold text-2xl tracking-tight flex items-center gap-2"
+                    style={{ color: 'var(--color-text)' }}>
+                    <MessageCircle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                    Messages
+                </h1>
+                <button onClick={() => setNewChatOpen(true)}
+                    className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl"
+                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                    <Plus className="h-3.5 w-3.5" /> New Chat
+                </button>
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ height: '72vh' }}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3" style={{ height: '76vh' }}>
                 {/* Sidebar */}
-                <div className="md:col-span-1 border border-border rounded-2xl overflow-hidden bg-card flex flex-col">
-                    <div className="p-3 border-b border-border shrink-0">
+                <div className="md:col-span-1 rounded-2xl overflow-hidden flex flex-col"
+                    style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                    <div className="p-2.5 shrink-0" style={{ borderBottom: '1px solid var(--color-border)' }}>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
-                            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…" className="pl-8 h-8 rounded-xl text-xs" />
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
+                            <input value={search} onChange={e => setSearch(e.target.value)}
+                                placeholder="Search conversations…"
+                                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg outline-none"
+                                style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                         </div>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {filteredConvos.length === 0 ? (
                             <div className="p-8 text-center">
-                                <Users className="h-7 w-7 text-zinc-300 mx-auto mb-2" />
-                                <p className="text-xs text-zinc-400">No conversations yet</p>
-                                {role === 'customer' && <p className="text-xs text-zinc-400 mt-1">Start by booking a service</p>}
+                                <Users className="h-7 w-7 mx-auto mb-2 opacity-20" style={{ color: 'var(--color-text-subtle)' }} />
+                                <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>No conversations yet</p>
+                                <button onClick={() => setNewChatOpen(true)} className="text-xs mt-2 font-semibold" style={{ color: 'var(--color-primary)' }}>
+                                    Start chatting →
+                                </button>
                             </div>
                         ) : filteredConvos.map((c, i) => {
-                            const label = role === 'customer' ? `Provider ${c.provider_id?.slice(-6)}` : c.customer_email;
-                            const isActive = selected?.provider_id === c.provider_id && selected?.customer_email === c.customer_email;
+                            const isActive = selected?.thread_key === c.thread_key;
+                            const unread = parseInt(c.unread_count || 0);
                             return (
-                                <button key={i} onClick={() => setSelected(c)}
-                                    className={`w-full text-left p-3.5 border-b border-border/50 hover:bg-muted/40 transition-colors ${isActive ? 'bg-muted' : ''}`}>
-                                    <div className="flex items-center justify-between mb-0.5">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-8 w-8 rounded-full bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-zinc-900 text-xs font-bold shrink-0">
-                                                {label.charAt(0).toUpperCase()}
-                                            </div>
-                                            <p className="text-xs font-semibold truncate max-w-[110px]">{label}</p>
+                                <button key={c.thread_key} onClick={() => setSelected(c)}
+                                    className="w-full text-left p-3 transition-colors"
+                                    style={{
+                                        borderBottom: '1px solid var(--color-border)',
+                                        backgroundColor: isActive ? 'var(--color-surface-high)' : 'transparent',
+                                    }}
+                                    onMouseEnter={e => !isActive && (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)')}
+                                    onMouseLeave={e => !isActive && (e.currentTarget.style.backgroundColor = 'transparent')}>
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                            style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                            {getInitial(c.other_name, c.other_email)}
                                         </div>
-                                        {c.unread > 0 && (
-                                            <span className="h-5 w-5 rounded-full bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold flex items-center justify-center shrink-0">{c.unread}</span>
-                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-0.5">
+                                                <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>
+                                                    {c.other_name || c.other_email || 'Unknown'}
+                                                </p>
+                                                <span className="text-[10px] shrink-0 ml-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                                    {formatTime(c.last_message_at)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <p className="text-[11px] truncate" style={{ color: 'var(--color-text-subtle)' }}>
+                                                    {c.last_message || 'Say hello!'}
+                                                </p>
+                                                {unread > 0 && (
+                                                    <span className="h-4.5 min-w-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 ml-1"
+                                                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                                        {unread}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    {c.last_text && <p className="text-[11px] text-zinc-400 truncate pl-10">{c.last_text}</p>}
                                 </button>
                             );
                         })}
@@ -149,34 +284,68 @@ export default function Chat() {
                 </div>
 
                 {/* Chat area */}
-                <div className="md:col-span-2 flex flex-col border border-border rounded-2xl overflow-hidden bg-card">
+                <div className="md:col-span-2 flex flex-col rounded-2xl overflow-hidden"
+                    style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
                     {selected ? (
                         <>
-                            <div className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-zinc-900 text-xs font-bold">
-                                    {(role === 'customer' ? 'P' : selected.customer_email?.charAt(0) || 'C').toUpperCase()}
+                            {/* Header */}
+                            <div className="flex items-center gap-3 px-4 py-3 shrink-0"
+                                style={{ borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                                <div className="h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                    {getInitial(selected.other_name, selected.other_email)}
                                 </div>
-                                <div>
-                                    <p className="text-sm font-semibold">{role === 'customer' ? `Provider ${selected.provider_id?.slice(-6)}` : selected.customer_email}</p>
-                                    <p className="text-xs text-zinc-400">Active now</p>
+                                <div className="flex-1">
+                                    <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+                                        {selected.other_name || selected.other_email || 'Unknown'}
+                                    </p>
+                                    <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>
+                                        {selected.other_email}
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+                            {/* Messages */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0"
+                                style={{ backgroundImage: 'radial-gradient(var(--color-border) 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
                                 {msgLoading ? (
-                                    <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-zinc-300" /></div>
+                                    <div className="flex justify-center py-8">
+                                        <Loader2 className="h-5 w-5 animate-spin" style={{ color: 'var(--color-text-subtle)' }} />
+                                    </div>
                                 ) : messages.length === 0 ? (
-                                    <p className="text-center text-sm text-zinc-400 py-8">No messages yet. Start the conversation.</p>
+                                    <div className="text-center py-10">
+                                        <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>
+                                            No messages yet. Say hello! 👋
+                                        </p>
+                                    </div>
                                 ) : messages.map(msg => {
-                                    const isMe = msg.sender_email === user.email;
+                                    const isMe = msg.sender_id === user.id;
                                     return (
                                         <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`max-w-[75%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${isMe ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-br-sm'
-                                                    : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-bl-sm'
-                                                }`}>
-                                                {msg.text}
-                                                <div className={`text-[10px] mt-1 ${isMe ? 'text-white/50 dark:text-zinc-500' : 'text-zinc-400'}`}>
-                                                    {new Date(msg.created_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {!isMe && (
+                                                <div className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mr-1.5 mt-auto mb-4"
+                                                    style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
+                                                    {getInitial(selected.other_name, selected.other_email)}
+                                                </div>
+                                            )}
+                                            <div className="max-w-[72%]">
+                                                <div className={`px-3.5 py-2 text-sm leading-relaxed shadow-sm`}
+                                                    style={{
+                                                        backgroundColor: isMe ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                                        color: isMe ? 'var(--color-on-primary)' : 'var(--color-text)',
+                                                        borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                                                    }}>
+                                                    {msg.content}
+                                                </div>
+                                                <div className={`flex items-center gap-1 mt-0.5 ${isMe ? 'justify-end' : 'justify-start'} px-1`}>
+                                                    <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                        {formatTime(msg.created_at)}
+                                                    </span>
+                                                    {isMe && (
+                                                        msg.read
+                                                            ? <CheckCheck className="h-3 w-3" style={{ color: 'var(--color-primary)' }} />
+                                                            : <Check className="h-3 w-3" style={{ color: 'var(--color-text-subtle)' }} />
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -185,33 +354,92 @@ export default function Chat() {
                                 <div ref={bottomRef} />
                             </div>
 
-                            <div className="px-4 py-3 border-t border-border shrink-0">
-                                <div className="flex gap-2">
-                                    <Input
+                            {/* Input */}
+                            <div className="px-4 py-3 shrink-0"
+                                style={{ borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                                <div className="flex gap-2 items-center">
+                                    <input
                                         value={text}
                                         onChange={e => setText(e.target.value)}
                                         onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
                                         placeholder="Type a message…"
-                                        className="rounded-xl flex-1 text-sm"
                                         disabled={sending}
+                                        className="flex-1 px-4 py-2.5 rounded-2xl text-sm outline-none"
+                                        style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                                     />
-                                    <Button onClick={send} disabled={!text.trim() || sending}
-                                        className="h-9 w-9 rounded-xl p-0 bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 text-white dark:text-zinc-900 shrink-0">
+                                    <button onClick={send} disabled={!text.trim() || sending}
+                                        className="h-10 w-10 rounded-full flex items-center justify-center shrink-0 transition-opacity"
+                                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', opacity: (!text.trim() || sending) ? 0.5 : 1 }}>
                                         {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                                    </Button>
+                                    </button>
                                 </div>
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex-1 flex items-center justify-center flex-col gap-4">
+                            <MessageCircle className="h-14 w-14 opacity-10" style={{ color: 'var(--color-text)' }} />
                             <div className="text-center">
-                                <MessageCircle className="h-10 w-10 text-zinc-200 mx-auto mb-3" />
-                                <p className="text-sm text-zinc-400">Select a conversation</p>
+                                <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Your messages</p>
+                                <p className="text-xs mt-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                    Select a conversation or start a new one
+                                </p>
                             </div>
+                            <button onClick={() => setNewChatOpen(true)}
+                                className="px-4 py-2 rounded-xl text-sm font-semibold"
+                                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                + New Chat
+                            </button>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* New Chat Dialog */}
+            {newChatOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    onClick={e => e.target === e.currentTarget && setNewChatOpen(false)}>
+                    <div className="rounded-2xl p-5 w-full max-w-sm shadow-xl"
+                        style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="font-bold text-base" style={{ color: 'var(--color-text)' }}>New Conversation</h2>
+                            <button onClick={() => setNewChatOpen(false)} style={{ color: 'var(--color-text-subtle)' }}>
+                                <X className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <input
+                            value={userSearch}
+                            onChange={e => searchUsers(e.target.value)}
+                            placeholder="Search by name or email…"
+                            className="w-full px-3 py-2 rounded-xl text-sm outline-none mb-3"
+                            style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+                            autoFocus
+                        />
+                        {userSearching && <div className="flex justify-center py-3"><Loader2 className="h-4 w-4 animate-spin" style={{ color: 'var(--color-text-subtle)' }} /></div>}
+                        <div className="space-y-1 max-h-52 overflow-y-auto">
+                            {userResults.map(u => (
+                                <button key={u.id} onClick={() => startChat(u)}
+                                    className="w-full flex items-center gap-2.5 p-2.5 rounded-xl text-left transition-colors"
+                                    style={{ border: '1px solid var(--color-border)' }}
+                                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)')}
+                                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
+                                    <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
+                                        {getInitial(u.full_name, u.email)}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{u.full_name || u.email}</p>
+                                        <p className="text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>{u.email} · {u.role}</p>
+                                    </div>
+                                </button>
+                            ))}
+                            {userSearch && !userSearching && userResults.length === 0 && (
+                                <p className="text-xs text-center py-4" style={{ color: 'var(--color-text-subtle)' }}>No users found</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
