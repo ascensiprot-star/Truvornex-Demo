@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/lib/ThemeContext';
+import { useSimon } from '@/lib/SimonContext';
 import { useAuthModal } from '@/lib/AuthModalContext';
 import {
     Search, Sparkles, MapPin, ChevronRight, Star,
@@ -25,12 +26,38 @@ const SIMON_INSIGHTS = [
 
 // ── Simon Proactive Widget ─────────────────────────────────────────────────────
 
+const SIMON_TYPE_META = {
+    demand:     { icon: Activity,    color: '#22c55e' },
+    reminder:   { icon: Bell,        color: '#7c6fcd' },
+    bundle:     { icon: TrendingUp,  color: '#06b6d4' },
+    trust:      { icon: Shield,      color: '#f43f5e' },
+    suggestion: { icon: Lightbulb,   color: '#f59e0b' },
+};
+
 function SimonInsightsWidget() {
     const navigate = useNavigate();
+    const { insights: liveInsights, ready } = useSimon();
     const [idx, setIdx]           = useState(0);
     const [dismissed, setDismiss] = useState(false);
     const [animating, setAnimating] = useState(false);
     const intervalRef = useRef(null);
+    const lenRef = useRef(SIMON_INSIGHTS.length);
+
+    // Live insights mapped to display format; fall back to static while loading
+    const INSIGHTS = ready && liveInsights.length > 0
+        ? liveInsights.map(i => ({
+            icon:  SIMON_TYPE_META[i.type]?.icon  || Activity,
+            color: SIMON_TYPE_META[i.type]?.color || '#7c6fcd',
+            tag:   i.tag,
+            msg:   i.message,
+        }))
+        : SIMON_INSIGHTS;
+
+    // Keep lenRef current so the interval closure stays accurate
+    useEffect(() => { lenRef.current = INSIGHTS.length; }, [INSIGHTS.length]);
+
+    // Reset carousel position when live data arrives
+    useEffect(() => { if (ready) setIdx(0); }, [ready]);
 
     const rotate = (next) => {
         setAnimating(true);
@@ -42,7 +69,7 @@ function SimonInsightsWidget() {
 
     useEffect(() => {
         intervalRef.current = setInterval(() => {
-            setIdx(prev => { const n = (prev + 1) % SIMON_INSIGHTS.length; rotate(n); return prev; });
+            setIdx(prev => { const n = (prev + 1) % lenRef.current; rotate(n); return prev; });
         }, 5000);
         return () => clearInterval(intervalRef.current);
     }, []);
@@ -51,13 +78,14 @@ function SimonInsightsWidget() {
         clearInterval(intervalRef.current);
         rotate(n);
         intervalRef.current = setInterval(() => {
-            setIdx(prev => { const n2 = (prev + 1) % SIMON_INSIGHTS.length; rotate(n2); return prev; });
+            setIdx(prev => { const n2 = (prev + 1) % lenRef.current; rotate(n2); return prev; });
         }, 5000);
     };
 
     if (dismissed) return null;
 
-    const ins = SIMON_INSIGHTS[idx];
+    const safeIdx = idx % INSIGHTS.length;
+    const ins = INSIGHTS[safeIdx];
     const Icon = ins.icon;
 
     return (
@@ -110,12 +138,12 @@ function SimonInsightsWidget() {
 
             {/* dot nav */}
             <div className="flex items-center justify-center gap-1.5 pb-2.5">
-                {SIMON_INSIGHTS.map((_, i) => (
+                {INSIGHTS.map((_, i) => (
                     <button key={i} onClick={() => goTo(i)}
                         style={{
-                            width: i === idx ? 14 : 5, height: 5, borderRadius: 99, border: 'none', cursor: 'pointer',
+                            width: i === safeIdx ? 14 : 5, height: 5, borderRadius: 99, border: 'none', cursor: 'pointer',
                             transition: 'width 0.25s ease, background-color 0.2s',
-                            backgroundColor: i === idx ? '#7c6fcd' : 'var(--color-border-strong)',
+                            backgroundColor: i === safeIdx ? '#7c6fcd' : 'var(--color-border-strong)',
                             padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
                         }}
                     />

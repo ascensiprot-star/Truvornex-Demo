@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import SimonZonePulse from '@/components/simon/SimonZonePulse';
 import { useTheme } from '@/lib/ThemeContext';
 import { useAuth } from '@/lib/AuthContext';
 import { useAuthModal } from '@/lib/AuthModalContext';
@@ -160,6 +161,9 @@ export default function CustomerLayout() {
                         </button>
                     </div>
                 )}
+
+                {/* Simon Zone Pulse */}
+                {!slim && <SimonZonePulse />}
 
                 {/* Nav */}
                 <nav className="flex-1 overflow-y-auto py-2 no-scrollbar" style={{ padding: slim ? '8px 6px' : '8px 6px' }}>

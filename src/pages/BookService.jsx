@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import SimonBookingHint from '@/components/simon/SimonBookingHint';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
@@ -186,6 +187,14 @@ export default function BookService() {
                         })}
                     </div>
                     <p className="text-xs text-zinc-400 mt-2">Grayed slots are already booked</p>
+                    {slot && date && (
+                        <SimonBookingHint
+                            serviceType={service?.category_slug || service?.name || 'service'}
+                            date={date.toISOString().split('T')[0]}
+                            timeSlot={slot}
+                            price={totalPrice}
+                        />
+                    )}
                     <div className="flex gap-3 mt-5">
                         <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setStep(1)}>Back</Button>
                         <Button className="flex-1 rounded-xl" disabled={!slot} onClick={() => setStep(3)}>

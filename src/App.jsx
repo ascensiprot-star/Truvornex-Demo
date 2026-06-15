@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Login from './pages/Login';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { SimonProvider } from '@/lib/SimonContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { AuthModalProvider } from '@/lib/AuthModalContext';
 import AuthModal from '@/components/AuthModal';
@@ -219,13 +220,15 @@ function App() {
             <AuthProvider>
                 <AuthModalProvider>
                     <QueryClientProvider client={queryClientInstance}>
-                        {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
-                        {splashDone && !introDone && <IntroFlow onComplete={handleIntroComplete} />}
-                        <Router>
-                            <AuthenticatedApp />
-                            <AuthModal />
-                        </Router>
-                        <Toaster />
+                        <SimonProvider>
+                            {!splashDone && <SplashScreen onComplete={handleSplashComplete} />}
+                            {splashDone && !introDone && <IntroFlow onComplete={handleIntroComplete} />}
+                            <Router>
+                                <AuthenticatedApp />
+                                <AuthModal />
+                            </Router>
+                            <Toaster />
+                        </SimonProvider>
                     </QueryClientProvider>
                 </AuthModalProvider>
             </AuthProvider>
