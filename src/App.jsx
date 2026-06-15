@@ -90,6 +90,9 @@ import SkillSwap from './pages/neighborhood/SkillSwap';
 import Jury from './pages/neighborhood/Jury';
 import TrustPassport from './pages/TrustPassport';
 import LabView from './pages/admin/LabView';
+import EconomicIdentity from './pages/EconomicIdentity';
+import ZoneEconomy from './pages/ZoneEconomy';
+import CareBridge from './pages/CareBridge';
 
 const AuthenticatedApp = () => {
     const { isLoadingAuth, authError } = useAuth();
@@ -156,8 +159,11 @@ const AuthenticatedApp = () => {
                 <Route path="/events" element={<Events />} />
                 <Route path="/transport" element={<Transport />} />
                 <Route path="/community" element={<Community />} />
+                <Route path="/care-bridge" element={<CareBridge />} />
+                <Route path="/zone-economy" element={<ZoneEconomy />} />
             </Route>
             <Route element={<ProviderLayout />}>
+                <Route path="/provider/identity" element={<EconomicIdentity />} />
                 <Route path="/provider" element={<ProviderDashboardPage />} />
                 <Route path="/provider/services" element={<ManageServices />} />
                 <Route path="/provider/bookings" element={<ProviderBookings />} />

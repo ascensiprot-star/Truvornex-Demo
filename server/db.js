@@ -278,3 +278,138 @@ export async function ensureWallet(userId) {
         [userId]
     );
 }
+
+export async function initExtendedTables() {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS skill_verifications (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                provider_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                category TEXT NOT NULL,
+                verified_count INT NOT NULL DEFAULT 0,
+                last_active_at TIMESTAMPTZ,
+                first_verified_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(provider_id, category)
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS income_snapshots (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                period TEXT NOT NULL CHECK (period IN ('30d','90d','365d')),
+                amount_pkr NUMERIC(14,2) NOT NULL DEFAULT 0,
+                transaction_count INT NOT NULL DEFAULT 0,
+                computed_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(user_id, period)
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS demand_forecasts (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                zone_id TEXT NOT NULL,
+                area TEXT NOT NULL DEFAULT 'your area',
+                category TEXT NOT NULL,
+                forecast_hour TIMESTAMPTZ NOT NULL,
+                demand_index INT NOT NULL DEFAULT 50 CHECK (demand_index BETWEEN 0 AND 100),
+                estimated_price_pkr NUMERIC(10,2),
+                supply_shortfall BOOLEAN DEFAULT FALSE,
+                living_wage_floor_pkr NUMERIC(10,2) DEFAULT 800,
+                generated_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(zone_id, category, forecast_hour)
+            )
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_demand_forecasts_zone_time
+            ON demand_forecasts(zone_id, forecast_hour)
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS idle_slots (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                provider_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                starts_at TIMESTAMPTZ NOT NULL,
+                ends_at TIMESTAMPTZ NOT NULL,
+                categories TEXT[] NOT NULL DEFAULT '{}',
+                zone_id TEXT,
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','matched','expired','cancelled')),
+                matched_micro_job_id UUID,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS micro_jobs (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                zone_id TEXT NOT NULL,
+                area TEXT NOT NULL DEFAULT 'your area',
+                category TEXT NOT NULL,
+                title TEXT NOT NULL,
+                description TEXT,
+                estimated_duration_hours NUMERIC(4,1) NOT NULL DEFAULT 1,
+                price_pkr NUMERIC(10,2) NOT NULL,
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','assigned','completed','cancelled')),
+                provider_id UUID REFERENCES users(id),
+                customer_id UUID REFERENCES users(id),
+                scheduled_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS care_bridge_orders (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                sender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                recipient_name TEXT NOT NULL,
+                recipient_phone TEXT NOT NULL,
+                recipient_city TEXT NOT NULL DEFAULT 'Hyderabad',
+                recipient_country TEXT NOT NULL DEFAULT 'PK',
+                services JSONB NOT NULL DEFAULT '[]',
+                notes TEXT,
+                total_pkr NUMERIC(12,2) NOT NULL,
+                currency_sent TEXT NOT NULL DEFAULT 'EUR',
+                amount_sent NUMERIC(12,4) NOT NULL,
+                exchange_rate NUMERIC(10,4) NOT NULL DEFAULT 310,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','scheduled','in_progress','completed','proof_sent','cancelled')),
+                proof_photo_url TEXT,
+                proof_notes TEXT,
+                proof_submitted_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_care_bridge_sender ON care_bridge_orders(sender_id, created_at DESC)
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS savings_goals (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                title TEXT NOT NULL,
+                target_pkr NUMERIC(12,2) NOT NULL,
+                saved_pkr NUMERIC(12,2) NOT NULL DEFAULT 0,
+                deadline DATE,
+                category TEXT,
+                simon_routing_active BOOLEAN DEFAULT TRUE,
+                status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','completed','paused','cancelled')),
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+}

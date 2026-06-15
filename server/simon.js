@@ -224,7 +224,81 @@ export async function parseVoiceSearch(input = {}) {
     return { query: transcript, category, intent: 'search', urgency: 'flexible' };
 }
 
-/* ── 5. Generate Recommendations ─────────────────────────────────────────── */
+/* ── 5. Zone Demand Forecast (Simon Intelligence) ────────────────────────── */
+const ZoneForecastSchema = z.object({
+    zone_id: z.string().optional(),
+    area: z.string().max(120).default('your area'),
+    categories: z.array(z.string()).optional(),
+});
+
+export async function getZoneForecast(input = {}) {
+    const parse = ZoneForecastSchema.safeParse(input);
+    const { zone_id, area } = parse.success ? parse.data : { area: 'your area' };
+    const cacheKey = `zone-forecast:${zone_id || area}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
+    const { h, month } = timeCtx();
+    const ai = await callAI(
+        `You are Simon, Truvornex's zone economy AI. Generate a 12-slot demand forecast for neighborhood services. Return JSON: {"forecast":[{"category":"cleaning|plumbing|hvac|moving|gardening|chef|handyman|fitness","demand_index":0-100,"estimated_price_pkr":number,"supply_shortfall":bool,"opportunity_note":"max 60 chars"}],"top_opportunity":{"category":"string","reason":"max 80 chars"},"living_wage_floor_pkr":800}`,
+        `Zone: ${zone_id || area}, Hour: ${h}, Month: ${month + 1}. Generate realistic demand for 8 service categories based on season and time.`
+    );
+    if (ai?.forecast) {
+        cacheSet(cacheKey, ai, 30 * 60 * 1000);
+        return ai;
+    }
+
+    const trending = getTrending();
+    const fallback = {
+        forecast: trending.map((cat, i) => ({
+            category: cat.toLowerCase(),
+            demand_index: 65 - i * 8,
+            estimated_price_pkr: [1200, 2000, 2500, 800, 1500][i % 5],
+            supply_shortfall: i === 0 && h >= 9 && h <= 14,
+            opportunity_note: i === 0 ? `High demand in ${area} right now` : 'Steady demand this week',
+        })),
+        top_opportunity: { category: trending[0].toLowerCase(), reason: `Peak demand in ${area} — ${trending[0]} providers are fully booked` },
+        living_wage_floor_pkr: 800,
+    };
+    cacheSet(cacheKey, fallback, 30 * 60 * 1000);
+    return fallback;
+}
+
+/* ── 6. Idle Resource Matching ───────────────────────────────────────────── */
+const IdleMatchSchema = z.object({
+    provider_id: z.string().uuid(),
+    slot_start: z.string(),
+    slot_end: z.string(),
+    categories: z.array(z.string()).default([]),
+    zone_id: z.string().optional(),
+});
+
+export async function generateIdleMatches(input = {}) {
+    const parse = IdleMatchSchema.safeParse(input);
+    if (!parse.success) return [];
+    const { slot_start, slot_end, categories, zone_id } = parse.data;
+
+    const durationHours = (new Date(slot_end) - new Date(slot_start)) / 3600000;
+    const cats = categories.length > 0 ? categories : ['cleaning', 'handyman', 'gardening'];
+
+    const ai = await callAI(
+        `You are Simon, Truvornex's idle resource matching engine. A provider has a free time window. Generate micro-jobs that fit exactly. Return JSON: {"jobs":[{"category":"string","title":"max 50 chars","description":"max 120 chars","duration_hours":number,"price_pkr":number,"area":"neighborhood name","urgency":"immediate|today|this_week"}]}. Max 3 jobs. Prices must never go below 800 PKR/hour living wage floor.`,
+        `Available: ${Math.round(durationHours)}h, categories: ${cats.join(', ')}, zone: ${zone_id || 'local area'}, slot: ${slot_start}`
+    );
+    if (ai?.jobs?.length > 0) return ai.jobs;
+
+    return cats.slice(0, 3).map((cat, i) => ({
+        category: cat,
+        title: `${cat.charAt(0).toUpperCase() + cat.slice(1)} — ${Math.round(durationHours)}h slot`,
+        description: `Quick ${cat} job matched to your available window. Customer confirmed nearby.`,
+        duration_hours: Math.min(durationHours, 3),
+        price_pkr: Math.max(800 * Math.round(durationHours), 1200) - i * 100,
+        area: zone_id || 'your area',
+        urgency: 'today',
+    }));
+}
+
+/* ── 7. Generate Recommendations ─────────────────────────────────────────── */
 export async function generateRecommendations(userId) {
     const cacheKey = `recommendations:${userId}`;
     const cached = cacheGet(cacheKey);

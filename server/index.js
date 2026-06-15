@@ -7,9 +7,12 @@ import pg from 'pg';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import * as simon from './simon.js';
-import { initNewTables, writeAuditLog, createNotification } from './db.js';
+import { initNewTables, initExtendedTables, writeAuditLog, createNotification } from './db.js';
 import financialRouter from './financial.js';
 import notificationsRouter, { broadcastNotification } from './notifications-routes.js';
+import { buildCredential, verifyCredential, recordSkillActivity, refreshIncomeSnapshots } from './identity.js';
+import zoneRouter from './zone-economy.js';
+import careBridgeRouter from './care-bridge.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -66,6 +69,7 @@ async function initDb() {
             )
         `);
         await initNewTables();
+        await initExtendedTables();
         console.log('Database ready');
     } catch (err) {
         console.error('DB init error:', err.message);
@@ -171,6 +175,61 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Dat
 
 app.use('/api/financial', requireAuth, financialRouter);
 app.use('/api/notifications', requireAuth, notificationsRouter);
+app.use('/api/zones', zoneRouter);
+app.get('/api/care-bridge/meta/rates', (req, res) => {
+    res.json({
+        base_currency: 'PKR',
+        rates: { EUR: 310, USD: 278, GBP: 355, AED: 75, CAD: 205, AUD: 182 },
+        note: 'Reference rates. Actual rates locked at order placement.',
+        updated_at: new Date().toISOString(),
+    });
+});
+app.use('/api/care-bridge', requireAuth, careBridgeRouter);
+
+/* ── Economic Identity Protocol (TIP-v1) ────────────────────────────────── */
+
+app.get('/api/identity/me', requireAuth, async (req, res) => {
+    try {
+        const credential = await buildCredential(req.session.user.id);
+        if (!credential) return res.status(404).json({ error: 'Identity not found or user is not a provider' });
+        res.json({ credential });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/identity/me/verify', requireAuth, async (req, res) => {
+    try {
+        const credential = await buildCredential(req.session.user.id);
+        if (!credential) return res.status(404).json({ error: 'Not found' });
+        res.json(verifyCredential(credential));
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/identity/:userId', async (req, res) => {
+    try {
+        const credential = await buildCredential(req.params.userId);
+        if (!credential) return res.status(404).json({ error: 'Provider identity not found' });
+        const { credential_hash, ...publicFields } = credential;
+        res.json({ credential: { ...publicFields, verification_endpoint: `/api/identity/${req.params.userId}/verify` } });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/identity/:userId/verify', async (req, res) => {
+    try {
+        const credential = await buildCredential(req.params.userId);
+        if (!credential) return res.status(404).json({ valid: false, reason: 'not_found' });
+        res.json(verifyCredential(credential));
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/identity/skill-activity', requireAuth, async (req, res) => {
+    const { category } = req.body;
+    if (!category) return res.status(400).json({ error: 'category required' });
+    try {
+        await recordSkillActivity(req.session.user.id, category);
+        await refreshIncomeSnapshots(req.session.user.id);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
 
 /* ── Neighborhood / Community API routes ─────────────────────── */
 
@@ -722,6 +781,15 @@ app.post('/api/simon/voice-search', async (req, res) => {
         res.json(result);
     } catch (err) {
         res.json({ query: '', category: null, intent: 'search', urgency: 'flexible' });
+    }
+});
+
+app.post('/api/simon/zone-forecast', async (req, res) => {
+    try {
+        const result = await simon.getZoneForecast(req.body || {});
+        res.json(result);
+    } catch (err) {
+        res.json({ forecast: [], top_opportunity: null, living_wage_floor_pkr: 800 });
     }
 });
 
