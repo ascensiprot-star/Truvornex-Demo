@@ -3,12 +3,12 @@ import { format, startOfWeek, addDays, addWeeks, isSameDay } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const STATUS_STYLES = {
-    pending: 'bg-amber-100 border-amber-300 text-amber-900',
-    confirmed: 'bg-blue-100 border-blue-300 text-blue-900',
+    pending:     'bg-amber-100 border-amber-300 text-amber-900',
+    confirmed:   'bg-blue-100 border-blue-300 text-blue-900',
     in_progress: 'bg-violet-100 border-violet-300 text-violet-900',
-    completed: 'bg-emerald-100 border-emerald-300 text-emerald-900',
-    cancelled: 'bg-zinc-100 border-zinc-200 text-zinc-400 opacity-60',
-    no_show: 'bg-red-100 border-red-300 text-red-800',
+    completed:   'bg-emerald-100 border-emerald-300 text-emerald-900',
+    cancelled:   'bg-zinc-100 border-zinc-200 text-zinc-400 opacity-60',
+    no_show:     'bg-red-100 border-red-300 text-red-800',
 };
 
 function parseHour(slot) {
@@ -19,7 +19,7 @@ function parseHour(slot) {
 
 const START_HOUR = 8;
 const HOUR_HEIGHT = 56;
-const VISIBLE_HOURS = 13; // 8am - 9pm
+const VISIBLE_HOURS = 13;
 
 export default function WeekCalendar({ bookings = [], onBookingClick }) {
     const [weekOffset, setWeekOffset] = useState(0);
@@ -36,41 +36,58 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
     const fmtHour = (h) => h > 12 ? `${h - 12}pm` : h === 12 ? '12pm' : `${h}am`;
 
     return (
-        <div className="bg-white rounded-2xl border border-zinc-100 overflow-hidden shadow-premium">
+        <div className="rounded-2xl overflow-hidden shadow-premium"
+            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             {/* Navigation header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100 bg-zinc-50/50">
+            <div className="flex items-center justify-between px-5 py-3.5"
+                style={{ borderBottom: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-high)' }}>
                 <div className="flex items-center gap-1.5">
                     <button onClick={() => setWeekOffset(o => o - 1)}
-                        className="h-8 w-8 rounded-xl hover:bg-zinc-200 flex items-center justify-center transition-colors">
+                        className="h-8 w-8 rounded-xl flex items-center justify-center transition-colors"
+                        style={{ color: 'var(--color-text-muted)' }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-highest)')}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
                         <ChevronLeft className="h-4 w-4" />
                     </button>
-                    <span className="text-sm font-bold px-2">
+                    <span className="text-sm font-bold px-2" style={{ color: 'var(--color-primary)' }}>
                         {format(weekStart, 'MMM d')} – {format(addDays(weekStart, 6), 'MMM d, yyyy')}
                     </span>
                     <button onClick={() => setWeekOffset(o => o + 1)}
-                        className="h-8 w-8 rounded-xl hover:bg-zinc-200 flex items-center justify-center transition-colors">
+                        className="h-8 w-8 rounded-xl flex items-center justify-center transition-colors"
+                        style={{ color: 'var(--color-text-muted)' }}
+                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-highest)')}
+                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
                         <ChevronRight className="h-4 w-4" />
                     </button>
                 </div>
                 {weekOffset !== 0 && (
                     <button onClick={() => setWeekOffset(0)}
-                        className="text-xs font-semibold text-zinc-500 hover:text-zinc-900 px-3 h-7 rounded-lg hover:bg-zinc-100 transition-colors">
+                        className="text-xs font-semibold px-3 h-7 rounded-lg transition-colors"
+                        style={{ color: 'var(--color-text-muted)', fontFamily: 'inherit', border: 'none', backgroundColor: 'transparent', cursor: 'pointer' }}
+                        onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--color-surface-highest)'; e.currentTarget.style.color = 'var(--color-primary)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}>
                         Today
                     </button>
                 )}
             </div>
 
             {/* Day headers */}
-            <div className="grid border-b border-zinc-100" style={{ gridTemplateColumns: '52px repeat(7, 1fr)' }}>
+            <div className="grid" style={{ gridTemplateColumns: '52px repeat(7, 1fr)', borderBottom: '1px solid var(--color-border)' }}>
                 <div className="h-11" />
                 {days.map((day, i) => {
                     const isToday = isSameDay(day, today);
                     return (
-                        <div key={i} className={`h-11 flex flex-col items-center justify-center border-l border-zinc-100 ${isToday ? 'bg-zinc-900' : ''}`}>
-                            <span className={`text-[9px] font-bold uppercase tracking-widest ${isToday ? 'text-zinc-400' : 'text-zinc-400'}`}>
+                        <div key={i} className="h-11 flex flex-col items-center justify-center"
+                            style={{
+                                borderLeft: '1px solid var(--color-border)',
+                                backgroundColor: isToday ? 'var(--color-primary)' : 'transparent',
+                            }}>
+                            <span className="text-[9px] font-bold uppercase tracking-widest"
+                                style={{ color: isToday ? 'var(--color-on-primary)' : 'var(--color-text-subtle)' }}>
                                 {format(day, 'EEE')}
                             </span>
-                            <span className={`text-sm font-black ${isToday ? 'text-white' : 'text-zinc-700'}`}>
+                            <span className="text-sm font-black"
+                                style={{ color: isToday ? 'var(--color-on-primary)' : 'var(--color-primary)' }}>
                                 {format(day, 'd')}
                             </span>
                         </div>
@@ -85,7 +102,7 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                     <div>
                         {hours.map(h => (
                             <div key={h} style={{ height: HOUR_HEIGHT }} className="flex items-start justify-end pr-2.5 pt-1.5">
-                                <span className="text-[10px] text-zinc-400 font-medium">{fmtHour(h)}</span>
+                                <span className="text-[10px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>{fmtHour(h)}</span>
                             </div>
                         ))}
                     </div>
@@ -94,10 +111,9 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                     {days.map((day, di) => {
                         const dayBookings = getBookingsForDay(day);
                         return (
-                            <div key={di} className="border-l border-zinc-100 relative">
+                            <div key={di} className="relative" style={{ borderLeft: '1px solid var(--color-border)' }}>
                                 {hours.map(h => (
-                                    <div key={h} style={{ height: HOUR_HEIGHT }}
-                                        className="border-b border-zinc-50 hover:bg-zinc-50/50 transition-colors" />
+                                    <div key={h} style={{ height: HOUR_HEIGHT, borderBottom: '1px solid var(--color-border-light, var(--color-border))' }} />
                                 ))}
                                 {dayBookings.map(b => {
                                     const startH = parseHour(b.time_slot);
@@ -126,11 +142,12 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
             </div>
 
             {/* Legend */}
-            <div className="px-5 py-3 border-t border-zinc-100 flex items-center gap-3 flex-wrap">
+            <div className="px-5 py-3 flex items-center gap-3 flex-wrap"
+                style={{ borderTop: '1px solid var(--color-border)' }}>
                 {Object.entries(STATUS_STYLES).map(([status, cls]) => (
                     <div key={status} className="flex items-center gap-1.5">
                         <div className={`h-3 w-3 rounded border ${cls}`} />
-                        <span className="text-[10px] text-zinc-500 capitalize">{status.replace('_', ' ')}</span>
+                        <span className="text-[10px] capitalize" style={{ color: 'var(--color-text-subtle)' }}>{status.replace('_', ' ')}</span>
                     </div>
                 ))}
             </div>

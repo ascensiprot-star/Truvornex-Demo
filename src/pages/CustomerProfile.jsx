@@ -4,6 +4,9 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { LogOut, Camera, User, Mail, Phone, MapPin, Edit3 } from 'lucide-react';
 
+const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--color-text-subtle)' };
+const fieldStyle = { height: 44, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 12, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', fontSize: 13, color: 'var(--color-text-muted)' };
+
 export default function CustomerProfile() {
     const [user, setUser] = useState(null);
     const [form, setForm] = useState({});
@@ -12,8 +15,7 @@ export default function CustomerProfile() {
     const [editMode, setEditMode] = useState(false);
     const fileRef = useRef();
 
-    useEffect(() => {
-    }, []);
+    useEffect(() => {}, []);
 
     const save = async () => {
         setSaving(true);
@@ -23,7 +25,7 @@ export default function CustomerProfile() {
         setEditMode(false);
     };
 
-    const uploadAvatar = async (file) => {
+    const uploadAvatar = async () => {
         setUploadingAvatar(true);
         toast.error('Image upload requires Supabase storage to be configured.');
         setUploadingAvatar(false);
@@ -31,8 +33,7 @@ export default function CustomerProfile() {
 
     if (!user) return (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
-                style={{ backgroundColor: 'var(--color-surface-high)' }}>
+            <div className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                 <User className="h-8 w-8" style={{ color: 'var(--color-text-subtle)' }} />
             </div>
             <h2 className="text-lg font-bold mb-2" style={{ color: 'var(--color-primary)' }}>Sign in to view your profile</h2>
@@ -44,36 +45,34 @@ export default function CustomerProfile() {
         <div className="max-w-md mx-auto pb-24 md:pb-8">
             {/* Profile header card */}
             <div className="card-premium p-6 mb-4 text-center">
-                {/* Avatar */}
                 <div className="relative inline-block mb-4">
-                    <div
-                        className="h-24 w-24 rounded-full bg-zinc-100 overflow-hidden cursor-pointer border-4 border-white shadow-float mx-auto group"
-                        onClick={() => fileRef.current.click()}
-                    >
+                    <div className="h-24 w-24 rounded-full overflow-hidden cursor-pointer mx-auto group relative"
+                        style={{ border: '3px solid var(--color-surface)', backgroundColor: 'var(--color-surface-high)', boxShadow: 'var(--shadow-float)' }}
+                        onClick={() => fileRef.current.click()}>
                         {form.avatar_url ? (
                             <img src={form.avatar_url} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-zinc-100">
-                                <User className="h-10 w-10 text-zinc-400" />
+                            <div className="w-full h-full flex items-center justify-center">
+                                <User className="h-10 w-10" style={{ color: 'var(--color-text-subtle)' }} />
                             </div>
                         )}
-                        <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
                             {uploadingAvatar
                                 ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 : <Camera className="h-5 w-5 text-white" />}
                         </div>
                     </div>
-                    <button
-                        onClick={() => fileRef.current.click()}
-                        className="absolute bottom-0 right-0 h-7 w-7 rounded-full bg-zinc-900 border-2 border-white flex items-center justify-center shadow-sm"
-                    >
-                        <Camera className="h-3.5 w-3.5 text-white" />
+                    <button onClick={() => fileRef.current.click()}
+                        className="absolute bottom-0 right-0 h-7 w-7 rounded-full flex items-center justify-center shadow-sm"
+                        style={{ backgroundColor: 'var(--color-primary)', border: '2px solid var(--color-surface)', color: 'var(--color-on-primary)' }}>
+                        <Camera className="h-3.5 w-3.5" />
                     </button>
                     <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadAvatar(e.target.files[0])} />
                 </div>
 
-                <h1 className="font-inter font-black text-xl">{user.full_name || 'Your Name'}</h1>
-                <p className="text-zinc-400 text-sm mt-0.5">{user.email}</p>
+                <h1 className="font-black text-xl" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>{user.full_name || 'Your Name'}</h1>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{user.email}</p>
 
                 {!editMode && (
                     <Button variant="outline" size="sm" className="mt-3 rounded-xl gap-1.5" onClick={() => setEditMode(true)}>
@@ -82,80 +81,61 @@ export default function CustomerProfile() {
                 )}
             </div>
 
-            {/* Info */}
-            <div className="card-premium p-6 mb-4">
-                <h2 className="font-bold text-base mb-4">Contact Information</h2>
-                <div className="space-y-4">
-                    <div>
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                            <User className="h-3.5 w-3.5" /> Full Name
-                        </label>
-                        <div className="h-11 px-3 flex items-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-400 text-sm">
-                            {user.full_name || 'Not set'}
-                        </div>
-                        <p className="text-xs text-zinc-400 mt-1">Name is managed by your account</p>
-                    </div>
+            {/* Contact info */}
+            <div className="card-premium p-6 mb-4 space-y-4">
+                <h2 className="font-bold text-sm" style={{ color: 'var(--color-primary)' }}>Contact Information</h2>
 
-                    <div>
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                            <Mail className="h-3.5 w-3.5" /> Email
-                        </label>
-                        <div className="h-11 px-3 flex items-center rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-400 text-sm">
-                            {user.email}
-                        </div>
+                {[
+                    { icon: User,   label: 'Full Name',    value: user.full_name, note: 'Name is managed by your account' },
+                    { icon: Mail,   label: 'Email',        value: user.email },
+                ].map(({ icon: Icon, label, value, note }) => (
+                    <div key={label}>
+                        <label style={labelStyle}><Icon className="h-3.5 w-3.5" />{label}</label>
+                        <div style={fieldStyle}>{value || 'Not set'}</div>
+                        {note && <p className="text-xs mt-1" style={{ color: 'var(--color-text-subtle)' }}>{note}</p>}
                     </div>
+                ))}
 
-                    <div>
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                            <Phone className="h-3.5 w-3.5" /> Phone Number
-                        </label>
-                        {editMode ? (
-                            <Input
-                                type="tel"
-                                value={form.phone}
-                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                                placeholder="+1 (555) 000-0000"
-                                className="h-11 rounded-xl"
-                            />
-                        ) : (
-                            <div className="h-11 px-3 flex items-center rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-700">
-                                {form.phone || <span className="text-zinc-400">Not set — tap Edit Profile</span>}
-                            </div>
-                        )}
-                    </div>
+                {/* Phone — editable */}
+                <div>
+                    <label style={labelStyle}><Phone className="h-3.5 w-3.5" />Phone Number</label>
+                    {editMode ? (
+                        <Input type="tel" value={form.phone || ''} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                            placeholder="+1 (555) 000-0000" className="h-11 rounded-xl" />
+                    ) : (
+                        <div style={fieldStyle}>{form.phone || <span style={{ color: 'var(--color-text-subtle)' }}>Not set — tap Edit Profile</span>}</div>
+                    )}
+                </div>
 
-                    <div>
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5 mb-1.5">
-                            <MapPin className="h-3.5 w-3.5" /> Address
-                        </label>
-                        {editMode ? (
-                            <Input
-                                value={form.address}
-                                onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                                placeholder="Your home address"
-                                className="h-11 rounded-xl"
-                            />
-                        ) : (
-                            <div className="h-11 px-3 flex items-center rounded-xl bg-zinc-50 border border-zinc-200 text-sm text-zinc-700">
-                                {form.address || <span className="text-zinc-400">Not set — tap Edit Profile</span>}
-                            </div>
-                        )}
-                    </div>
+                {/* Address — editable */}
+                <div>
+                    <label style={labelStyle}><MapPin className="h-3.5 w-3.5" />Address</label>
+                    {editMode ? (
+                        <Input value={form.address || ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                            placeholder="Your home address" className="h-11 rounded-xl" />
+                    ) : (
+                        <div style={fieldStyle}>{form.address || <span style={{ color: 'var(--color-text-subtle)' }}>Not set — tap Edit Profile</span>}</div>
+                    )}
                 </div>
 
                 {editMode && (
-                    <div className="flex gap-3 mt-5">
+                    <div className="flex gap-3 pt-1">
                         <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setEditMode(false)}>Cancel</Button>
-                        <Button className="flex-1 h-11 rounded-xl bg-zinc-900 hover:bg-zinc-800" onClick={save} disabled={saving}>
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </Button>
+                        <button className="flex-1 h-11 rounded-xl text-sm font-semibold"
+                            style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: saving ? 'wait' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}
+                            onClick={save} disabled={saving}
+                            onMouseEnter={e => { if (!saving) e.currentTarget.style.opacity = '0.88'; }}
+                            onMouseLeave={e => { if (!saving) e.currentTarget.style.opacity = '1'; }}>
+                            {saving ? 'Saving…' : 'Save Changes'}
+                        </button>
                     </div>
                 )}
             </div>
 
-            <Button variant="outline" className="w-full mt-4 rounded-xl text-red-600 border-red-200 hover:bg-red-50">
-                <LogOut className="h-4 w-4 mr-2" /> Sign Out
-            </Button>
+            <button className="w-full mt-4 rounded-xl h-10 text-sm font-medium flex items-center justify-center gap-2"
+                style={{ color: 'var(--color-error)', backgroundColor: 'var(--color-error-bg)', border: '1px solid rgba(252,165,165,0.2)', cursor: 'pointer', fontFamily: 'inherit' }}>
+                <LogOut className="h-4 w-4" /> Sign Out
+            </button>
         </div>
     );
 }

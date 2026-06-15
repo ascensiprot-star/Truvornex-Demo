@@ -199,6 +199,49 @@
     [role="tablist"] { background-color: var(--color-surface-low) !important; }
 }
 
+/* ── Global dark-mode zinc override ───────────────────────────── */
+/* Fixes all pages that use bare text-zinc-* without dark: variants.
+   Selectors use specificity 0-2-1 to beat Tailwind utilities (0-1-0)
+   and still let intentional dark:text-white / dark:text-zinc-* classes
+   on Community-style inverted buttons work (different escaped class names). */
+html.dark .text-zinc-900 { color: var(--color-primary); }
+html.dark .text-zinc-800 { color: var(--color-text); }
+html.dark .text-zinc-700 { color: var(--color-text); }
+html.dark .text-zinc-600 { color: var(--color-text-muted); }
+html.dark .text-zinc-500 { color: var(--color-text-muted); }
+html.dark .text-zinc-400 { color: var(--color-text-subtle); }
+html.dark .text-zinc-300 { color: var(--color-text-subtle); }
+html.dark .text-zinc-200 { color: var(--color-border-strong); }
+html.dark .text-gray-900 { color: var(--color-primary); }
+html.dark .text-gray-800 { color: var(--color-text); }
+html.dark .text-gray-700 { color: var(--color-text); }
+html.dark .text-gray-600 { color: var(--color-text-muted); }
+html.dark .text-gray-500 { color: var(--color-text-muted); }
+html.dark .text-gray-400 { color: var(--color-text-subtle); }
+
+/* Light bg fixes in dark mode — scoped to card contexts so they don't
+   affect intentional inverted sections (Community New Post button, etc.) */
+html.dark .card-premium .bg-zinc-100,
+html.dark .card-premium .bg-zinc-50,
+html.dark .card-premium .bg-white,
+html.dark .card .bg-zinc-100,
+html.dark .card .bg-zinc-50,
+html.dark .card .bg-white { background-color: var(--color-surface-high); }
+html.dark .card-premium .border-zinc-100,
+html.dark .card-premium .border-zinc-200,
+html.dark .card .border-zinc-100,
+html.dark .card .border-zinc-200 { border-color: var(--color-border); }
+
+/* Standalone white cards that forgot dark: variant — fix bg-white rounded-2xl/rounded-xl
+   used as card-style containers. OwnerAdmin's active tab uses rounded-lg on bg-zinc-800
+   containers (not this pattern) so it stays unaffected. */
+html.dark .bg-white.rounded-2xl,
+html.dark .bg-white.rounded-xl { background-color: var(--color-surface) !important; }
+html.dark .border-zinc-100.rounded-2xl,
+html.dark .border-zinc-200.rounded-2xl,
+html.dark .border-zinc-100.rounded-xl,
+html.dark .border-zinc-200.rounded-xl { border-color: var(--color-border) !important; }
+
 /* ── Components ───────────────────────────────────────────────── */
 @layer components {
 

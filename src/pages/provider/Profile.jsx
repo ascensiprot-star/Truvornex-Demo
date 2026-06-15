@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
-import { LogOut, Camera, MapPin, Navigation, CheckCircle, Image, X } from 'lucide-react';
+import { LogOut, Camera, MapPin, Navigation, CheckCircle, Image, X, Info } from 'lucide-react';
 
 const ALL_ICONS = ['scissors', 'stethoscope', 'wrench', 'zap', 'book', 'truck', 'dumbbell', 'utensils', 'shopping', 'droplets', 'paintbrush', 'car'];
+
+const labelStyle = { fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', display: 'block', marginBottom: 6 };
+const sectionTitle = { fontWeight: 700, fontSize: 14, color: 'var(--color-primary)', marginBottom: 4 };
+
+const btnBase = {
+    border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600,
+    transition: 'opacity 0.15s', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 6,
+};
 
 export default function ProviderProfile() {
     const [provider, setProvider] = useState(null);
@@ -35,10 +42,8 @@ export default function ProviderProfile() {
         set('category_slugs', current.includes(slug) ? current.filter(s => s !== slug) : [...current, slug]);
     };
 
-    const uploadImage = async (file, field, setUploading) => {
-        setUploading(true);
+    const uploadImage = async () => {
         toast.error('Image upload requires Supabase storage to be configured.');
-        setUploading(false);
     };
 
     const getMyLocation = () => {
@@ -46,9 +51,7 @@ export default function ProviderProfile() {
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
                 const { latitude, longitude } = pos.coords;
-                set('latitude', latitude);
-                set('longitude', longitude);
-                // Reverse geocode for address
+                set('latitude', latitude); set('longitude', longitude);
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
                     const data = await res.json();
@@ -88,184 +91,211 @@ export default function ProviderProfile() {
     );
 
     return (
-        <div className="max-w-2xl pb-24 md:pb-8">
-            <h1 className="font-inter font-black text-2xl mb-6">{creating ? '🚀 Set Up Your Business' : 'Business Profile'}</h1>
+        <div className="max-w-2xl pb-8 space-y-4">
+            <div>
+                <h1 className="font-black text-xl tracking-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>
+                    {creating ? 'Set Up Your Business' : 'Business Profile'}
+                </h1>
+                <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Fill in your details to start receiving bookings</p>
+            </div>
 
             {creating && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-sm text-blue-700">
-                    <strong>Welcome!</strong> Fill in your business details below. Once submitted, our team will review and approve your profile within 24 hours.
+                <div className="flex items-start gap-3 rounded-xl p-3.5"
+                    style={{ backgroundColor: 'var(--color-info-bg)', border: '1px solid rgba(147,197,253,0.2)' }}>
+                    <Info className="h-4 w-4 shrink-0 mt-0.5" style={{ color: 'var(--color-info)' }} />
+                    <p className="text-xs" style={{ color: 'var(--color-info)' }}>
+                        <strong>Welcome!</strong> Once submitted, our team will review and approve your profile within 24 hours.
+                    </p>
                 </div>
             )}
 
-            {/* Cover Photo */}
-            <div className="card-premium overflow-hidden mb-6">
-                <div className="relative h-40 bg-zinc-100 group cursor-pointer" onClick={() => coverRef.current.click()}>
+            {/* Cover Photo + Logo */}
+            <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <div className="relative h-36 cursor-pointer group"
+                    style={{ backgroundColor: 'var(--color-surface-high)' }}
+                    onClick={() => coverRef.current.click()}>
                     {form.cover_image ? (
                         <img src={form.cover_image} alt="Cover" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                            <Image className="h-8 w-8 text-zinc-300" />
-                            <span className="text-zinc-400 text-sm">Click to add cover photo</span>
+                            <Image className="h-7 w-7" style={{ color: 'var(--color-text-subtle)' }} />
+                            <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Click to add cover photo</span>
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        {uploadingCover ? (
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            <Camera className="h-7 w-7 text-white" />
-                        )}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}>
+                        {uploadingCover
+                            ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            : <Camera className="h-6 w-6 text-white" />}
                     </div>
-                    <input ref={coverRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'cover_image', setUploadingCover)} />
+                    <input ref={coverRef} type="file" accept="image/*" className="hidden"
+                        onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'cover_image', setUploadingCover)} />
                 </div>
 
-                {/* Logo */}
-                <div className="px-5 pb-5 -mt-10 relative">
+                <div className="px-5 pb-5 -mt-9 relative">
                     <div className="relative inline-block">
-                        <div
-                            className="h-20 w-20 rounded-2xl border-4 border-white bg-zinc-100 overflow-hidden cursor-pointer shadow-float group"
-                            onClick={() => logoRef.current.click()}
-                        >
+                        <div className="h-18 w-18 rounded-2xl overflow-hidden cursor-pointer group"
+                            style={{ width: 72, height: 72, border: '3px solid var(--color-surface)', backgroundColor: 'var(--color-surface-high)', boxShadow: 'var(--shadow-md)' }}
+                            onClick={() => logoRef.current.click()}>
                             {form.logo_url ? (
                                 <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                    <span className="text-zinc-400 font-black text-2xl">
+                                    <span className="font-black text-2xl" style={{ color: 'var(--color-text-muted)' }}>
                                         {form.business_name?.[0]?.toUpperCase() || '?'}
                                     </span>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
-                                {uploadingLogo ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Camera className="h-5 w-5 text-white" />}
+                            <div className="absolute inset-0 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}>
+                                {uploadingLogo
+                                    ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    : <Camera className="h-4 w-4 text-white" />}
                             </div>
                         </div>
-                        <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'logo_url', setUploadingLogo)} />
                         {form.verified && (
-                            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center border-2 border-white">
+                            <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center"
+                                style={{ border: '2px solid var(--color-surface)' }}>
                                 <CheckCircle className="h-3 w-3 text-white" />
                             </div>
                         )}
+                        <input ref={logoRef} type="file" accept="image/*" className="hidden"
+                            onChange={e => e.target.files[0] && uploadImage(e.target.files[0], 'logo_url', setUploadingLogo)} />
                     </div>
                 </div>
             </div>
 
             {/* Business Info */}
-            <div className="card-premium p-6 mb-4 space-y-4">
-                <h2 className="font-bold text-base">Business Information</h2>
+            <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 style={sectionTitle}>Business Information</h2>
+                {[
+                    { label: 'Business Name *', key: 'business_name', placeholder: "e.g. John's Plumbing" },
+                    { label: 'Phone Number', key: 'phone', placeholder: '+1 (555) 000-0000', type: 'tel' },
+                ].map(f => (
+                    <div key={f.key}>
+                        <label style={labelStyle}>{f.label}</label>
+                        <Input type={f.type || 'text'} value={form[f.key] || ''} onChange={e => set(f.key, e.target.value)}
+                            placeholder={f.placeholder} className="h-10 rounded-xl" />
+                    </div>
+                ))}
                 <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">Business Name <span className="text-red-500">*</span></label>
-                    <Input value={form.business_name || ''} onChange={e => set('business_name', e.target.value)} placeholder="e.g. John's Plumbing" className="h-11 rounded-xl" />
-                </div>
-                <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">Description</label>
-                    <Textarea
-                        value={form.description || ''}
-                        onChange={e => set('description', e.target.value)}
+                    <label style={labelStyle}>Description</label>
+                    <Textarea value={form.description || ''} onChange={e => set('description', e.target.value)}
                         placeholder="Tell customers what makes your business special..."
-                        className="resize-none rounded-xl"
-                        rows={3}
-                    />
-                </div>
-                <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">Phone Number</label>
-                    <Input type="tel" value={form.phone || ''} onChange={e => set('phone', e.target.value)} placeholder="+1 (555) 000-0000" className="h-11 rounded-xl" />
+                        className="resize-none rounded-xl" rows={3} />
                 </div>
             </div>
 
             {/* Location */}
-            <div className="card-premium p-6 mb-4 space-y-4">
+            <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                    <h2 className="font-bold text-base">Location</h2>
-                    <Button variant="outline" size="sm" className="rounded-xl text-xs gap-1.5" onClick={getMyLocation} disabled={geoLoading}>
-                        <Navigation className={`h-3.5 w-3.5 ${geoLoading ? 'animate-spin' : ''}`} />
-                        {geoLoading ? 'Getting...' : 'Use My Location'}
-                    </Button>
+                    <h2 style={sectionTitle}>Location</h2>
+                    <button style={{ ...btnBase, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)', padding: '5px 10px', fontSize: 11 }}
+                        onClick={getMyLocation} disabled={geoLoading}
+                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                        <Navigation className={`h-3 w-3 ${geoLoading ? 'animate-spin' : ''}`} />
+                        {geoLoading ? 'Getting…' : 'Use My Location'}
+                    </button>
                 </div>
-                <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">Address <span className="text-red-500">*</span></label>
-                    <Input value={form.address || ''} onChange={e => set('address', e.target.value)} placeholder="123 Main Street" className="h-11 rounded-xl" />
-                </div>
-                <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">City</label>
-                    <Input value={form.city || ''} onChange={e => set('city', e.target.value)} placeholder="New York" className="h-11 rounded-xl" />
-                </div>
+                {[
+                    { label: 'Address *', key: 'address', placeholder: '123 Main Street' },
+                    { label: 'City', key: 'city', placeholder: 'New York' },
+                ].map(f => (
+                    <div key={f.key}>
+                        <label style={labelStyle}>{f.label}</label>
+                        <Input value={form[f.key] || ''} onChange={e => set(f.key, e.target.value)}
+                            placeholder={f.placeholder} className="h-10 rounded-xl" />
+                    </div>
+                ))}
                 <div className="grid grid-cols-2 gap-3">
-                    <div>
-                        <label className="text-sm font-semibold text-zinc-700 block mb-1.5 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />Latitude</label>
-                        <Input type="number" step="any" value={form.latitude || ''} onChange={e => set('latitude', Number(e.target.value))} className="h-11 rounded-xl font-mono text-sm" />
-                    </div>
-                    <div>
-                        <label className="text-sm font-semibold text-zinc-700 block mb-1.5 flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />Longitude</label>
-                        <Input type="number" step="any" value={form.longitude || ''} onChange={e => set('longitude', Number(e.target.value))} className="h-11 rounded-xl font-mono text-sm" />
-                    </div>
+                    {[{ label: 'Latitude', key: 'latitude' }, { label: 'Longitude', key: 'longitude' }].map(f => (
+                        <div key={f.key}>
+                            <label style={labelStyle} className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />{f.label}
+                            </label>
+                            <Input type="number" step="any" value={form[f.key] || ''} onChange={e => set(f.key, Number(e.target.value))}
+                                className="h-10 rounded-xl font-mono text-xs" />
+                        </div>
+                    ))}
                 </div>
                 <div>
-                    <label className="text-sm font-semibold text-zinc-700 block mb-1.5">Service Radius (km)</label>
-                    <Input type="number" value={form.service_radius_km || 10} onChange={e => set('service_radius_km', Number(e.target.value))} className="h-11 rounded-xl" />
+                    <label style={labelStyle}>Service Radius (km)</label>
+                    <Input type="number" value={form.service_radius_km || 10} onChange={e => set('service_radius_km', Number(e.target.value))}
+                        className="h-10 rounded-xl" />
                 </div>
             </div>
 
             {/* Service Categories */}
-            <div className="card-premium p-6 mb-4">
-                <h2 className="font-bold text-base mb-1">Service Categories</h2>
-                <p className="text-zinc-500 text-sm mb-4">Select all categories that describe your services. This determines where you appear in searches.</p>
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 style={sectionTitle}>Service Categories</h2>
+                <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>
+                    Select all categories that describe your services. This determines where you appear in searches.
+                </p>
                 <div className="flex flex-wrap gap-2">
                     {categories.map(c => {
-                        const selected = (form.category_slugs || []).includes(c.slug);
+                        const sel = (form.category_slugs || []).includes(c.slug);
                         return (
-                            <button
-                                key={c.slug}
-                                onClick={() => toggleCategory(c.slug)}
-                                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${selected
-                                        ? 'bg-zinc-900 text-white border-zinc-900'
-                                        : 'bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-zinc-400'
-                                    }`}
-                            >
-                                {selected && <span className="mr-1.5">✓</span>}
+                            <button key={c.slug} onClick={() => toggleCategory(c.slug)}
+                                style={{
+                                    ...btnBase,
+                                    padding: '6px 12px', fontSize: 12,
+                                    backgroundColor: sel ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                    color: sel ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                                    border: `1px solid ${sel ? 'transparent' : 'var(--color-border-strong)'}`,
+                                }}
+                                onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+                                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                                {sel && <span>✓</span>}
                                 {c.name}
                             </button>
                         );
                     })}
                 </div>
                 {(form.category_slugs || []).length === 0 && (
-                    <p className="text-amber-600 text-sm mt-3 bg-amber-50 rounded-lg p-3">
-                        ⚠️ Please select at least one category so customers can find you.
-                    </p>
+                    <div className="flex items-start gap-2 rounded-xl p-3 mt-3"
+                        style={{ backgroundColor: 'var(--color-warning-bg)', border: '1px solid rgba(252,211,77,0.2)' }}>
+                        <span className="text-xs" style={{ color: 'var(--color-warning)' }}>
+                            ⚠️ Please select at least one category so customers can find you.
+                        </span>
+                    </div>
                 )}
             </div>
 
             {/* Settings */}
-            <div className="card-premium p-6 mb-6">
-                <h2 className="font-bold text-base mb-4">Settings</h2>
-                <div className="flex items-center justify-between">
+            <div className="rounded-xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                <h2 style={{ ...sectionTitle, marginBottom: 16 }}>Settings</h2>
+                <div className="flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm font-semibold text-zinc-800">Enable Chat</p>
-                        <p className="text-xs text-zinc-500 mt-0.5">Allow customers to message you directly</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>Enable Chat</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>Allow customers to message you directly</p>
                     </div>
                     <Switch checked={form.chat_enabled || false} onCheckedChange={v => set('chat_enabled', v)} />
                 </div>
             </div>
 
             {/* Status banner */}
-            {provider && provider.status !== 'approved' && (
-                <div className={`rounded-xl p-4 mb-4 text-sm font-medium ${provider.status === 'pending' ? 'bg-yellow-50 text-yellow-800 border border-yellow-200' :
-                        provider.status === 'rejected' ? 'bg-red-50 text-red-800 border border-red-200' :
-                            'bg-zinc-100 text-zinc-700'
-                    }`}>
-                    {provider.status === 'pending' && '⏳ Your profile is pending admin review. Usually takes 24 hours.'}
-                    {provider.status === 'rejected' && '❌ Your profile was rejected. Please update your information and save again.'}
-                    {provider.status === 'suspended' && '⚠️ Your profile is currently suspended. Contact support for help.'}
-                </div>
-            )}
+            {provider && provider.status !== 'approved' && (() => {
+                const cfg = provider.status === 'pending'
+                    ? { bg: 'var(--color-warning-bg)', border: 'rgba(252,211,77,0.2)', color: 'var(--color-warning)', text: '⏳ Your profile is pending admin review. Usually takes 24 hours.' }
+                    : provider.status === 'rejected'
+                    ? { bg: 'var(--color-error-bg)', border: 'rgba(252,165,165,0.2)', color: 'var(--color-error)', text: '❌ Your profile was rejected. Please update and save again.' }
+                    : { bg: 'var(--color-surface-high)', border: 'var(--color-border)', color: 'var(--color-text-muted)', text: '⚠️ Your profile is suspended. Contact support.' };
+                return (
+                    <div className="rounded-xl p-3.5" style={{ backgroundColor: cfg.bg, border: `1px solid ${cfg.border}` }}>
+                        <p className="text-xs font-medium" style={{ color: cfg.color }}>{cfg.text}</p>
+                    </div>
+                );
+            })()}
 
-            <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                    className="flex-1 h-12 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-base font-semibold"
-                    onClick={save}
-                    disabled={saving || !form.business_name}
-                >
-                    {saving ? 'Saving...' : creating ? '✓ Submit Profile' : '✓ Save Changes'}
-                </Button>
-            </div>
+            {/* Submit */}
+            <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all"
+                style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: (saving || !form.business_name) ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: (saving || !form.business_name) ? 0.5 : 1 }}
+                onClick={save} disabled={saving || !form.business_name}
+                onMouseEnter={e => { if (!saving && form.business_name) e.currentTarget.style.opacity = '0.88'; }}
+                onMouseLeave={e => { if (!saving && form.business_name) e.currentTarget.style.opacity = '1'; }}>
+                {saving ? 'Saving…' : creating ? '✓ Submit Profile' : '✓ Save Changes'}
+            </button>
         </div>
     );
 }

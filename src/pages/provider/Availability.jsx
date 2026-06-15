@@ -93,7 +93,12 @@ export default function Availability() {
             <div className="glass rounded-2xl p-1.5 flex gap-1 mb-6 shadow-premium">
                 {[['hours', 'Working Hours', Clock], ['settings', 'Schedule Rules', Settings2], ['blackouts', 'Blackout Dates', CalendarOff]].map(([key, label, Icon]) => (
                     <button key={key} onClick={() => setTab(key)}
-                        className={`flex-1 h-9 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${tab === key ? 'bg-zinc-900 text-white' : 'text-zinc-500 hover:text-zinc-900'}`}>
+                        className="flex-1 h-9 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
+                        style={{
+                            backgroundColor: tab === key ? 'var(--color-primary)' : 'transparent',
+                            color: tab === key ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                            border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                        }}>
                         <Icon className="h-3.5 w-3.5" />{label}
                     </button>
                 ))}

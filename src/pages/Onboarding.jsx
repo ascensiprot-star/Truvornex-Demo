@@ -149,8 +149,7 @@ export default function Onboarding() {
                             style={{
                                 width: 40, height: 40,
                                 backgroundColor: selected === 'customer' ? 'rgba(0,0,0,0.15)' : 'var(--color-surface-high)',
-                                border: '1px solid',
-                                borderColor: selected === 'customer' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)',
+                                border: `1px solid ${selected === 'customer' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)'}`,
                             }}>
                             <User style={{ width: 18, height: 18, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
                         </div>
@@ -205,8 +204,7 @@ export default function Onboarding() {
                             style={{
                                 width: 40, height: 40,
                                 backgroundColor: selected === 'provider' ? 'rgba(0,0,0,0.15)' : 'var(--color-surface-high)',
-                                border: '1px solid',
-                                borderColor: selected === 'provider' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)',
+                                border: `1px solid ${selected === 'provider' ? 'rgba(0,0,0,0.1)' : 'var(--color-border)'}`,
                             }}>
                             <Briefcase style={{ width: 18, height: 18, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text-muted)' }} />
                         </div>

@@ -740,7 +740,7 @@ export default function Home() {
                 <div className="relative flex flex-col sm:flex-row items-start gap-4">
                     <div className="flex-1">
                         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold mb-2"
-                            style={{ backgroundColor: 'rgba(0,0,0,0.12)', color: 'rgba(255,255,255,0.7)' }}>
+                            style={{ backgroundColor: 'rgba(128,128,128,0.18)', color: 'var(--color-on-primary)', opacity: 0.85 }}>
                             <Shield style={{ width: 8, height: 8 }} /> Join 2,400+ providers
                         </div>
                         <h2 className="font-black mb-1" style={{ fontSize: 15, letterSpacing: '-0.03em' }}>Are you a service provider?</h2>

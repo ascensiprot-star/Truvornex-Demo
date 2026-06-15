@@ -30,17 +30,19 @@ function ProviderAICard({ provider, rank }) {
                     {provider.logo_url ? (
                         <img src={provider.logo_url} alt="" className="h-12 w-12 rounded-xl object-cover" />
                     ) : (
-                        <div className="h-12 w-12 rounded-xl bg-zinc-100 flex items-center justify-center font-black text-xl text-zinc-300">
+                        <div className="h-12 w-12 rounded-xl flex items-center justify-center font-black text-xl"
+                            style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>
                             {provider.business_name?.[0]}
                         </div>
                     )}
-                    <span className="absolute -top-1.5 -left-1.5 h-5 w-5 rounded-full bg-zinc-900 text-white text-[10px] font-black flex items-center justify-center">
+                    <span className="absolute -top-1.5 -left-1.5 h-5 w-5 rounded-full text-[10px] font-black flex items-center justify-center"
+                        style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                         {rank}
                     </span>
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-semibold text-sm truncate group-hover:text-black transition-colors">{provider.business_name}</h3>
+                        <h3 className="font-semibold text-sm truncate transition-colors" style={{ color: 'var(--color-primary)' }}>{provider.business_name}</h3>
                         {provider.verified && <CheckCircle className="h-3.5 w-3.5 text-blue-500 shrink-0" />}
                     </div>
                     <div className="flex items-center gap-2 mb-2">
@@ -60,9 +62,9 @@ function ProviderAICard({ provider, rank }) {
                     </div>
                 </div>
                 <div className="text-right shrink-0">
-                    <div className="text-lg font-black text-zinc-900">{provider.aiScore}</div>
-                    <div className="text-[10px] text-zinc-400 font-medium">AI Score</div>
-                    <div className="h-1.5 w-12 bg-zinc-100 rounded-full mt-1 overflow-hidden">
+                    <div className="text-lg font-black" style={{ color: 'var(--color-primary)' }}>{provider.aiScore}</div>
+                    <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>AI Score</div>
+                    <div className="h-1.5 w-12 rounded-full mt-1 overflow-hidden" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                         <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full" style={{ width: `${provider.aiScore}%` }} />
                     </div>
                 </div>
@@ -134,23 +136,27 @@ export default function SmartRecommendations() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {repeatPredictions.slice(0, 3).map((p, i) => (
-                            <div key={i} className="bg-white rounded-2xl border border-zinc-100 p-4 shadow-premium">
+                            <div key={i} className="card-premium p-4">
                                 <div className="flex items-start justify-between mb-2">
-                                    <div className="h-8 w-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+                                    <div className="h-8 w-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
                                         <RefreshCw className="h-4 w-4 text-indigo-500" />
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${CONFIDENCE_STYLE[p.confidence]}`}>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                        style={{
+                                            backgroundColor: p.confidence === 'high' ? 'rgba(16,185,129,0.12)' : p.confidence === 'medium' ? 'rgba(245,158,11,0.12)' : 'var(--color-surface-high)',
+                                            color: p.confidence === 'high' ? '#10b981' : p.confidence === 'medium' ? '#f59e0b' : 'var(--color-text-muted)',
+                                        }}>
                                         {p.confidence} confidence
                                     </span>
                                 </div>
-                                <p className="font-semibold text-sm mb-0.5">{p.service}</p>
-                                <p className="text-xs text-zinc-400 mb-3">
+                                <p className="font-semibold text-sm mb-0.5" style={{ color: 'var(--color-primary)' }}>{p.service}</p>
+                                <p className="text-xs mb-3" style={{ color: 'var(--color-text-subtle)' }}>
                                     Every ~{p.avgIntervalDays} days · booked {p.bookingCount}×
                                 </p>
-                                <div className={`text-sm font-bold ${p.daysUntil <= 3 ? 'text-red-600' : p.daysUntil <= 7 ? 'text-amber-600' : 'text-zinc-700'}`}>
+                                <div className="text-sm font-bold" style={{ color: p.daysUntil <= 3 ? '#ef4444' : p.daysUntil <= 7 ? '#f59e0b' : 'var(--color-primary)' }}>
                                     {p.daysUntil <= 0 ? 'Due now' : p.daysUntil === 1 ? 'Due tomorrow' : `Due in ${p.daysUntil} days`}
                                 </div>
-                                <div className="text-[10px] text-zinc-400">{format(new Date(p.nextDate + 'T12:00:00'), 'MMM d, yyyy')}</div>
+                                <div className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{format(new Date(p.nextDate + 'T12:00:00'), 'MMM d, yyyy')}</div>
                             </div>
                         ))}
                     </div>
@@ -201,7 +207,12 @@ export default function SmartRecommendations() {
                     <div className="flex gap-1.5 flex-wrap">
                         {[['all', 'All'], ...categories.slice(0, 4).map(c => [c.slug, c.name.split(' ')[0]])].map(([v, l]) => (
                             <button key={v} onClick={() => setCatFilter(v)}
-                                className={`h-7 px-3 rounded-xl text-xs font-semibold transition-all ${catFilter === v ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-500 hover:border-zinc-400'}`}>
+                                className="h-7 px-3 rounded-xl text-xs font-semibold transition-all"
+                                style={{
+                                    backgroundColor: catFilter === v ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                    color: catFilter === v ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                                    border: 'none', fontFamily: 'inherit', cursor: 'pointer',
+                                }}>
                                 {l}
                             </button>
                         ))}
@@ -209,8 +220,8 @@ export default function SmartRecommendations() {
                 </div>
 
                 {rankedProviders.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-zinc-100 p-10 text-center shadow-premium">
-                        <p className="text-zinc-400 text-sm">No providers found for this category.</p>
+                    <div className="card-premium p-10 text-center">
+                        <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>No providers found for this category.</p>
                     </div>
                 ) : (
                     <div className="space-y-3">

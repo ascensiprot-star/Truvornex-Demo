@@ -244,10 +244,16 @@ export default function Settings() {
             </div>
 
             {/* Tab bar */}
-            <div className="flex flex-wrap gap-1 mb-6 bg-zinc-100 p-1.5 rounded-2xl">
+            <div className="flex flex-wrap gap-1 mb-6 p-1.5 rounded-2xl" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                 {TABS.map(([key, label, Icon]) => (
                     <button key={key} onClick={() => setTab(key)}
-                        className={`flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-all ${tab === key ? 'bg-zinc-900 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-800 hover:bg-white/60'}`}>
+                        className="flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-all"
+                        style={{
+                            backgroundColor: tab === key ? 'var(--color-primary)' : 'transparent',
+                            color: tab === key ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                            boxShadow: tab === key ? '0 1px 3px rgba(0,0,0,0.15)' : 'none',
+                            border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                        }}>
                         <Icon className="h-3.5 w-3.5" />{label}
                     </button>
                 ))}
@@ -823,7 +829,13 @@ export default function Settings() {
                                     const active = ruleForm.channels?.includes(ch);
                                     return (
                                         <button key={ch} onClick={() => toggleChannel(ch)}
-                                            className={`flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold border transition-all ${active ? 'bg-zinc-900 text-white border-zinc-900' : 'border-zinc-200 text-zinc-500'}`}>
+                                            className="flex items-center gap-1.5 h-8 px-3 rounded-xl text-xs font-semibold transition-all"
+                                            style={{
+                                                backgroundColor: active ? 'var(--color-primary)' : 'transparent',
+                                                color: active ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                                                border: `1px solid ${active ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                                                cursor: 'pointer', fontFamily: 'inherit',
+                                            }}>
                                             {active && <Check className="h-3 w-3" />}{label}
                                         </button>
                                     );

@@ -337,7 +337,7 @@ export default function Marketplace() {
                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-all"
                                     style={{
                                         backgroundColor: active ? (cat.color || 'var(--color-primary)') : 'var(--color-surface)',
-                                        color: active ? '#fff' : 'var(--color-text-muted)',
+                                        color: active ? (cat.color ? '#fff' : 'var(--color-on-primary)') : 'var(--color-text-muted)',
                                         border: `1px solid ${active ? 'transparent' : 'var(--color-border)'}`,
                                     }}>
                                     <cat.icon className="h-3.5 w-3.5" />

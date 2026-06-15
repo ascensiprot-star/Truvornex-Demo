@@ -18,18 +18,20 @@ const ReviewCard = ({ review }) => (
     <div className="card-premium p-4">
         <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                <div className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold"
+                    style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
                     {(review.customer_name || 'C')[0].toUpperCase()}
                 </div>
-                <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{review.customer_name || 'Customer'}</span>
+                <span className="text-sm font-semibold" style={{ color: 'var(--color-primary)' }}>{review.customer_name || 'Customer'}</span>
             </div>
             <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'fill-zinc-800 text-zinc-800' : 'text-zinc-200'}`} />
+                    <Star key={i} className="h-3 w-3"
+                        style={{ color: i < review.rating ? 'var(--color-primary)' : 'var(--color-border-strong)', fill: i < review.rating ? 'var(--color-primary)' : 'none' }} />
                 ))}
             </div>
         </div>
-        {review.comment && <p className="text-sm text-zinc-500 leading-relaxed">{review.comment}</p>}
+        {review.comment && <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{review.comment}</p>}
     </div>
 );
 
@@ -100,9 +102,9 @@ export default function ProviderDetail() {
                             <div className="flex items-center gap-4 flex-wrap text-sm text-zinc-500 dark:text-zinc-400">
                                 {provider.rating > 0 && (
                                     <div className="flex items-center gap-1">
-                                        <Star className="h-4 w-4 fill-zinc-800 text-zinc-800" />
-                                        <span className="font-semibold text-zinc-900 dark:text-zinc-100">{provider.rating?.toFixed(1)}</span>
-                                        <span className="text-zinc-400">({provider.review_count} reviews)</span>
+                                        <Star className="h-4 w-4" style={{ color: 'var(--color-primary)', fill: 'var(--color-primary)' }} />
+                                        <span className="font-semibold" style={{ color: 'var(--color-primary)' }}>{provider.rating?.toFixed(1)}</span>
+                                        <span style={{ color: 'var(--color-text-subtle)' }}>({provider.review_count} reviews)</span>
                                     </div>
                                 )}
                                 <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{provider.city || provider.address}</span>
@@ -171,11 +173,13 @@ export default function ProviderDetail() {
                             </div>
                             <div className="flex items-center gap-3 shrink-0">
                                 <span className="font-inter font-black text-xl text-zinc-900 dark:text-zinc-100">${s.price}</span>
-                                <Button asChild size="sm" className="rounded-xl bg-zinc-900 hover:bg-zinc-700 text-white">
-                                    <Link to={`/book/${provider.id}/${s.id}`}>
-                                        Book <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                                    </Link>
-                                </Button>
+                                <Link to={`/book/${provider.id}/${s.id}`}
+                                    className="inline-flex items-center gap-1 rounded-xl text-xs font-semibold transition-all px-3 py-2"
+                                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}
+                                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+                                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
+                                    Book <ArrowRight className="h-3 w-3" />
+                                </Link>
                             </div>
                         </div>
                     ))}
@@ -208,20 +212,20 @@ export default function ProviderDetail() {
 
             {/* Map tab */}
             {activeTab === 'map' && (
-                <div className="rounded-2xl overflow-hidden shadow-premium border border-zinc-100 dark:border-zinc-800">
+                <div className="rounded-2xl overflow-hidden shadow-premium" style={{ border: '1px solid var(--color-border)' }}>
                     {provider.latitude ? (
                         <MapView providers={[provider]} className="h-72" />
                     ) : (
-                        <div className="h-72 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
-                            <p className="text-zinc-400 text-sm">Location not set.</p>
+                        <div className="h-72 flex items-center justify-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
+                            <p className="text-sm" style={{ color: 'var(--color-text-subtle)' }}>Location not set.</p>
                         </div>
                     )}
                     {provider.address && (
-                        <div className="p-4 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400 flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-zinc-400" />
+                        <div className="p-4" style={{ backgroundColor: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
+                            <p className="text-sm flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
+                                <MapPin className="h-4 w-4" style={{ color: 'var(--color-text-subtle)' }} />
                                 {provider.address}
-                                {provider.service_radius_km && <span className="ml-auto text-xs text-zinc-400">±{provider.service_radius_km} km radius</span>}
+                                {provider.service_radius_km && <span className="ml-auto text-xs" style={{ color: 'var(--color-text-subtle)' }}>±{provider.service_radius_km} km radius</span>}
                             </p>
                         </div>
                     )}
