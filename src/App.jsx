@@ -88,6 +88,8 @@ import EmergencyRequest from './pages/neighborhood/EmergencyRequest';
 import GroupBuy from './pages/neighborhood/GroupBuy';
 import SkillSwap from './pages/neighborhood/SkillSwap';
 import Jury from './pages/neighborhood/Jury';
+import TrustPassport from './pages/TrustPassport';
+import LabView from './pages/admin/LabView';
 
 const AuthenticatedApp = () => {
     const { isLoadingAuth, authError } = useAuth();
@@ -189,6 +191,7 @@ const AuthenticatedApp = () => {
                 <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/payouts" element={<ProviderPayouts />} />
                 <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/system-health" element={<SystemHealth />} />
                 <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/content" element={<ContentManagement />} />
+                <Route path="/x7k9m2q4p8w1n5v3r6t0y/admin/lab" element={<LabView />} />
             </Route>
             <Route path="/admin" element={<AdminGuard><div /></AdminGuard>} />
             <Route path="/admin/*" element={<AdminGuard><div /></AdminGuard>} />
@@ -196,6 +199,7 @@ const AuthenticatedApp = () => {
             <Route path="/signup" element={<Login />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/x7k9m2q4p8w1n5v3r6t0y/owner" element={<OwnerAdmin />} />
+            <Route path="/trust/:providerId" element={<TrustPassport />} />
             <Route path="*" element={<PageNotFound />} />
         </Routes>
     );

@@ -5,7 +5,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
 import crypto from 'crypto';
+import rateLimit from 'express-rate-limit';
 import * as simon from './simon.js';
+import { initNewTables, writeAuditLog, createNotification } from './db.js';
+import financialRouter from './financial.js';
+import notificationsRouter, { broadcastNotification } from './notifications-routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -17,6 +21,23 @@ const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const PgSession = connectPgSimple(session);
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=(self)');
+    next();
+});
+
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+const apiLimiter = rateLimit({ windowMs: 60 * 1000, max: 120, standardHeaders: true, legacyHeaders: false });
+const simonLimiter = rateLimit({ windowMs: 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
+
+app.use('/api/auth', authLimiter);
+app.use('/api/simon', simonLimiter);
+app.use('/api', apiLimiter);
 
 app.use(session({
     store: new PgSession({ pool, tableName: 'session', createTableIfMissing: true }),
@@ -44,6 +65,7 @@ async function initDb() {
                 updated_at TIMESTAMPTZ DEFAULT NOW()
             )
         `);
+        await initNewTables();
         console.log('Database ready');
     } catch (err) {
         console.error('DB init error:', err.message);
@@ -146,6 +168,9 @@ app.post('/api/ai/chat', async (req, res) => {
 });
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+app.use('/api/financial', requireAuth, financialRouter);
+app.use('/api/notifications', requireAuth, notificationsRouter);
 
 /* ── Neighborhood / Community API routes ─────────────────────── */
 
@@ -391,14 +416,284 @@ app.patch('/api/neighborhood-polls/:id/vote', requireAuth, async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+/* ── Trust Passport (public, no auth) ────────────────────────────────────── */
+
+app.get('/api/trust-passport/:providerId', async (req, res) => {
+    const { providerId } = req.params;
+    try {
+        const { rows: users } = await pool.query(
+            'SELECT id, full_name, avatar_url, city, country FROM users WHERE id = $1',
+            [providerId]
+        );
+        if (!users[0]) return res.status(404).json({ error: 'Provider not found' });
+        const user = users[0];
+
+        const { rows: trust } = await pool.query(
+            'SELECT * FROM provider_trust_scores WHERE provider_id = $1',
+            [providerId]
+        );
+        const score = trust[0];
+
+        const { rows: vouches } = await pool.query(
+            'SELECT COUNT(*) AS count FROM provider_vouches WHERE provider_id = $1',
+            [providerId]
+        );
+
+        const badges = [];
+        if (score?.tier === 'champion') badges.push('🏆 Champion Provider');
+        if (score?.tier === 'trusted' || score?.tier === 'champion') badges.push('✅ Community Trusted');
+        if ((score?.total_completed || 0) >= 50) badges.push('⭐ 50+ Jobs');
+        if ((score?.total_completed || 0) >= 10) badges.push('🎯 Experienced');
+        if ((score?.avg_rating || 0) >= 4.8) badges.push('💎 Top Rated');
+        if (parseInt(vouches[0]?.count || 0) >= 3) badges.push('👥 Vouched');
+
+        const credentialData = {
+            provider_id: providerId,
+            provider_name: user.full_name || 'Provider',
+            avatar_url: user.avatar_url,
+            city: user.city,
+            country: user.country || 'PK',
+            score: parseFloat(score?.score || 0),
+            tier: score?.tier || 'new',
+            completion_rate: parseFloat(score?.completion_rate || 0),
+            avg_rating: score?.avg_rating ? parseFloat(score.avg_rating) : null,
+            total_completed: score?.total_completed || 0,
+            dispute_free_streak: score?.dispute_free_streak || 0,
+            vouches_count: parseInt(vouches[0]?.count || 0),
+            last_computed_at: score?.last_computed_at || null,
+            badges,
+        };
+
+        const verificationHash = crypto
+            .createHmac('sha256', process.env.TRUST_PASSPORT_SECRET || 'truvornex-trust-v1')
+            .update(JSON.stringify(credentialData))
+            .digest('hex');
+
+        res.json({ ...credentialData, verification_hash: verificationHash });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── Admin Lab Data ─────────────────────────────────────────────────────────── */
+
+app.get('/api/admin/lab-data', requireAuth, async (req, res) => {
+    if (req.session.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    try {
+        const [statsR, trustR, zonesR, bnplR, loyaltyR] = await Promise.all([
+            pool.query(`
+                SELECT
+                    (SELECT COUNT(*) FROM users) AS total_users,
+                    (SELECT COUNT(*) FROM users WHERE role='provider') AS total_providers,
+                    (SELECT COUNT(*) FROM bookings) AS total_bookings,
+                    (SELECT COUNT(*) FROM bookings WHERE DATE(created_at) = CURRENT_DATE) AS bookings_today
+            `),
+            pool.query(`SELECT tier, COUNT(*) AS count FROM provider_trust_scores GROUP BY tier ORDER BY count DESC`),
+            pool.query(`SELECT id, name, health_score, demand_index, updated_at FROM neighborhood_zones ORDER BY health_score DESC LIMIT 20`).catch(() => ({ rows: [] })),
+            pool.query(`
+                SELECT
+                    COUNT(*) FILTER (WHERE status='active') AS active_count,
+                    SUM(total_amount - (paid_installments * installment_amount)) FILTER (WHERE status='active') AS total_exposure,
+                    COUNT(*) FILTER (WHERE status='active' AND next_due_date < CURRENT_DATE) AS overdue_count,
+                    COUNT(*) FILTER (WHERE status='defaulted') AS defaulted_count
+                FROM bnpl_agreements
+            `).catch(() => ({ rows: [{}] })),
+            pool.query(`
+                SELECT
+                    SUM(coins) FILTER (WHERE coins > 0) AS total_coins_issued,
+                    SUM(coins) FILTER (WHERE coins < 0) AS total_coins_redeemed,
+                    SUM(coins) AS outstanding_balance,
+                    COUNT(DISTINCT user_id) AS users_with_coins
+                FROM loyalty_ledger
+            `).catch(() => ({ rows: [{}] })),
+        ]);
+
+        res.json({
+            platform_stats: statsR.rows[0],
+            trust_distribution: trustR.rows,
+            zones: zonesR.rows,
+            bnpl_risk: bnplR.rows[0] || {},
+            loyalty_economy: loyaltyR.rows[0] || {},
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── Realtime polling endpoints ─────────────────────────────────────────────── */
+
+const REALTIME_ALLOWED_TABLES = new Set(['bookings', 'notifications', 'emergency_requests', 'group_buy_participants', 'chat_messages']);
+
+app.get('/api/realtime/platform-stats', requireAuth, async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT
+                (SELECT COUNT(*) FROM bookings) AS bookings,
+                (SELECT COUNT(*) FROM users WHERE role='provider') AS providers,
+                (SELECT COUNT(*) FROM bookings WHERE status='pending') AS pending_bookings,
+                (SELECT COUNT(*) FROM bookings WHERE status IN ('confirmed','in_progress')) AS active_bookings
+        `);
+        const { rows: activity } = await pool.query(
+            `SELECT id, status, created_at FROM bookings ORDER BY created_at DESC LIMIT 5`
+        ).catch(() => ({ rows: [] }));
+        res.json({ stats: { ...rows[0], recentActivity: activity } });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/realtime/list/:table', requireAuth, async (req, res) => {
+    const { table } = req.params;
+    if (!REALTIME_ALLOWED_TABLES.has(table)) return res.status(400).json({ error: 'Table not allowed' });
+    const userId = req.session.user.id;
+    try {
+        let q, params;
+        if (table === 'notifications') {
+            q = `SELECT * FROM notifications WHERE user_id=$1 ORDER BY created_at DESC LIMIT 30`;
+            params = [userId];
+        } else if (table === 'bookings') {
+            const col = req.session.user.role === 'provider' ? 'provider_id' : 'customer_id';
+            q = `SELECT * FROM bookings WHERE ${col}=$1 ORDER BY created_at DESC LIMIT 30`;
+            params = [userId];
+        } else if (table === 'chat_messages') {
+            q = `SELECT * FROM chat_messages WHERE sender_id=$1 OR receiver_id=$1 ORDER BY created_at DESC LIMIT 50`;
+            params = [userId];
+        } else {
+            q = `SELECT * FROM ${table} ORDER BY created_at DESC LIMIT 30`;
+            params = [];
+        }
+        const { rows } = await pool.query(q, params);
+        res.json({ rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/realtime/single/:table/:id', requireAuth, async (req, res) => {
+    const { table, id } = req.params;
+    if (!REALTIME_ALLOWED_TABLES.has(table)) return res.status(400).json({ error: 'Table not allowed' });
+    try {
+        const { rows } = await pool.query(`SELECT * FROM ${table} WHERE id=$1 LIMIT 1`, [id]);
+        res.json({ row: rows[0] || null });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── Vouches ────────────────────────────────────────────────────────────────── */
+
+app.get('/api/vouches/:providerId', async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            `SELECT pv.*, u.full_name AS voucher_name, u.avatar_url AS voucher_avatar
+             FROM provider_vouches pv
+             LEFT JOIN users u ON u.id = pv.voucher_id
+             WHERE pv.provider_id = $1 ORDER BY pv.created_at DESC`,
+            [req.params.providerId]
+        );
+        res.json({ vouches: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/vouches', requireAuth, async (req, res) => {
+    const { provider_id, message, zone_id } = req.body;
+    if (!provider_id) return res.status(400).json({ error: 'provider_id required' });
+    if (provider_id === req.session.user.id) return res.status(400).json({ error: 'Cannot vouch for yourself' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO provider_vouches(provider_id, voucher_id, zone_id, message) VALUES ($1,$2,$3,$4)
+             ON CONFLICT (provider_id, voucher_id) DO UPDATE SET message=$4
+             RETURNING *`,
+            [provider_id, req.session.user.id, zone_id || null, message || null]
+        );
+        await pool.query(`UPDATE provider_trust_scores SET vouches_count = (SELECT COUNT(*) FROM provider_vouches WHERE provider_id=$1) WHERE provider_id=$1`, [provider_id]);
+        await writeAuditLog({ actorId: req.session.user.id, action: 'vouch.create', entity: 'provider_vouches', entityId: rows[0].id, ipAddress: req.ip });
+        res.json({ vouch: rows[0] });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── Full-text Search ───────────────────────────────────────────────────────── */
+
+app.get('/api/search', async (req, res) => {
+    const { q, category, lat, lng, limit: lim } = req.query;
+    if (!q && !category) return res.status(400).json({ error: 'Query or category required' });
+    const limitN = Math.min(parseInt(lim) || 20, 50);
+    try {
+        let rows = [];
+        const searchQuery = q ? q.trim() : null;
+
+        const providersQ = await pool.query(
+            `SELECT p.*, u.full_name, u.avatar_url,
+                    pts.score AS trust_score, pts.tier,
+                    CASE WHEN $1::text IS NOT NULL AND (
+                        p.business_name ILIKE '%' || $1 || '%' OR
+                        p.description ILIKE '%' || $1 || '%' OR
+                        p.category_slug ILIKE '%' || $1 || '%'
+                    ) THEN 1 ELSE 0 END AS text_match
+             FROM providers p
+             LEFT JOIN users u ON u.id::text = p.user_id::text
+             LEFT JOIN provider_trust_scores pts ON pts.provider_id::text = p.user_id::text
+             WHERE p.status = 'approved'
+               AND ($1::text IS NULL OR p.business_name ILIKE '%' || $1 || '%' OR p.description ILIKE '%' || $1 || '%' OR p.category_slug ILIKE '%' || $1 || '%')
+               AND ($2::text IS NULL OR p.category_slug = $2)
+             ORDER BY pts.score DESC NULLS LAST, text_match DESC
+             LIMIT $3`,
+            [searchQuery, category || null, limitN]
+        ).catch(() => ({ rows: [] }));
+
+        rows = providersQ.rows;
+
+        const servicesQ = await pool.query(
+            `SELECT s.*, p.business_name AS provider_name, p.category_slug,
+                    pts.score AS trust_score, pts.tier
+             FROM services s
+             LEFT JOIN providers p ON p.id = s.provider_id
+             LEFT JOIN provider_trust_scores pts ON pts.provider_id::text = p.user_id::text
+             WHERE s.is_active = true
+               AND ($1::text IS NULL OR s.title ILIKE '%' || $1 || '%' OR s.description ILIKE '%' || $1 || '%')
+               AND ($2::text IS NULL OR p.category_slug = $2)
+             ORDER BY pts.score DESC NULLS LAST
+             LIMIT $3`,
+            [searchQuery, category || null, limitN]
+        ).catch(() => ({ rows: [] }));
+
+        res.json({ providers: rows, services: servicesQ.rows, query: q, category: category || null });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── Audit Log (admin only) ─────────────────────────────────────────────────── */
+
+app.get('/api/audit-log', requireAuth, async (req, res) => {
+    if (req.session.user.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+    try {
+        const { rows } = await pool.query(
+            `SELECT al.*, u.email AS actor_email FROM audit_log al
+             LEFT JOIN users u ON u.id = al.actor_id
+             ORDER BY al.created_at DESC LIMIT $1`,
+            [limit]
+        );
+        res.json({ entries: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 /* ── Simon Intelligence API ─────────────────────────────────────────────────── */
 
 app.get('/api/simon/home-insights', async (req, res) => {
     try {
-        const insights = await simon.getHomeInsights({ area: 'your area' });
+        const userId = req.session?.user?.id;
+        const area = req.query.area || 'your area';
+        const insights = await simon.getHomeInsights({ area, user_id: userId });
         res.json({ insights });
     } catch (err) {
-        console.error('Simon home-insights error:', err.message);
         res.json({ insights: [] });
     }
 });
@@ -408,18 +703,35 @@ app.post('/api/simon/booking-analysis', async (req, res) => {
         const result = await simon.analyzeBooking(req.body || {});
         res.json(result);
     } catch (err) {
-        console.error('Simon booking-analysis error:', err.message);
         res.json({ demandLevel: 'moderate', priceFairness: 'fair', timingScore: 7, timingSuggestion: 'A solid time slot for this service.', savingsTip: null });
     }
 });
 
 app.get('/api/simon/zone-health', (req, res) => {
     try {
-        const result = simon.getZoneHealth({ area: 'your area' });
+        const result = simon.getZoneHealth({ zone_id: req.query.zone_id, area: req.query.area || 'your area' });
         res.json(result);
     } catch (err) {
-        console.error('Simon zone-health error:', err.message);
         res.json({ health: 'active', score: 75, activeProviders: 40, area: 'your area', trendingServices: ['Cleaning', 'Plumbing'], peakHours: false, alert: null });
+    }
+});
+
+app.post('/api/simon/voice-search', async (req, res) => {
+    try {
+        const result = await simon.parseVoiceSearch(req.body || {});
+        res.json(result);
+    } catch (err) {
+        res.json({ query: '', category: null, intent: 'search', urgency: 'flexible' });
+    }
+});
+
+app.get('/api/simon/recommendations', async (req, res) => {
+    try {
+        const userId = req.session?.user?.id || 'anonymous';
+        const result = await simon.generateRecommendations(userId);
+        res.json(result);
+    } catch (err) {
+        res.json({ services: [], bundle_suggestion: null, optimal_booking_time: null });
     }
 });
 

@@ -1,17 +1,12 @@
 /**
  * Financial Engine — Feature #4
  *
- * The financial layer that makes Truvornex a de-facto digital banking
- * entry point for gig workers — BNPL for customers, instant payouts
- * and savings recommendations for providers.
+ * Client-side analytics computations (pure-JS, no DB writes) are preserved below.
+ * All mutation and balance operations go through the server via async functions at the bottom.
  */
 
 // ─── BNPL (Buy Now Pay Later) ─────────────────────────────────────────────────
 
-/**
- * Determines if a customer is eligible for BNPL on a service booking.
- * Factors: loyalty tier, booking history, risk score, minimum spend threshold.
- */
 export function computeBNPLEligibility(customer, bookings, requestedAmount) {
     const completedBookings = bookings.filter(b =>
         b.customer_email === customer.email && b.status === 'completed'
@@ -27,45 +22,25 @@ export function computeBNPLEligibility(customer, bookings, requestedAmount) {
     const cancelRate = bookings.length > 0 ? cancelledBookings.length / bookings.length : 0;
     const noShowRate = bookings.length > 0 ? noShows.length / bookings.length : 0;
 
-    // Eligibility rules
     const reasons = [];
 
-    if (completedBookings.length < 2) {
-        reasons.push('Need at least 2 completed bookings to qualify');
-    }
-    if (cancelRate > 0.4) {
-        reasons.push('Cancellation rate is too high');
-    }
-    if (noShowRate > 0.2) {
-        reasons.push('No-show rate is too high');
-    }
+    if (completedBookings.length < 2) reasons.push('Need at least 2 completed bookings to qualify');
+    if (cancelRate > 0.4) reasons.push('Cancellation rate is too high');
+    if (noShowRate > 0.2) reasons.push('No-show rate is too high');
 
-    // Tier-based credit limits
-    const creditLimits = {
-        champion: 5000,
-        vip: 2000,
-        regular: 500,
-        new: 0,
-    };
+    const creditLimits = { champion: 5000, trusted: 3000, verified: 2000, rising: 1000, vip: 2000, regular: 500, new: 0 };
     const tier = customer.loyalty_tier || 'new';
     const creditLimit = creditLimits[tier] || 0;
 
-    if (creditLimit === 0) {
-        reasons.push('Loyalty tier does not qualify for BNPL yet');
-    }
+    if (creditLimit === 0) reasons.push('Loyalty tier does not qualify for BNPL yet');
 
     const eligible = reasons.length === 0 && creditLimit > 0;
     const approvedAmount = eligible ? Math.min(requestedAmount || creditLimit, creditLimit) : 0;
 
     return {
-        eligible,
-        reasons,
-        creditLimit,
-        approvedAmount,
-        tier,
+        eligible, reasons, creditLimit, approvedAmount, tier,
         repaymentOptions: eligible ? generateRepaymentOptions(approvedAmount) : [],
-        completedBookings: completedBookings.length,
-        totalSpent,
+        completedBookings: completedBookings.length, totalSpent,
     };
 }
 
@@ -80,21 +55,13 @@ function generateRepaymentOptions(amount) {
 
 // ─── Instant Payout ───────────────────────────────────────────────────────────
 
-/**
- * Determines if a provider is eligible for instant payout (vs standard settlement).
- * High-trust providers with consistent completion get priority payout.
- */
 export function computeInstantPayoutEligibility(provider, bookings) {
     const providerBookings = bookings.filter(b => b.provider_id === provider.id);
     const completed = providerBookings.filter(b => b.status === 'completed');
     const noShows = providerBookings.filter(b => b.status === 'no_show');
 
-    const completionRate = providerBookings.length > 0
-        ? completed.length / providerBookings.length
-        : 0;
-    const noShowRate = providerBookings.length > 0
-        ? noShows.length / providerBookings.length
-        : 0;
+    const completionRate = providerBookings.length > 0 ? completed.length / providerBookings.length : 0;
+    const noShowRate = providerBookings.length > 0 ? noShows.length / providerBookings.length : 0;
 
     const reasons = [];
     if (completed.length < 5) reasons.push('Need at least 5 completed jobs');
@@ -103,16 +70,10 @@ export function computeInstantPayoutEligibility(provider, bookings) {
     if (!provider.verified) reasons.push('Provider verification required');
 
     const eligible = reasons.length === 0;
+    const pendingRevenue = completed.filter(b => !b.paid_at).reduce((s, b) => s + (b.price || 0), 0);
 
-    // Pending payout = sum of completed but unpaid
-    const pendingRevenue = completed
-        .filter(b => !b.paid_at)
-        .reduce((s, b) => s + (b.price || 0), 0);
-
-    // Standard settlement is T+7; instant is within 24h
     return {
-        eligible,
-        reasons,
+        eligible, reasons,
         settlementType: eligible ? 'instant' : 'standard',
         settlementHours: eligible ? 24 : 168,
         pendingRevenue,
@@ -125,39 +86,21 @@ export function computeInstantPayoutEligibility(provider, bookings) {
 
 // ─── Provider Savings Engine ──────────────────────────────────────────────────
 
-/**
- * Generates savings recommendations for a provider based on their earnings.
- * Targets the unbanked/underbanked gig worker — encourages building
- * a financial buffer within the platform.
- */
 export function computeProviderSavingsRecommendation(provider, bookings) {
-    const completed = bookings.filter(b =>
-        b.provider_id === provider.id && b.status === 'completed'
-    );
-
+    const completed = bookings.filter(b => b.provider_id === provider.id && b.status === 'completed');
     const totalRevenue = completed.reduce((s, b) => s + (b.price || 0), 0);
     const monthlyRevenue = computeMonthlyRevenueForProvider(completed);
     const avgMonthly = monthlyRevenue.length > 0
-        ? monthlyRevenue.reduce((s, m) => s + m.revenue, 0) / monthlyRevenue.length
-        : 0;
-
+        ? monthlyRevenue.reduce((s, m) => s + m.revenue, 0) / monthlyRevenue.length : 0;
     const volatility = computeRevenueVolatility(monthlyRevenue);
-
-    // Emergency fund target = 3 months of average revenue
     const emergencyFundTarget = Math.round(avgMonthly * 3);
     const recommendedMonthlySaving = Math.round(avgMonthly * 0.15);
-
-    // Tool/equipment BNPL: providers can buy tools on credit against future earnings
     const bnplForTools = totalRevenue >= 500 && completed.length >= 10;
 
     return {
-        avgMonthlyRevenue: Math.round(avgMonthly),
-        totalEarned: Math.round(totalRevenue),
-        volatility,
-        emergencyFundTarget,
-        recommendedMonthlySaving,
-        recommendedSavingsRate: '15%',
-        bnplForToolsEligible: bnplForTools,
+        avgMonthlyRevenue: Math.round(avgMonthly), totalEarned: Math.round(totalRevenue),
+        volatility, emergencyFundTarget, recommendedMonthlySaving,
+        recommendedSavingsRate: '15%', bnplForToolsEligible: bnplForTools,
         bnplToolsCreditLimit: bnplForTools ? Math.round(avgMonthly * 0.5) : 0,
         milestones: generateSavingsMilestones(totalRevenue, avgMonthly),
         insights: generateSavingsInsights(avgMonthly, volatility, completed.length),
@@ -185,67 +128,46 @@ function computeRevenueVolatility(monthlyRevenue) {
 }
 
 function generateSavingsMilestones(totalRevenue, avgMonthly) {
-    const milestones = [
+    return [
         { label: 'Emergency fund (1 month)', target: Math.round(avgMonthly), reached: totalRevenue * 0.1 >= avgMonthly },
         { label: 'Emergency fund (3 months)', target: Math.round(avgMonthly * 3), reached: totalRevenue * 0.1 >= avgMonthly * 3 },
         { label: 'Tool upgrade fund', target: 300, reached: totalRevenue * 0.1 >= 300 },
         { label: 'Business insurance buffer', target: 500, reached: totalRevenue * 0.1 >= 500 },
     ];
-    return milestones;
 }
 
 function generateSavingsInsights(avgMonthly, volatility, completedJobs) {
     const insights = [];
-    if (volatility === 'high') {
-        insights.push('Your income is quite variable — a bigger emergency fund (4-6 months) would give you stability.');
-    }
-    if (avgMonthly > 0) {
-        insights.push(`Saving 15% of your earnings means PKR ${Math.round(avgMonthly * 0.15).toLocaleString()} / month set aside automatically.`);
-    }
-    if (completedJobs >= 20) {
-        insights.push('With 20+ completed jobs, you qualify for Truvornex BNPL to finance tools and equipment.');
-    }
+    if (volatility === 'high') insights.push('Your income is quite variable — a bigger emergency fund (4-6 months) would give you stability.');
+    if (avgMonthly > 0) insights.push(`Saving 15% of your earnings means PKR ${Math.round(avgMonthly * 0.15).toLocaleString()} / month set aside automatically.`);
+    if (completedJobs >= 20) insights.push('With 20+ completed jobs, you qualify for Truvornex BNPL to finance tools and equipment.');
     return insights;
 }
 
 // ─── Wallet Balance Summary ───────────────────────────────────────────────────
 
-/**
- * Computes a comprehensive wallet summary for a provider.
- * Includes pending payouts, savings balance, and BNPL exposure.
- */
 export function computeProviderWalletSummary(provider, bookings) {
     const providerBookings = bookings.filter(b => b.provider_id === provider.id);
     const completed = providerBookings.filter(b => b.status === 'completed');
     const pending = providerBookings.filter(b => ['pending', 'confirmed'].includes(b.status));
-
     const totalEarned = completed.reduce((s, b) => s + (b.price || 0), 0);
     const pendingEarnings = pending.reduce((s, b) => s + (b.price || 0), 0);
     const payoutEligibility = computeInstantPayoutEligibility(provider, bookings);
     const savings = computeProviderSavingsRecommendation(provider, bookings);
-
     return {
-        totalEarned,
-        pendingEarnings,
+        totalEarned, pendingEarnings,
         instantPayoutEligible: payoutEligibility.eligible,
         pendingPayoutAmount: payoutEligibility.pendingRevenue,
         instantPayoutNet: payoutEligibility.netInstantPayout,
         savingsRecommendation: savings,
-        walletHealth: totalEarned > savings.avgMonthlyRevenue * 3 ? 'healthy' :
-            totalEarned > savings.avgMonthlyRevenue ? 'growing' : 'early',
+        walletHealth: totalEarned > savings.avgMonthlyRevenue * 3 ? 'healthy' : totalEarned > savings.avgMonthlyRevenue ? 'growing' : 'early',
     };
 }
 
 // ─── Customer Spending Intelligence ──────────────────────────────────────────
 
-/**
- * Analyses a customer's spending patterns and generates budget recommendations.
- */
 export function computeCustomerSpendingIntelligence(customerEmail, bookings) {
-    const myBookings = bookings.filter(b =>
-        b.customer_email === customerEmail && b.status === 'completed'
-    );
-
+    const myBookings = bookings.filter(b => b.customer_email === customerEmail && b.status === 'completed');
     const totalSpent = myBookings.reduce((s, b) => s + (b.price || 0), 0);
     const byCategory = {};
     for (const b of myBookings) {
@@ -254,21 +176,16 @@ export function computeCustomerSpendingIntelligence(customerEmail, bookings) {
         byCategory[cat].count++;
         byCategory[cat].total += b.price || 0;
     }
-
     const topCategories = Object.entries(byCategory)
         .map(([cat, data]) => ({ category: cat, ...data, avgSpend: Math.round(data.total / data.count) }))
         .sort((a, b) => b.total - a.total);
-
     const avgMonthlySpend = computeAvgMonthlySpend(myBookings);
-
     return {
-        totalSpent,
-        avgMonthlySpend,
-        topCategories,
+        totalSpent, avgMonthlySpend, topCategories,
         bookingCount: myBookings.length,
         avgBookingValue: myBookings.length > 0 ? Math.round(totalSpent / myBookings.length) : 0,
         budgetRecommendation: avgMonthlySpend > 0 ? Math.round(avgMonthlySpend * 1.1) : null,
-        savingsOpportunity: topCategories.length > 0 ? `Bundle your top services to save up to 15%` : null,
+        savingsOpportunity: topCategories.length > 0 ? 'Bundle your top services to save up to 15%' : null,
     };
 }
 
@@ -282,4 +199,62 @@ function computeAvgMonthlySpend(bookings) {
     }
     const months = Object.values(byMonth);
     return months.length > 0 ? Math.round(months.reduce((s, v) => s + v, 0) / months.length) : 0;
+}
+
+// ─── Server-backed wallet operations (async, real DB) ─────────────────────────
+
+export async function getWalletBalance() {
+    const r = await fetch('/api/financial/wallet', { credentials: 'include' });
+    if (!r.ok) throw new Error('Failed to fetch wallet');
+    return r.json();
+}
+
+export async function creditWallet({ amount, description, reference_type, reference_id }) {
+    const r = await fetch('/api/financial/wallet/credit', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description, reference_type, reference_id }),
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.error || 'Credit failed'); }
+    return r.json();
+}
+
+export async function debitWallet({ amount, description, reference_type, reference_id }) {
+    const r = await fetch('/api/financial/wallet/debit', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description, reference_type, reference_id }),
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.error || 'Debit failed'); }
+    return r.json();
+}
+
+export async function checkBNPLEligibility(requested_amount) {
+    const r = await fetch('/api/financial/bnpl/check', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requested_amount }),
+    });
+    if (!r.ok) throw new Error('BNPL check failed');
+    return r.json();
+}
+
+export async function createBNPLAgreement({ booking_id, total_amount, installments }) {
+    const r = await fetch('/api/financial/bnpl', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ booking_id, total_amount, installments }),
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.error || 'BNPL creation failed'); }
+    return r.json();
+}
+
+export async function getLoyaltyBalance() {
+    const r = await fetch('/api/financial/loyalty', { credentials: 'include' });
+    if (!r.ok) throw new Error('Failed to fetch loyalty balance');
+    return r.json();
 }

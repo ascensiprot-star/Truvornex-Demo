@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 
-export default function useGeolocation(fallback = [40.7128, -74.006]) {
+const HYDERABAD_PK = [25.396, 68.374];
+
+export default function useGeolocation(fallback = HYDERABAD_PK) {
     const [location, setLocation] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,12 +24,10 @@ export default function useGeolocation(fallback = [40.7128, -74.006]) {
 
         const onError = (err) => {
             if (err.code === 1) {
-                // Permission denied
                 setPermissionDenied(true);
                 setError('Location permission denied. Please allow location access in your browser settings.');
             } else if (err.code === 2) {
                 setError('Location unavailable. Trying without high accuracy...');
-                // Retry without high accuracy
                 navigator.geolocation.getCurrentPosition(onSuccess, (e2) => {
                     setError('Could not get your location. Showing default location.');
                     setLocation(fallback);

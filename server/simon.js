@@ -1,8 +1,45 @@
 /**
  * Simon Intelligence Service — the nervous system of Truvornex.
- * Runs behind every booking, zone check, and home insight.
- * All functions have deterministic fallbacks — works without a DeepSeek key.
+ * Hardened: in-memory caching, Zod validation, deterministic fallbacks.
  */
+import { z } from 'zod';
+
+const cache = new Map();
+
+function cacheGet(key) {
+    const entry = cache.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expires) { cache.delete(key); return null; }
+    return entry.value;
+}
+
+function cacheSet(key, value, ttlMs) {
+    cache.set(key, { value, expires: Date.now() + ttlMs });
+}
+
+const HomeInsightsSchema = z.object({
+    area: z.string().max(120).default('your area'),
+    user_id: z.string().optional(),
+});
+
+const BookingAnalysisSchema = z.object({
+    serviceType: z.string().max(80).default('service'),
+    date: z.string().optional(),
+    timeSlot: z.string().optional(),
+    price: z.number().optional(),
+    area: z.string().max(120).default('your area'),
+    service_id: z.string().uuid().optional(),
+    provider_id: z.string().uuid().optional(),
+});
+
+const ZoneHealthSchema = z.object({
+    zone_id: z.string().optional(),
+    area: z.string().max(120).default('your area'),
+});
+
+const SearchParseSchema = z.object({
+    transcript: z.string().min(1).max(500),
+});
 
 async function callAI(systemPrompt, userPrompt) {
     const key = process.env.DEEPSEEK_API_KEY;
@@ -46,23 +83,34 @@ function getTrending() {
 }
 
 /* ── 1. Home Insights ─────────────────────────────────────────────────────── */
-export async function getHomeInsights({ area = 'your area' } = {}) {
+export async function getHomeInsights({ area = 'your area', user_id } = {}) {
+    const cacheKey = `home-insights:${user_id || area}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
+    const parse = HomeInsightsSchema.safeParse({ area, user_id });
+    const safeArea = parse.success ? parse.data.area : 'your area';
+
     const { h, weekend, month } = timeCtx();
 
     const ai = await callAI(
-        `You are Simon, the AI intelligence layer of Truvornex neighborhood services. Return JSON with exactly 3 insights: {"insights":[{"tag":"2-3 word label","message":"actionable insight max 115 chars","type":"demand|reminder|bundle|trust|suggestion"},{"tag":...},{"tag":...}]}. Be specific, personal, and useful.`,
-        `Area: ${area}, Hour: ${h}, Month: ${month + 1}, Weekend: ${weekend}`
+        `You are Simon, the AI intelligence layer of Truvornex neighborhood services platform in Pakistan. Return JSON with exactly 3 insights: {"insights":[{"tag":"2-3 word label","message":"actionable insight max 115 chars","type":"demand|reminder|bundle|trust|suggestion"},{"tag":...},{"tag":...}]}. Be specific, personal, and useful.`,
+        `Area: ${safeArea}, Hour: ${h}, Month: ${month + 1}, Weekend: ${weekend}`
     );
-    if (ai?.insights?.length >= 3) return ai.insights.slice(0, 3);
+    if (ai?.insights?.length >= 3) {
+        const result = ai.insights.slice(0, 3);
+        cacheSet(cacheKey, result, 10 * 60 * 1000);
+        return result;
+    }
 
     const ins = [];
 
     if (weekend) {
-        ins.push({ tag: 'Demand Spike', message: `Cleaning requests in ${area} are 3× higher this weekend. Book now to secure your preferred provider.`, type: 'demand' });
+        ins.push({ tag: 'Demand Spike', message: `Cleaning requests in ${safeArea} are 3× higher this weekend. Book now to secure your preferred provider.`, type: 'demand' });
     } else if (h >= 7 && h <= 9) {
-        ins.push({ tag: 'Morning Window', message: `${18 + Math.floor(Math.random() * 8)} providers just came online in ${area}. Best window for same-day bookings.`, type: 'demand' });
+        ins.push({ tag: 'Morning Window', message: `Providers just came online in ${safeArea}. Best window for same-day bookings.`, type: 'demand' });
     } else {
-        ins.push({ tag: 'Zone Active', message: `${32 + Math.floor(Math.random() * 15)} providers live in ${area} right now — average response under 3 minutes.`, type: 'demand' });
+        ins.push({ tag: 'Zone Active', message: `Active providers in ${safeArea} right now — average response under 3 minutes.`, type: 'demand' });
     }
 
     if (month >= 2 && month <= 4) {
@@ -72,23 +120,30 @@ export async function getHomeInsights({ area = 'your area' } = {}) {
     } else if (month >= 5 && month <= 7) {
         ins.push({ tag: 'Smart Reminder', message: 'Summer AC demand is 2× normal. Your last HVAC check may be overdue — schedule before peak heat.', type: 'reminder' });
     } else {
-        ins.push({ tag: 'Smart Reminder', message: 'Based on home cycles, a deep clean may be due. Simon has Maria R. available Thursday at 10 AM.', type: 'reminder' });
+        ins.push({ tag: 'Smart Reminder', message: 'Based on seasonal cycles, a deep clean may be due. Check available providers for this week.', type: 'reminder' });
     }
 
-    ins.push({ tag: 'Bundle Deal', message: `4 neighbors in ${area} are booking movers this week. Join the Group Bundle and save up to 30%.`, type: 'bundle' });
+    ins.push({ tag: 'Bundle Deal', message: `Neighbors in ${safeArea} are booking services this week. Join the Group Bundle and save up to 30%.`, type: 'bundle' });
 
+    cacheSet(cacheKey, ins, 10 * 60 * 1000);
     return ins;
 }
 
 /* ── 2. Booking Analysis ──────────────────────────────────────────────────── */
-export async function analyzeBooking({ serviceType = 'service', date, timeSlot, price, area = 'your area' } = {}) {
+export async function analyzeBooking(input = {}) {
+    const parse = BookingAnalysisSchema.safeParse(input);
+    if (!parse.success) {
+        return { demandLevel: 'moderate', priceFairness: 'fair', timingScore: 7, timingSuggestion: 'A solid time slot for this service.', savingsTip: null };
+    }
+    const { serviceType, date, timeSlot, price, area } = parse.data;
+
     const { weekend } = timeCtx();
     const h = timeSlot ? parseInt(timeSlot) : 10;
     const slotWeekend = date ? [0, 6].includes(new Date(date + 'T12:00:00').getDay()) : weekend;
 
     const ai = await callAI(
         `You are Simon. Analyze a service booking request and return JSON: {"demandLevel":"low|moderate|high|surge","priceFairness":"below_market|fair|above_market","timingScore":1-10,"timingSuggestion":"max 80 chars, actionable","savingsTip":"max 80 chars or null"}`,
-        `Service: ${serviceType}, Date: ${date}, Time: ${timeSlot}, Price: $${price}, Area: ${area}, Weekend: ${slotWeekend}`
+        `Service: ${serviceType}, Date: ${date}, Time: ${timeSlot}, Price: PKR${price}, Area: ${area}, Weekend: ${slotWeekend}`
     );
     if (ai?.demandLevel) return ai;
 
@@ -116,7 +171,14 @@ export async function analyzeBooking({ serviceType = 'service', date, timeSlot, 
 }
 
 /* ── 3. Zone Health ───────────────────────────────────────────────────────── */
-export function getZoneHealth({ area = 'your area' } = {}) {
+export function getZoneHealth(input = {}) {
+    const parse = ZoneHealthSchema.safeParse(input);
+    const { zone_id, area } = parse.success ? parse.data : { area: 'your area' };
+
+    const cacheKey = `zone-health:${zone_id || area}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
     const { active, h } = timeCtx();
     const score = active
         ? 72 + Math.floor(Math.random() * 20)
@@ -126,15 +188,57 @@ export function getZoneHealth({ area = 'your area' } = {}) {
         : 8 + Math.floor(Math.random() * 10);
     const health = score >= 72 ? 'active' : score >= 50 ? 'moderate' : 'quiet';
 
-    return {
+    const result = {
         health,
         score,
         activeProviders: providers,
         area,
+        zone_id: zone_id || null,
         trendingServices: getTrending(),
         peakHours: active && h >= 10 && h <= 14,
         alert: score < 40
             ? `Low provider availability in ${area} right now. Consider booking for tomorrow morning.`
             : null,
     };
+
+    cacheSet(cacheKey, result, 5 * 60 * 1000);
+    return result;
+}
+
+/* ── 4. Voice Search Parse ────────────────────────────────────────────────── */
+export async function parseVoiceSearch(input = {}) {
+    const parse = SearchParseSchema.safeParse(input);
+    if (!parse.success) return { query: '', category: null, intent: 'search' };
+    const { transcript } = parse.data;
+
+    const ai = await callAI(
+        `You are Simon parsing a voice search for Truvornex neighborhood services. Return JSON: {"query":"cleaned search terms","category":"cleaning|plumbing|hvac|moving|gardening|chef|handyman|fitness|other|null","intent":"book|search|compare|info","urgency":"immediate|today|this_week|flexible"}`,
+        `Voice input: "${transcript}"`
+    );
+    if (ai?.query !== undefined) return ai;
+
+    const lower = transcript.toLowerCase();
+    const category = ['cleaning','plumbing','hvac','moving','gardening','chef','handyman','fitness']
+        .find(c => lower.includes(c)) || null;
+
+    return { query: transcript, category, intent: 'search', urgency: 'flexible' };
+}
+
+/* ── 5. Generate Recommendations ─────────────────────────────────────────── */
+export async function generateRecommendations(userId) {
+    const cacheKey = `recommendations:${userId}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return cached;
+
+    const { h, weekend, month } = timeCtx();
+    const trending = getTrending();
+
+    const result = {
+        services: trending.map(s => ({ name: s, reason: 'Trending in your area', urgency: 'this_week' })),
+        bundle_suggestion: weekend ? 'Book cleaning + handyman together and save 20%' : null,
+        optimal_booking_time: !weekend && h < 12 ? 'Now is a great time to book — providers are available' : null,
+    };
+
+    cacheSet(cacheKey, result, 15 * 60 * 1000);
+    return result;
 }

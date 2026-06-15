@@ -1,5 +1,6 @@
 - [Truvornex import fixes](truvornex-fixes.md) — all broken Promise.all/undefined-var patterns from stripped Base44 API calls; fix pattern documented
-- [DeepSeek AI wiring](deepseek-wiring.md) — Simon AI uses VITE_DEEPSEEK_API_KEY via client-side fetch with SSE streaming; isConfigured() guard before every call
+- [DeepSeek AI wiring](deepseek-wiring.md) — Simon AI uses server-side DEEPSEEK_API_KEY (process.env only); all LLM calls via Express routes, never VITE_ prefix
 - [Dark mode pattern](dark-mode-pattern.md) — never use hardcoded Tailwind colors (text-zinc-900, bg-white); always use CSS var() inline styles; prose needs explicit overrides in index.css
 - [Auth page](auth-page.md) — /login and /signup both render Login.jsx (tab-based toggle); routes must be outside all Layout wrappers in App.jsx
 - [Neighborhood OS features](neighborhood-os.md) — Community has 4 tabs (Feed/Jobs/Events/Polls), inline comments, polls voting; NeighborhoodDashboard is a full OS hub; Events wired to Supabase
+- [System completion arch](system-completion.md) — Express+PostgreSQL adapted from Supabase spec; all new tables in server/db.js initNewTables(); wallet_mutate is a Postgres stored proc with FOR UPDATE locking
