@@ -54,7 +54,7 @@ export default function SpendingAnalytics() {
 
     const getAiInsight = async () => {
         if (!isConfigured()) {
-            setAiInsight('**DeepSeek not configured** — Add `DEEPSEEK_API_KEY` to your Replit secrets to unlock Simon AI spending insights.');
+            setAiInsight('**DeepSeek not configured** — Add `DEEPSEEK_API_KEY` to your environment variables to unlock Simon AI spending insights.');
             return;
         }
         setAiLoading(true);

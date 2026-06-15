@@ -70,6 +70,35 @@ async function initDb() {
         `);
         await initNewTables();
         await initExtendedTables();
+        try {
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS neighborhood_zones (
+                    id TEXT PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    area TEXT,
+                    city TEXT,
+                    country TEXT DEFAULT 'PK',
+                    health_score INTEGER DEFAULT 70,
+                    demand_index INTEGER DEFAULT 60,
+                    active_providers INTEGER DEFAULT 0,
+                    updated_at TIMESTAMPTZ DEFAULT NOW()
+                )
+            `);
+            const { rows: zc } = await pool.query(`SELECT COUNT(*) FROM neighborhood_zones`);
+            if (parseInt(zc[0].count) === 0) {
+                await pool.query(`
+                    INSERT INTO neighborhood_zones (id, name, area, city, health_score, demand_index, active_providers)
+                    VALUES
+                        ('hyderabad-main', 'Hyderabad Central', 'Latifabad', 'Hyderabad', 78, 72, 45),
+                        ('karachi-gulshan', 'Karachi Gulshan', 'Gulshan-e-Iqbal', 'Karachi', 85, 81, 120),
+                        ('lahore-gulberg', 'Lahore Gulberg', 'Gulberg III', 'Lahore', 82, 77, 95)
+                    ON CONFLICT (id) DO NOTHING
+                `);
+                console.log('Seed: 3 neighborhood zones added');
+            }
+        } catch (e) {
+            console.warn('Zone seed skipped:', e.message);
+        }
         console.log('Database ready');
     } catch (err) {
         console.error('DB init error:', err.message);
@@ -639,6 +668,36 @@ app.get('/api/realtime/single/:table/:id', requireAuth, async (req, res) => {
     }
 });
 
+app.get('/api/realtime/poll', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    const role = req.session.user.role;
+    try {
+        const bookingCol = role === 'provider' ? 'provider_id' : 'customer_id';
+        const [notifs, bookings, messages] = await Promise.all([
+            pool.query(
+                `SELECT id, type, message, read, created_at FROM notifications WHERE user_id=$1 AND read=false ORDER BY created_at DESC LIMIT 10`,
+                [userId]
+            ),
+            pool.query(
+                `SELECT id, status, updated_at FROM bookings WHERE ${bookingCol}=$1 AND updated_at >= NOW() - INTERVAL '5 minutes' ORDER BY updated_at DESC LIMIT 5`,
+                [userId]
+            ),
+            pool.query(
+                `SELECT id, content, sender_id, created_at FROM chat_messages WHERE receiver_id=$1 AND created_at >= NOW() - INTERVAL '5 minutes' ORDER BY created_at DESC LIMIT 10`,
+                [userId]
+            ),
+        ]);
+        res.json({
+            unread_notifications: notifs.rows,
+            recent_booking_updates: bookings.rows,
+            recent_messages: messages.rows,
+            polled_at: new Date().toISOString(),
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 /* ── Vouches ────────────────────────────────────────────────────────────────── */
 
 app.get('/api/vouches/:providerId', async (req, res) => {
@@ -766,9 +825,18 @@ app.post('/api/simon/booking-analysis', async (req, res) => {
     }
 });
 
-app.get('/api/simon/zone-health', (req, res) => {
+app.get('/api/simon/zone-health', async (req, res) => {
     try {
-        const result = simon.getZoneHealth({ zone_id: req.query.zone_id, area: req.query.area || 'your area' });
+        let dbStats = null;
+        try {
+            const { rows } = await pool.query(`
+                SELECT
+                    (SELECT COUNT(*)::int FROM bookings WHERE status IN ('confirmed','in_progress')) AS active_bookings,
+                    (SELECT COUNT(*)::int FROM users WHERE role = 'provider') AS total_providers
+            `);
+            dbStats = rows[0];
+        } catch (_) {}
+        const result = simon.getZoneHealth({ zone_id: req.query.zone_id, area: req.query.area || 'your area', dbStats });
         res.json(result);
     } catch (err) {
         res.json({ health: 'active', score: 75, activeProviders: 40, area: 'your area', trendingServices: ['Cleaning', 'Plumbing'], peakHours: false, alert: null });

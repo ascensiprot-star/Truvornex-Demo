@@ -143,7 +143,7 @@ Be precise, data-driven, use markdown formatting with headers and bullet points.
         if (!isConfigured()) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: '**Simon needs DeepSeek to be configured.** Your `DEEPSEEK_API_KEY` secret powers this AI. Add it in Replit Secrets and restart the server.',
+                content: '**Simon needs DeepSeek to be configured.** Your `DEEPSEEK_API_KEY` secret powers this AI. Add it in your environment variables and restart the server.',
             }]);
             setLoading(false);
             return;

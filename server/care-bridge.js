@@ -112,6 +112,23 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 
+/* ── GET /api/care-bridge/my-orders — alias for listing sent orders ──────── */
+router.get('/my-orders', requireAuth, async (req, res) => {
+    const { status, limit = 20 } = req.query;
+    try {
+        const { rows } = await pool.query(`
+            SELECT * FROM care_bridge_orders
+            WHERE sender_id = $1
+              AND ($2::TEXT IS NULL OR status = $2)
+            ORDER BY created_at DESC
+            LIMIT $3
+        `, [req.session.user.id, status || null, Math.min(parseInt(limit) || 20, 100)]);
+        res.json({ orders: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 /* ── GET /api/care-bridge/:id — single order detail ─────────────────────── */
 router.get('/:id', requireAuth, async (req, res) => {
     try {

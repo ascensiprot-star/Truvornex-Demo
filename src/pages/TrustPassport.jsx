@@ -46,6 +46,8 @@ export default function TrustPassport() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [verifyResult, setVerifyResult] = useState(null);
+    const [verifying, setVerifying] = useState(false);
     const shareUrl = `${window.location.origin}/trust/${providerId}`;
 
     useEffect(() => {
@@ -65,6 +67,20 @@ export default function TrustPassport() {
             await navigator.clipboard.writeText(shareUrl);
             setCopied(true);
             setTimeout(() => setCopied(false), 2500);
+        }
+    };
+
+    const handleVerify = async () => {
+        setVerifying(true);
+        setVerifyResult(null);
+        try {
+            const r = await fetch(`/api/identity/${providerId}/verify`);
+            const d = await r.json();
+            setVerifyResult(d);
+        } catch (e) {
+            setVerifyResult({ error: 'Verification request failed.' });
+        } finally {
+            setVerifying(false);
         }
     };
 
@@ -259,6 +275,18 @@ export default function TrustPassport() {
                     >
                         {copied ? '✓ Link Copied' : '↗ Share Passport'}
                     </button>
+                    <button
+                        onClick={handleVerify}
+                        disabled={verifying}
+                        style={{
+                            flex: 1, padding: '12px 20px',
+                            background: 'var(--color-surface-raised)', color: 'var(--color-text)',
+                            border: '1px solid var(--color-border)', borderRadius: 10,
+                            fontWeight: 700, fontSize: 14, cursor: 'pointer',
+                        }}
+                    >
+                        {verifying ? '⏳ Verifying…' : '🔍 Verify Credential'}
+                    </button>
                     <a
                         href="/"
                         style={{
@@ -272,6 +300,27 @@ export default function TrustPassport() {
                         Book This Provider
                     </a>
                 </div>
+
+                {verifyResult && (
+                    <div style={{
+                        marginTop: 16, padding: '14px 18px', borderRadius: 12,
+                        background: verifyResult.error ? 'var(--color-surface-raised)' : '#10b98115',
+                        border: `1px solid ${verifyResult.error ? 'var(--color-border)' : '#10b98140'}`,
+                    }}>
+                        {verifyResult.error ? (
+                            <p style={{ fontSize: 13, color: 'var(--color-text-subtle)', margin: 0 }}>{verifyResult.error}</p>
+                        ) : (
+                            <>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 4 }}>
+                                    ✓ Credential Verified
+                                </div>
+                                <div style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>
+                                    Status: {verifyResult.status || 'valid'} · Hash: {verifyResult.credential_hash?.slice(0, 16) || verifyResult.hash?.slice(0, 16) || 'confirmed'}…
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
 
                 <div style={{ marginTop: 24, textAlign: 'center', fontSize: 11, color: 'var(--color-text-subtle)' }}>
                     Last updated {passport.last_computed_at

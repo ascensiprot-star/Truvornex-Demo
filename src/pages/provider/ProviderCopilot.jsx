@@ -133,7 +133,7 @@ You are a proactive, data-driven business advisor. Give specific, numbered actio
         if (!isConfigured()) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: '**Simon Copilot needs DeepSeek configured.** Add `DEEPSEEK_API_KEY` to your Replit secrets to activate AI responses.',
+                content: '**Simon Copilot needs DeepSeek configured.** Add `DEEPSEEK_API_KEY` to your environment variables to activate AI responses.',
             }]);
             setLoading(false);
             return;

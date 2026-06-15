@@ -111,6 +111,21 @@ async function generateForecast(zoneId, area, categories) {
     };
 }
 
+/* ── GET /api/zones — list all zones ────────────────────────────────────── */
+router.get('/', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT id, name, area, city, health_score, demand_index, active_providers, updated_at
+            FROM neighborhood_zones
+            ORDER BY health_score DESC
+            LIMIT 50
+        `);
+        res.json({ zones: rows });
+    } catch (err) {
+        res.json({ zones: [] });
+    }
+});
+
 /* ── PUBLIC: GET /api/zones/:zoneId/forecast ────────────────────────────── */
 router.get('/:zoneId/forecast', async (req, res) => {
     const { zoneId } = req.params;
@@ -201,7 +216,7 @@ router.get('/idle-slots', requireAuth, async (req, res) => {
 });
 
 /* ── POST /api/zones/micro-jobs/match — Simon idle matching ─────────────── */
-router.post('/micro-jobs/match', requireAuth, async (req, res) => {
+async function handleMatchIdle(req, res) {
     const providerId = req.session.user.id;
 
     try {
@@ -260,7 +275,9 @@ router.post('/micro-jobs/match', requireAuth, async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-});
+}
+router.post('/micro-jobs/match', requireAuth, handleMatchIdle);
+router.post('/match-idle', requireAuth, handleMatchIdle);
 
 /* ── PATCH /api/zones/micro-jobs/:id/accept ─────────────────────────────── */
 router.patch('/micro-jobs/:id/accept', requireAuth, async (req, res) => {
@@ -331,6 +348,60 @@ router.post('/savings-goals', requireAuth, async (req, res) => {
             VALUES ($1, $2, $3, $4, $5) RETURNING *
         `, [req.session.user.id, title, target_pkr, deadline || null, category || null]);
         res.json({ savings_goal: rows[0], message: 'Simon will now route idle-time micro-jobs toward this target.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── GET /api/zones/:zoneId/idle-slots — open slots in a zone (public) ───── */
+router.get('/:zoneId/idle-slots', async (req, res) => {
+    try {
+        const { rows } = await pool.query(`
+            SELECT is.id, is.starts_at, is.ends_at, is.categories, is.status, is.zone_id,
+                   u.full_name AS provider_name
+            FROM idle_slots is
+            JOIN users u ON u.id = is.provider_id
+            WHERE is.zone_id = $1 AND is.status = 'open' AND is.starts_at >= NOW()
+            ORDER BY is.starts_at ASC LIMIT 50
+        `, [req.params.zoneId]);
+        res.json({ idle_slots: rows });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── POST /api/zones/:zoneId/idle-slots — declare availability in a zone ── */
+router.post('/:zoneId/idle-slots', requireAuth, async (req, res) => {
+    const { starts_at, ends_at, categories = [] } = req.body;
+    const { zoneId } = req.params;
+    const providerId = req.session.user.id;
+    if (!starts_at || !ends_at) return res.status(400).json({ error: 'starts_at and ends_at required' });
+    if (new Date(ends_at) <= new Date(starts_at)) return res.status(400).json({ error: 'ends_at must be after starts_at' });
+    try {
+        const { rows } = await pool.query(`
+            INSERT INTO idle_slots(provider_id, starts_at, ends_at, categories, zone_id)
+            VALUES ($1, $2, $3, $4, $5) RETURNING *
+        `, [providerId, starts_at, ends_at, categories, zoneId]);
+        res.json({ idle_slot: rows[0], message: 'Idle window registered. Simon will match micro-jobs in your area.' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+/* ── GET /api/zones/:zoneId/micro-jobs — open micro-jobs in a zone ───────── */
+router.get('/:zoneId/micro-jobs', async (req, res) => {
+    const { category, limit = 20 } = req.query;
+    try {
+        const { rows } = await pool.query(`
+            SELECT mj.*, u.full_name AS provider_name
+            FROM micro_jobs mj
+            LEFT JOIN users u ON u.id = mj.provider_id
+            WHERE mj.status = 'open' AND mj.zone_id = $1
+              AND ($2::TEXT IS NULL OR mj.category = $2)
+            ORDER BY mj.price_pkr DESC, mj.created_at DESC
+            LIMIT $3
+        `, [req.params.zoneId, category || null, Math.min(parseInt(limit) || 20, 100)]);
+        res.json({ micro_jobs: rows });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

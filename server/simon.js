@@ -175,17 +175,23 @@ export function getZoneHealth(input = {}) {
     const parse = ZoneHealthSchema.safeParse(input);
     const { zone_id, area } = parse.success ? parse.data : { area: 'your area' };
 
+    const dbStats = input.dbStats || null;
     const cacheKey = `zone-health:${zone_id || area}`;
-    const cached = cacheGet(cacheKey);
-    if (cached) return cached;
+    if (!dbStats) {
+        const cached = cacheGet(cacheKey);
+        if (cached) return cached;
+    }
 
     const { active, h } = timeCtx();
-    const score = active
-        ? 72 + Math.floor(Math.random() * 20)
-        : 35 + Math.floor(Math.random() * 18);
-    const providers = active
-        ? 30 + Math.floor(Math.random() * 20)
-        : 8 + Math.floor(Math.random() * 10);
+    const score = dbStats
+        ? Math.min(95, Math.max(15, Math.round(
+            (parseInt(dbStats.active_bookings) / Math.max(1, parseInt(dbStats.total_providers))) * 25
+            + (active ? 55 : 28)
+          )))
+        : active ? 72 + Math.floor(Math.random() * 20) : 35 + Math.floor(Math.random() * 18);
+    const providers = dbStats
+        ? parseInt(dbStats.total_providers)
+        : active ? 30 + Math.floor(Math.random() * 20) : 8 + Math.floor(Math.random() * 10);
     const health = score >= 72 ? 'active' : score >= 50 ? 'moderate' : 'quiet';
 
     const result = {

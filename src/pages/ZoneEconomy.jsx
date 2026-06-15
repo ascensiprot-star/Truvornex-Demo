@@ -59,6 +59,9 @@ export default function ZoneEconomy() {
     const [idleMsg, setIdleMsg] = useState('');
     const [idleLoading, setIdleLoading] = useState(false);
 
+    const [zones, setZones] = useState([]);
+    const [microJobs, setMicroJobs] = useState([]);
+
     const [matches, setMatches] = useState(null);
     const [matchLoading, setMatchLoading] = useState(false);
 
@@ -67,6 +70,28 @@ export default function ZoneEconomy() {
     const [goalTarget, setGoalTarget] = useState('');
     const [goalDeadline, setGoalDeadline] = useState('');
     const [goalMsg, setGoalMsg] = useState('');
+
+    const loadZones = useCallback(async () => {
+        try {
+            const r = await fetch('/api/zones');
+            const d = await r.json();
+            if (d.zones?.length > 0) {
+                setZones(d.zones);
+                if (!zoneId || zoneId === 'hyderabad-main') {
+                    setZoneId(d.zones[0].id);
+                    setArea(d.zones[0].area || d.zones[0].name);
+                }
+            }
+        } catch { }
+    }, []);
+
+    const loadMicroJobs = useCallback(async () => {
+        try {
+            const r = await fetch(`/api/zones/${encodeURIComponent(zoneId)}/micro-jobs`);
+            const d = await r.json();
+            setMicroJobs(d.micro_jobs || []);
+        } catch { }
+    }, [zoneId]);
 
     const loadForecast = useCallback(async () => {
         setForecastLoading(true);
@@ -101,7 +126,8 @@ export default function ZoneEconomy() {
         setGoals(d.savings_goals || []);
     }, [user]);
 
-    useEffect(() => { loadForecast(); loadSimonForecast(); }, [loadForecast, loadSimonForecast]);
+    useEffect(() => { loadZones(); }, [loadZones]);
+    useEffect(() => { loadForecast(); loadSimonForecast(); loadMicroJobs(); }, [loadForecast, loadSimonForecast, loadMicroJobs]);
     useEffect(() => { loadIdleSlots(); loadGoals(); }, [loadIdleSlots, loadGoals]);
 
     async function submitIdleSlot(e) {
@@ -235,6 +261,23 @@ export default function ZoneEconomy() {
                     </p>
                 </Card>
             </div>
+
+            {microJobs.length > 0 && (
+                <Card style={{ marginBottom: 24 }}>
+                    <SectionHead title="Open Micro-Jobs in Zone" sub={`Live micro-jobs available in ${area}`} />
+                    {microJobs.slice(0, 6).map(job => (
+                        <div key={job.id} style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '10px 0', borderBottom: '1px solid var(--color-border)',
+                            fontSize: 13, color: 'var(--color-text)', gap: 12,
+                        }}>
+                            <span style={{ fontWeight: 600 }}>{CAT_ICONS[job.category] || '⚙️'} {job.title}</span>
+                            <span style={{ color: 'var(--color-text-subtle)', fontSize: 12 }}>{job.estimated_duration_hours}h</span>
+                            <span style={{ fontWeight: 700, color: 'var(--color-primary)', flexShrink: 0 }}>₨{Number(job.price_pkr).toLocaleString()}</span>
+                        </div>
+                    ))}
+                </Card>
+            )}
 
             {user?.role === 'provider' && (
                 <>
