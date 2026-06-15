@@ -17,9 +17,11 @@ import chatRouter from './chat.js';
 import committeeRouter from './committee.js';
 import marketplaceRouter from './marketplace.js';
 import neighborhoodExtRouter from './neighborhood-ext.js';
+import walletRouter from './wallet.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.set('trust proxy', 1);
 const PORT = 5000;
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -211,6 +213,7 @@ app.use('/api/financial', requireAuth, financialRouter);
 app.use('/api/notifications', requireAuth, notificationsRouter);
 app.use('/api/zones', zoneRouter);
 app.use('/api/chat', requireAuth, chatRouter);
+app.use('/api/wallet', requireAuth, walletRouter);
 app.use('/api/committees', requireAuth, committeeRouter);
 app.use('/api/marketplace', requireAuth, marketplaceRouter);
 app.use('/api/neighborhood', requireAuth, neighborhoodExtRouter);
@@ -340,6 +343,61 @@ app.post('/api/group-buys/:id/join', requireAuth, async (req, res) => {
         const { rows } = await pool.query('SELECT current_participants FROM group_buys WHERE id=$1', [req.params.id]);
         const newCount = (rows[0]?.current_participants || 0) + 1;
         await pool.query('UPDATE group_buys SET current_participants=$1, updated_at=NOW() WHERE id=$2', [newCount, req.params.id]);
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ═══════════════════════════════════════
+   SERVICE BUNDLES
+═══════════════════════════════════════ */
+app.get('/api/bundles', async (req, res) => {
+    const { status } = req.query;
+    try {
+        const conditions = [];
+        const params = [];
+        let pi = 1;
+        if (status && status !== 'all') { conditions.push(`status = $${pi++}`); params.push(status); }
+        const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+        const { rows } = await pool.query(
+            `SELECT sb.*, u.full_name AS organizer_name, u.email AS organizer_email
+             FROM service_bundles sb JOIN users u ON u.id = sb.organizer_id
+             ${where} ORDER BY sb.created_at DESC LIMIT 50`,
+            params
+        );
+        res.json({ bundles: rows });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/bundles', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    const { title, description, category_slug, service_name, zone_name, address_hint, max_participants, discount_percentage, base_price, scheduled_date, deadline_date } = req.body;
+    if (!title || !category_slug) return res.status(400).json({ error: 'title and category_slug required' });
+    try {
+        const { rows: userRow } = await pool.query(`SELECT full_name, email FROM users WHERE id = $1`, [userId]);
+        const discountedPrice = base_price ? parseFloat(base_price) * (1 - parseInt(discount_percentage) / 100) : null;
+        const { rows } = await pool.query(
+            `INSERT INTO service_bundles (organizer_id, title, description, category_slug, service_name, zone_name, address_hint, max_participants, discount_percentage, base_price, discounted_price, scheduled_date, deadline_date, organizer_email, participant_emails)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,ARRAY[$14])
+             RETURNING *`,
+            [userId, title, description || null, category_slug, service_name || category_slug, zone_name || null, address_hint || null, parseInt(max_participants) || 5, parseInt(discount_percentage) || 20, base_price ? parseFloat(base_price) : null, discountedPrice, scheduled_date || null, deadline_date || null, userRow[0]?.email]
+        );
+        await pool.query(`INSERT INTO bundle_participants (bundle_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [rows[0].id, userId]);
+        res.json({ bundle: rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/bundles/:id/join', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    try {
+        const { rows: bundle } = await pool.query(`SELECT * FROM service_bundles WHERE id = $1 AND status = 'forming'`, [req.params.id]);
+        if (!bundle[0]) return res.status(404).json({ error: 'Bundle not available' });
+        if (bundle[0].current_participants >= bundle[0].max_participants) return res.status(400).json({ error: 'Bundle is full' });
+        await pool.query(`INSERT INTO bundle_participants (bundle_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [req.params.id, userId]);
+        const { rows: userRow } = await pool.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        await pool.query(
+            `UPDATE service_bundles SET current_participants = current_participants + 1, participant_emails = array_append(participant_emails, $2), updated_at = NOW() WHERE id = $1`,
+            [req.params.id, userRow[0]?.email]
+        );
         res.json({ success: true });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

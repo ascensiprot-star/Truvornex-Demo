@@ -113,8 +113,8 @@ router.post('/:id/order', async (req, res) => {
             INSERT INTO marketplace_orders (listing_id, buyer_id, seller_id, amount_pkr, message)
             VALUES ($1, $2, $3, $4, $5) RETURNING *
         `, [req.params.id, buyerId, listing[0].seller_id, listing[0].price_pkr, message || '']);
-        const { rows: buyer } = await pool.query(`SELECT name, email FROM users WHERE id = $1`, [buyerId]);
-        const buyerName = buyer[0]?.name || buyer[0]?.email || 'Someone';
+        const { rows: buyer } = await pool.query(`SELECT full_name, email FROM users WHERE id = $1`, [buyerId]);
+        const buyerName = buyer[0]?.full_name || buyer[0]?.email || 'Someone';
         await createNotification({ userId: listing[0].seller_id, type: 'marketplace', title: 'New offer on your listing', body: `${buyerName} is interested in "${listing[0].title}"`, data: { listing_id: req.params.id, order_id: rows[0].id } });
         broadcastNotification(listing[0].seller_id, { type: 'marketplace', title: 'New offer!', body: `${buyerName}: ${listing[0].title}` });
         // Mark as reserved

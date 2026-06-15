@@ -93,6 +93,9 @@ import LabView from './pages/admin/LabView';
 import EconomicIdentity from './pages/EconomicIdentity';
 import ZoneEconomy from './pages/ZoneEconomy';
 import CareBridge from './pages/CareBridge';
+import Wallet from './pages/Wallet';
+import Marketplace from './pages/Marketplace';
+import Committee from './pages/Committee';
 
 const AuthenticatedApp = () => {
     const { isLoadingAuth, authError } = useAuth();
@@ -161,6 +164,9 @@ const AuthenticatedApp = () => {
                 <Route path="/community" element={<Community />} />
                 <Route path="/care-bridge" element={<CareBridge />} />
                 <Route path="/zone-economy" element={<ZoneEconomy />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/committee" element={<Committee />} />
             </Route>
             <Route element={<ProviderLayout />}>
                 <Route path="/provider/identity" element={<EconomicIdentity />} />

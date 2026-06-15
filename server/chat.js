@@ -73,7 +73,7 @@ router.post('/messages', async (req, res) => {
         `, [senderId, receiver_id, threadKey, content.trim(), type]);
         const msg = rows[0];
         // Get sender info for notification
-        const { rows: senderRows } = await pool.query(`SELECT name, email FROM users WHERE id = $1`, [senderId]);
+        const { rows: senderRows } = await pool.query(`SELECT full_name, email FROM users WHERE id = $1`, [senderId]);
         const senderName = senderRows[0]?.name || senderRows[0]?.email || 'Someone';
         // Broadcast SSE + create DB notification
         const notification = { type: 'chat', title: `New message from ${senderName}`, body: content.trim().slice(0, 80), data: { thread_key: threadKey, sender_id: senderId } };

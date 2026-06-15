@@ -33,13 +33,13 @@ router.get('/:id', async (req, res) => {
         `, [req.params.id]);
         if (!rows[0]) return res.status(404).json({ error: 'Not found' });
         const { rows: members } = await pool.query(`
-            SELECT cm.*, u.name, u.email,
+            SELECT cm.*, u.full_name, u.email,
                 (SELECT SUM(amount_pkr) FROM committee_contributions cc WHERE cc.member_id = cm.user_id AND cc.committee_id = $1) AS total_contributed
             FROM committee_members cm JOIN users u ON u.id = cm.user_id
             WHERE cm.committee_id = $1 ORDER BY cm.payout_position ASC NULLS LAST
         `, [req.params.id]);
         const { rows: contribs } = await pool.query(`
-            SELECT cc.*, u.name AS member_name FROM committee_contributions cc
+            SELECT cc.*, u.full_name AS member_name FROM committee_contributions cc
             JOIN users u ON u.id = cc.member_id
             WHERE cc.committee_id = $1 ORDER BY cc.paid_at DESC LIMIT 50
         `, [req.params.id]);
@@ -86,9 +86,9 @@ router.post('/:id/join', async (req, res) => {
             ON CONFLICT (committee_id, user_id) DO NOTHING
         `, [req.params.id, userId, position]);
         // Notify organizer
-        const { rows: usr } = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
-        await createNotification({ userId: c[0].organizer_id, type: 'committee', title: 'New committee member', body: `${usr[0]?.name || 'Someone'} joined your committee "${c[0].name}"`, data: { committee_id: c[0].id } });
-        broadcastNotification(c[0].organizer_id, { type: 'committee', title: 'New member joined', body: `${usr[0]?.name} joined ${c[0].name}` });
+        const { rows: usr } = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [userId]);
+        await createNotification({ userId: c[0].organizer_id, type: 'committee', title: 'New committee member', body: `${usr[0]?.full_name || 'Someone'} joined your committee "${c[0].name}"`, data: { committee_id: c[0].id } });
+        broadcastNotification(c[0].organizer_id, { type: 'committee', title: 'New member joined', body: `${usr[0]?.full_name} joined ${c[0].name}` });
         res.json({ success: true, position });
     } catch (err) {
         if (err.code === '23505') return res.status(400).json({ error: 'Already a member' });

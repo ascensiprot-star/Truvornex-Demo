@@ -724,6 +724,41 @@ export async function initExtendedTables() {
         `);
 
         await client.query(`
+            CREATE TABLE IF NOT EXISTS service_bundles (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                organizer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                zone_id UUID,
+                title TEXT NOT NULL,
+                description TEXT,
+                category_slug TEXT NOT NULL DEFAULT 'other',
+                service_name TEXT,
+                zone_name TEXT,
+                address_hint TEXT,
+                max_participants INT NOT NULL DEFAULT 5,
+                current_participants INT NOT NULL DEFAULT 1,
+                discount_percentage INT NOT NULL DEFAULT 20,
+                base_price NUMERIC(12,2),
+                discounted_price NUMERIC(12,2),
+                status TEXT NOT NULL DEFAULT 'forming' CHECK (status IN ('forming','confirmed','active','completed','cancelled')),
+                scheduled_date DATE,
+                deadline_date DATE,
+                organizer_email TEXT,
+                participant_emails TEXT[] DEFAULT '{}',
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                updated_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS bundle_participants (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                bundle_id UUID NOT NULL REFERENCES service_bundles(id) ON DELETE CASCADE,
+                user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                joined_at TIMESTAMPTZ DEFAULT NOW(),
+                UNIQUE(bundle_id, user_id)
+            )
+        `);
+
+        await client.query(`
             CREATE TABLE IF NOT EXISTS savings_goals (
                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

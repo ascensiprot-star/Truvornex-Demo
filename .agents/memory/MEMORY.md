@@ -4,3 +4,5 @@
 - [Auth page](auth-page.md) — /login and /signup both render Login.jsx (tab-based toggle); routes must be outside all Layout wrappers in App.jsx
 - [Neighborhood OS features](neighborhood-os.md) — Community has 4 tabs (Feed/Jobs/Events/Polls), inline comments, polls voting; NeighborhoodDashboard is a full OS hub; Events wired to Supabase
 - [System completion arch](system-completion.md) — Express+PostgreSQL adapted from Supabase spec; all new tables in server/db.js initNewTables(); wallet_mutate is a Postgres stored proc with FOR UPDATE locking
+- [Column name bug](column-name-bug.md) — DB users table uses full_name not name; always use u.full_name in SQL joins; GroupBuy/ServiceBundles use server API not Supabase client
+- [New feature routes](new-feature-routes.md) — Wallet /api/wallet, Marketplace /api/marketplace, Committee /api/committees, Bundles /api/bundles all wired in server/index.js; frontend at /wallet /marketplace /committee routes

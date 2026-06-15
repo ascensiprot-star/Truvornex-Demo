@@ -51,9 +51,9 @@ router.post('/transport/:id/join', async (req, res) => {
         if (ride[0].seats_available <= 0) return res.status(400).json({ error: 'No seats available' });
         await pool.query(`INSERT INTO ride_passengers (ride_id, passenger_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [req.params.id, userId]);
         await pool.query(`UPDATE ride_shares SET seats_available = seats_available - 1, status = CASE WHEN seats_available - 1 <= 0 THEN 'full' ELSE 'open' END WHERE id = $1`, [req.params.id]);
-        const { rows: u } = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
-        await createNotification({ userId: ride[0].driver_id, type: 'transport', title: 'New passenger', body: `${u[0]?.name || 'Someone'} requested a seat for ${ride[0].from_location} → ${ride[0].to_location}`, data: { ride_id: req.params.id } });
-        broadcastNotification(ride[0].driver_id, { type: 'transport', title: 'New seat request', body: `${u[0]?.name} joined your ride` });
+        const { rows: u } = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [userId]);
+        await createNotification({ userId: ride[0].driver_id, type: 'transport', title: 'New passenger', body: `${u[0]?.full_name || 'Someone'} requested a seat for ${ride[0].from_location} → ${ride[0].to_location}`, data: { ride_id: req.params.id } });
+        broadcastNotification(ride[0].driver_id, { type: 'transport', title: 'New seat request', body: `${u[0]?.full_name} joined your ride` });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -66,7 +66,7 @@ router.post('/transport/:id/join', async (req, res) => {
 router.get('/blood-donors', async (req, res) => {
     const { blood_type, zone_id } = req.query;
     try {
-        let q = `SELECT bd.*, u.name, u.email FROM blood_donors bd JOIN users u ON u.id = bd.user_id WHERE bd.available = TRUE`;
+        let q = `SELECT bd.*, u.full_name, u.email FROM blood_donors bd JOIN users u ON u.id = bd.user_id WHERE bd.available = TRUE`;
         const params = [];
         let pi = 1;
         if (blood_type) { q += ` AND bd.blood_type = $${pi++}`; params.push(blood_type); }
@@ -221,9 +221,9 @@ router.post('/tool-library/:id/borrow', async (req, res) => {
         if (item[0].owner_id === userId) return res.status(400).json({ error: 'Cannot borrow your own item' });
         const { rows } = await pool.query(`INSERT INTO tool_loans (item_id, borrower_id, return_by) VALUES ($1,$2,$3) RETURNING *`, [req.params.id, userId, return_by]);
         await pool.query(`UPDATE tool_items SET available = FALSE WHERE id = $1`, [req.params.id]);
-        const { rows: u } = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
-        await createNotification({ userId: item[0].owner_id, type: 'tool', title: 'Tool borrowed', body: `${u[0]?.name || 'Someone'} borrowed your "${item[0].name}", to return by ${return_by}`, data: { item_id: req.params.id } });
-        broadcastNotification(item[0].owner_id, { type: 'tool', title: 'Tool borrowed', body: `${u[0]?.name} took your ${item[0].name}` });
+        const { rows: u } = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [userId]);
+        await createNotification({ userId: item[0].owner_id, type: 'tool', title: 'Tool borrowed', body: `${u[0]?.full_name || 'Someone'} borrowed your "${item[0].name}", to return by ${return_by}`, data: { item_id: req.params.id } });
+        broadcastNotification(item[0].owner_id, { type: 'tool', title: 'Tool borrowed', body: `${u[0]?.full_name} took your ${item[0].name}` });
         res.json({ loan: rows[0] });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -286,9 +286,9 @@ router.post('/job-board/:id/apply', async (req, res) => {
         const { rows: job } = await pool.query(`SELECT * FROM job_posts WHERE id = $1 AND status = 'open'`, [req.params.id]);
         if (!job[0]) return res.status(404).json({ error: 'Job not found or closed' });
         const { rows } = await pool.query(`INSERT INTO job_applications (job_id, applicant_id, message) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING RETURNING *`, [req.params.id, userId, message]);
-        const { rows: u } = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
-        await createNotification({ userId: job[0].poster_id, type: 'job', title: 'New applicant', body: `${u[0]?.name || 'Someone'} applied for "${job[0].title}"`, data: { job_id: req.params.id } });
-        broadcastNotification(job[0].poster_id, { type: 'job', title: 'New application', body: `${u[0]?.name} applied for ${job[0].title}` });
+        const { rows: u } = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [userId]);
+        await createNotification({ userId: job[0].poster_id, type: 'job', title: 'New applicant', body: `${u[0]?.full_name || 'Someone'} applied for "${job[0].title}"`, data: { job_id: req.params.id } });
+        broadcastNotification(job[0].poster_id, { type: 'job', title: 'New application', body: `${u[0]?.full_name} applied for ${job[0].title}` });
         res.json({ application: rows[0] || { message: 'Already applied' } });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -334,9 +334,9 @@ router.post('/food-sharing/:id/claim', async (req, res) => {
             WHERE id = $2 AND active = TRUE AND claimed_by IS NULL RETURNING *
         `, [userId, req.params.id]);
         if (!rows[0]) return res.status(400).json({ error: 'Item already claimed' });
-        const { rows: u } = await pool.query(`SELECT name FROM users WHERE id = $1`, [userId]);
-        await createNotification({ userId: rows[0].user_id, type: 'food', title: 'Food claimed!', body: `${u[0]?.name || 'Someone'} claimed "${rows[0].title}"`, data: {} });
-        broadcastNotification(rows[0].user_id, { type: 'food', title: 'Food claimed', body: `${u[0]?.name} took your ${rows[0].title}` });
+        const { rows: u } = await pool.query(`SELECT full_name FROM users WHERE id = $1`, [userId]);
+        await createNotification({ userId: rows[0].user_id, type: 'food', title: 'Food claimed!', body: `${u[0]?.full_name || 'Someone'} claimed "${rows[0].title}"`, data: {} });
+        broadcastNotification(rows[0].user_id, { type: 'food', title: 'Food claimed', body: `${u[0]?.full_name} took your ${rows[0].title}` });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -349,7 +349,7 @@ router.post('/food-sharing/:id/claim', async (req, res) => {
 router.get('/community-watch', async (req, res) => {
     const { type } = req.query;
     try {
-        let q = `SELECT wr.*, CASE WHEN wr.anonymous THEN 'Anonymous' ELSE u.name END AS reporter_name
+        let q = `SELECT wr.*, CASE WHEN wr.anonymous THEN 'Anonymous' ELSE u.full_name END AS reporter_name
             FROM watch_reports wr LEFT JOIN users u ON u.id = wr.reporter_id WHERE 1=1`;
         const params = [];
         if (type) { q += ` AND wr.type = $1`; params.push(type); }
@@ -479,7 +479,7 @@ router.get('/load-shedding', async (req, res) => {
     const { zone_id } = req.query;
     try {
         const { rows } = await pool.query(`
-            SELECT ls.*, COALESCE(u.name, 'Anonymous') AS reporter_name
+            SELECT ls.*, COALESCE(u.full_name, 'Anonymous') AS reporter_name
             FROM load_shedding_reports ls LEFT JOIN users u ON u.id = ls.reporter_id
             WHERE ls.created_at > NOW() - interval '7 days'
             ORDER BY ls.created_at DESC LIMIT 50

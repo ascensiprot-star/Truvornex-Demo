@@ -10,21 +10,30 @@ import {
     Heart, MapPin, Clock, Star, Settings, HelpCircle,
     MessageSquare, Repeat, Gift, Zap, ChevronRight,
     PanelLeftClose, PanelLeftOpen, LogIn, LogOut,
+    Wallet, ShoppingBag, PiggyBank, Globe, Car, Users, Calendar,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
-    { path: '/',         icon: Home,     label: 'Home',    exact: true },
-    { path: '/services', icon: Compass,  label: 'Explore' },
-    { path: '/ai',       icon: Sparkles, label: 'Simon AI' },
-    { path: '/spending', icon: BarChart3, label: 'Spending' },
-    { path: '/profile',  icon: User,     label: 'Profile' },
+    { path: '/',            icon: Home,        label: 'Home',       exact: true },
+    { path: '/services',    icon: Compass,     label: 'Explore' },
+    { path: '/marketplace', icon: ShoppingBag, label: 'Market' },
+    { path: '/wallet',      icon: Wallet,      label: 'Wallet' },
+    { path: '/ai',          icon: Sparkles,    label: 'Simon AI' },
+    { path: '/profile',     icon: User,        label: 'Profile' },
 ];
 
 const MORE_ITEMS = [
     { path: '/chat',                   icon: MessageSquare, label: 'Messages'      },
+    { path: '/committee',              icon: PiggyBank,     label: 'Committee'     },
+    { path: '/neighborhood',           icon: Globe,         label: 'Neighborhood'  },
+    { path: '/transport',              icon: Car,           label: 'Transport'     },
+    { path: '/events',                 icon: Calendar,      label: 'Events'        },
+    { path: '/community',              icon: Users,         label: 'Community'     },
     { path: '/favorites',              icon: Heart,         label: 'Saved'         },
     { path: '/booking-history',        icon: Clock,         label: 'Booking History'},
     { path: '/loyalty',                icon: Star,          label: 'Loyalty'       },
+    { path: '/bundles',                icon: Briefcase,     label: 'Group Deals'   },
+    { path: '/spending',               icon: BarChart3,     label: 'Spending'      },
     { path: '/recurring',              icon: Repeat,        label: 'Recurring'     },
     { path: '/gift-cards',             icon: Gift,          label: 'Gift Cards'    },
     { path: '/emergency',              icon: Zap,           label: 'Emergency'     },
