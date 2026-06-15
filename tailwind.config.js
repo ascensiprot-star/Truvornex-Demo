@@ -48,6 +48,9 @@ module.exports = {
                 "on-primary-fixed-variant": "var(--color-text-muted)",
                 "surface-tint":             "var(--color-accent)",
 
+                /* ── Shadcn button fix — primary-foreground must map to on-primary ── */
+                "primary-foreground": "var(--color-on-primary)",
+
                 /* ── Shadcn compatibility ── */
                 foreground:     "var(--color-text)",
                 card: {
@@ -94,20 +97,33 @@ module.exports = {
                 "margin-mobile":  "16px",
             },
             fontFamily: {
-                "display":  ["Hanken Grotesk", "sans-serif"],
-                "headline": ["Hanken Grotesk", "sans-serif"],
-                sans: ["Inter", "sans-serif"],
+                "display":  ["Plus Jakarta Sans", "sans-serif"],
+                "headline": ["Plus Jakarta Sans", "sans-serif"],
+                sans: ["Plus Jakarta Sans", "sans-serif"],
+                inter: ["Plus Jakarta Sans", "sans-serif"],
             },
             fontSize: {
-                "display-lg":  ["48px",  { lineHeight: "56px",  letterSpacing: "-0.02em", fontWeight: "700" }],
-                "display-lg-mobile": ["32px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }],
-                "headline-lg": ["28px",  { lineHeight: "36px",  letterSpacing: "-0.01em", fontWeight: "600" }],
-                "headline-md": ["22px",  { lineHeight: "30px",  fontWeight: "600" }],
-                "body-lg":     ["18px",  { lineHeight: "28px",  fontWeight: "400" }],
-                "body-md":     ["15px",  { lineHeight: "24px",  fontWeight: "400" }],
-                "body-sm":     ["13px",  { lineHeight: "20px",  fontWeight: "400" }],
-                "label-md":    ["12px",  { lineHeight: "16px",  letterSpacing: "0.04em", fontWeight: "500" }],
-                "label-sm":    ["10px",  { lineHeight: "14px",  letterSpacing: "0.06em", fontWeight: "600" }],
+                /* ── Compact scale — slightly smaller than Tailwind defaults ── */
+                "xs":    ["10.5px", { lineHeight: "15px" }],
+                "sm":    ["12px",   { lineHeight: "17px" }],
+                "base":  ["13.5px", { lineHeight: "20px" }],
+                "lg":    ["15px",   { lineHeight: "22px" }],
+                "xl":    ["17px",   { lineHeight: "24px", letterSpacing: "-0.015em" }],
+                "2xl":   ["20px",   { lineHeight: "27px", letterSpacing: "-0.025em" }],
+                "3xl":   ["23px",   { lineHeight: "30px", letterSpacing: "-0.03em" }],
+                "4xl":   ["28px",   { lineHeight: "36px", letterSpacing: "-0.035em" }],
+                "5xl":   ["34px",   { lineHeight: "42px", letterSpacing: "-0.04em" }],
+                "6xl":   ["42px",   { lineHeight: "50px", letterSpacing: "-0.045em" }],
+                /* ── Custom semantic tokens ── */
+                "display-lg":        ["42px",  { lineHeight: "50px",  letterSpacing: "-0.04em", fontWeight: "700" }],
+                "display-lg-mobile": ["28px",  { lineHeight: "34px",  letterSpacing: "-0.03em", fontWeight: "700" }],
+                "headline-lg":       ["24px",  { lineHeight: "32px",  letterSpacing: "-0.025em", fontWeight: "600" }],
+                "headline-md":       ["19px",  { lineHeight: "27px",  fontWeight: "600" }],
+                "body-lg":           ["15px",  { lineHeight: "24px",  fontWeight: "400" }],
+                "body-md":           ["13.5px",{ lineHeight: "21px",  fontWeight: "400" }],
+                "body-sm":           ["12px",  { lineHeight: "18px",  fontWeight: "400" }],
+                "label-md":          ["11px",  { lineHeight: "15px",  letterSpacing: "0.04em", fontWeight: "500" }],
+                "label-sm":          ["9.5px", { lineHeight: "13px",  letterSpacing: "0.06em", fontWeight: "600" }],
             },
             boxShadow: {
                 'sm':  'var(--shadow-sm)',
