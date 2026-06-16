@@ -774,6 +774,80 @@ export async function initExtendedTables() {
             )
         `);
 
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS community_posts (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                type TEXT DEFAULT 'general',
+                title TEXT,
+                body TEXT,
+                author_name TEXT,
+                author_email TEXT,
+                author_id UUID,
+                image_url TEXT,
+                upvotes INT DEFAULT 0,
+                reply_count INT DEFAULT 0,
+                is_resolved BOOLEAN DEFAULT FALSE,
+                neighborhood TEXT,
+                job_type TEXT,
+                job_salary TEXT,
+                skill_offer TEXT,
+                skill_want TEXT,
+                contact_email TEXT,
+                created_date TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS neighborhood_polls (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                question TEXT NOT NULL,
+                options JSONB DEFAULT '[]',
+                neighborhood TEXT,
+                created_by_email TEXT,
+                created_by_name TEXT,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS post_comments (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                post_id TEXT NOT NULL,
+                author_email TEXT,
+                author_name TEXT,
+                body TEXT NOT NULL,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_post_comments_post ON post_comments(post_id)
+        `);
+
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS events (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                title TEXT NOT NULL,
+                description TEXT,
+                category TEXT DEFAULT 'other',
+                venue_name TEXT,
+                venue_type TEXT,
+                address TEXT,
+                date TEXT,
+                start_time TEXT,
+                end_time TEXT,
+                organizer_name TEXT,
+                organizer_id UUID,
+                ticket_price NUMERIC(10,2) DEFAULT 0,
+                is_free BOOLEAN DEFAULT TRUE,
+                total_tickets INT DEFAULT 100,
+                tickets_sold INT DEFAULT 0,
+                bundle_services JSONB DEFAULT '[]',
+                cover_image_url TEXT,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )
+        `);
+
         await client.query('COMMIT');
     } catch (err) {
         await client.query('ROLLBACK');

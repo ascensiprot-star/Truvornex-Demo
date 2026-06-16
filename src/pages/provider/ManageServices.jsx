@@ -46,7 +46,7 @@ export default function ManageServices() {
     const btnStyle = {
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
         backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)',
-        border: 'none', borderRadius: 10, padding: '0 14px', height: 34, fontSize: 12,
+        border: 'none', borderRadius: 10, padding: '0 14px', height: 34, fontSize: 14,
         fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'opacity 0.15s',
     };
 

@@ -210,8 +210,8 @@ Give:
                                         <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                                <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                                 <Tooltip content={<CustomTooltip />} />
                                 <Area type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} fill="url(#earnGrad)" />
                             </AreaChart>
@@ -289,8 +289,8 @@ Give:
                     <h2 className="font-semibold text-sm mb-4" style={{ color: 'var(--color-primary)' }}>Monthly Revenue</h2>
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={metrics.trendData}>
-                            <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="value" fill="#7c6fcd" radius={[6, 6, 0, 0]} />
                         </BarChart>

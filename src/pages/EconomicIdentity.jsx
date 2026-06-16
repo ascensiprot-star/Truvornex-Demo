@@ -23,9 +23,9 @@ function StatCard({ label, value, sub, highlight }) {
             border: `1px solid ${highlight ? 'var(--color-primary)' : 'var(--color-border)'}`,
             borderRadius: 12, padding: '18px 20px',
         }}>
-            <div style={{ fontSize: 11, color: highlight ? 'rgba(255,255,255,0.75)' : 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>{label}</div>
-            <div style={{ fontSize: 26, fontWeight: 700, color: highlight ? '#fff' : 'var(--color-text)', lineHeight: 1 }}>{value}</div>
-            {sub && <div style={{ fontSize: 12, color: highlight ? 'rgba(255,255,255,0.65)' : 'var(--color-text-subtle)', marginTop: 4 }}>{sub}</div>}
+            <div style={{ fontSize: 13, color: highlight ? 'rgba(255,255,255,0.75)' : 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>{label}</div>
+            <div style={{ fontSize: 30, fontWeight: 700, color: highlight ? '#fff' : 'var(--color-text)', lineHeight: 1 }}>{value}</div>
+            {sub && <div style={{ fontSize: 14, color: highlight ? 'rgba(255,255,255,0.65)' : 'var(--color-text-subtle)', marginTop: 4 }}>{sub}</div>}
         </div>
     );
 }
@@ -44,7 +44,7 @@ function ScoreRing({ score, tier }) {
                 <text x={55} y={52} textAnchor="middle" fill="var(--color-text)" fontSize={20} fontWeight={700}>{Math.round(score)}</text>
                 <text x={55} y={68} textAnchor="middle" fill="var(--color-text-subtle)" fontSize={10}>/100</text>
             </svg>
-            <div style={{ background: tc.bg, border: `1px solid ${tc.border}`, color: tc.text, borderRadius: 20, padding: '4px 14px', fontSize: 12, fontWeight: 600 }}>
+            <div style={{ background: tc.bg, border: `1px solid ${tc.border}`, color: tc.text, borderRadius: 20, padding: '4px 14px', fontSize: 14, fontWeight: 600 }}>
                 {tc.label}
             </div>
         </div>
@@ -98,15 +98,15 @@ export default function EconomicIdentity() {
     if (loading) return (
         <div style={{ padding: 60, textAlign: 'center' }}>
             <div className="animate-spin" style={{ width: 36, height: 36, border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', margin: '0 auto 16px' }} />
-            <p style={{ color: 'var(--color-text-subtle)', fontSize: 13 }}>Building your Economic Identity...</p>
+            <p style={{ color: 'var(--color-text-subtle)', fontSize: 16 }}>Building your Economic Identity...</p>
         </div>
     );
 
     if (error) return (
         <div style={{ padding: 40, textAlign: 'center', color: 'var(--color-text-subtle)' }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
+            <div style={{ fontSize: 37, marginBottom: 12 }}>⚠️</div>
             <p>{error}</p>
-            {user?.role !== 'provider' && <p style={{ marginTop: 12, fontSize: 13 }}>Economic Identity is available for providers only.</p>}
+            {user?.role !== 'provider' && <p style={{ marginTop: 12, fontSize: 16 }}>Economic Identity is available for providers only.</p>}
         </div>
     );
 
@@ -118,14 +118,14 @@ export default function EconomicIdentity() {
 
             <div style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontSize: 11, color: 'var(--color-text-subtle)', letterSpacing: 2, textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: 13, color: 'var(--color-text-subtle)', letterSpacing: 2, textTransform: 'uppercase' }}>
                         Xylvanthrex Labs · Trust Identity Protocol v1
                     </span>
                 </div>
-                <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-text)', margin: 0 }}>
+                <h1 style={{ fontSize: 30, fontWeight: 700, color: 'var(--color-text)', margin: 0 }}>
                     Economic Identity
                 </h1>
-                <p style={{ color: 'var(--color-text-subtle)', fontSize: 14, margin: '6px 0 0' }}>
+                <p style={{ color: 'var(--color-text-subtle)', fontSize: 17, margin: '6px 0 0' }}>
                     Machine-readable. Cryptographically signed. Verifiable by any bank, employer, or platform.
                 </p>
             </div>
@@ -134,18 +134,18 @@ export default function EconomicIdentity() {
                 <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                     <ScoreRing score={trust.score} tier={trust.tier} />
                     <div style={{ flex: 1, minWidth: 200 }}>
-                        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>{subject.name}</div>
-                        <div style={{ color: 'var(--color-text-subtle)', fontSize: 13, margin: '4px 0 10px' }}>
+                        <div style={{ fontSize: 23, fontWeight: 700, color: 'var(--color-text)' }}>{subject.name}</div>
+                        <div style={{ color: 'var(--color-text-subtle)', fontSize: 16, margin: '4px 0 10px' }}>
                             {subject.city}, {subject.country} · Member since {subject.member_since ? new Date(subject.member_since).getFullYear() : 'N/A'}
                         </div>
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                            <div style={{ background: tc.bg, border: `1px solid ${tc.border}`, color: tc.text, borderRadius: 6, padding: '3px 10px', fontSize: 12, fontWeight: 600 }}>
+                            <div style={{ background: tc.bg, border: `1px solid ${tc.border}`, color: tc.text, borderRadius: 6, padding: '3px 10px', fontSize: 14, fontWeight: 600 }}>
                                 {Math.round(trust.completion_rate * 100)}% Completion Rate
                             </div>
-                            <div style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>
+                            <div style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)', borderRadius: 6, padding: '3px 10px', fontSize: 14 }}>
                                 {trust.total_completed} Jobs Completed
                             </div>
-                            <div style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)', borderRadius: 6, padding: '3px 10px', fontSize: 12 }}>
+                            <div style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)', borderRadius: 6, padding: '3px 10px', fontSize: 14 }}>
                                 {trust.vouches} Vouches
                             </div>
                         </div>
@@ -162,7 +162,7 @@ export default function EconomicIdentity() {
 
             {skills.length > 0 && (
                 <div style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '20px', marginBottom: 20 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>
                         Verified Skills
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
@@ -171,13 +171,13 @@ export default function EconomicIdentity() {
                                 background: 'var(--color-bg)', border: '1px solid var(--color-border)',
                                 borderRadius: 10, padding: '10px 14px', minWidth: 120,
                             }}>
-                                <div style={{ fontSize: 18, marginBottom: 4 }}>{CATEGORY_ICONS[s.category] || '⚙️'}</div>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', textTransform: 'capitalize' }}>{s.category}</div>
-                                <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 2 }}>
+                                <div style={{ fontSize: 21, marginBottom: 4 }}>{CATEGORY_ICONS[s.category] || '⚙️'}</div>
+                                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', textTransform: 'capitalize' }}>{s.category}</div>
+                                <div style={{ fontSize: 13, color: 'var(--color-text-subtle)', marginTop: 2 }}>
                                     {s.verified_jobs} verified jobs
                                 </div>
                                 {s.last_active && (
-                                    <div style={{ fontSize: 10, color: 'var(--color-text-subtle)', marginTop: 2 }}>
+                                    <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginTop: 2 }}>
                                         Active: {s.last_active}
                                     </div>
                                 )}
@@ -185,7 +185,7 @@ export default function EconomicIdentity() {
                         ))}
                     </div>
                     {skills.length === 0 && (
-                        <p style={{ color: 'var(--color-text-subtle)', fontSize: 13 }}>
+                        <p style={{ color: 'var(--color-text-subtle)', fontSize: 16 }}>
                             Complete jobs to build verified skill records.
                         </p>
                     )}
@@ -193,7 +193,7 @@ export default function EconomicIdentity() {
             )}
 
             <div style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '20px', marginBottom: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Credential Info</div>
+                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: 1 }}>Credential Info</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
                         ['Protocol', 'TIP-v1 (Trust Identity Protocol)'],
@@ -203,7 +203,7 @@ export default function EconomicIdentity() {
                         ['Hash', credential_hash ? credential_hash.slice(0, 24) + '…' : '—'],
                         ['Dispute Record', `${dispute_record.resolved_favorably}/${dispute_record.total} resolved favorably`],
                     ].map(([k, v]) => (
-                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 13 }}>
+                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, fontSize: 16 }}>
                             <span style={{ color: 'var(--color-text-subtle)' }}>{k}</span>
                             <span style={{ color: 'var(--color-text)', fontFamily: 'monospace', textAlign: 'right' }}>{v}</span>
                         </div>
@@ -215,7 +215,7 @@ export default function EconomicIdentity() {
                 <div style={{
                     background: verifyResult.valid ? '#10b98114' : '#ef444414',
                     border: `1px solid ${verifyResult.valid ? '#10b981' : '#ef4444'}`,
-                    borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 13,
+                    borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 16,
                     color: verifyResult.valid ? '#059669' : '#dc2626',
                 }}>
                     {verifyResult.valid
@@ -227,29 +227,29 @@ export default function EconomicIdentity() {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <button onClick={downloadCredential} style={{
                     background: 'var(--color-primary)', color: '#fff', border: 'none',
-                    borderRadius: 10, padding: '11px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    borderRadius: 10, padding: '11px 20px', fontSize: 17, fontWeight: 600, cursor: 'pointer',
                 }}>
                     ↓ Download TIP-v1 JSON
                 </button>
                 <button onClick={copyVerifyLink} style={{
                     background: 'var(--color-card)', color: 'var(--color-text)',
                     border: '1px solid var(--color-border)',
-                    borderRadius: 10, padding: '11px 20px', fontSize: 14, cursor: 'pointer',
+                    borderRadius: 10, padding: '11px 20px', fontSize: 17, cursor: 'pointer',
                 }}>
                     {copied ? '✓ Copied' : '🔗 Copy Verify Link'}
                 </button>
                 <button onClick={testVerify} style={{
                     background: 'var(--color-card)', color: 'var(--color-text)',
                     border: '1px solid var(--color-border)',
-                    borderRadius: 10, padding: '11px 20px', fontSize: 14, cursor: 'pointer',
+                    borderRadius: 10, padding: '11px 20px', fontSize: 17, cursor: 'pointer',
                 }}>
                     Verify Hash
                 </button>
             </div>
 
-            <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 16, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: 'var(--color-text-subtle)', marginTop: 16, lineHeight: 1.5 }}>
                 This credential can be verified by any institution using the public API at{' '}
-                <code style={{ fontSize: 10 }}>/api/identity/{'{userId}'}/verify</code>.
+                <code style={{ fontSize: 12 }}>/api/identity/{'{userId}'}/verify</code>.
                 No phone call required. No third-party check. One API call.
             </p>
         </div>

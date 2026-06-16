@@ -2,7 +2,8 @@
 - [DeepSeek AI wiring](deepseek-wiring.md) — Simon AI uses server-side DEEPSEEK_API_KEY (process.env only); all LLM calls via Express routes, never VITE_ prefix
 - [Dark mode pattern](dark-mode-pattern.md) — never use hardcoded Tailwind colors (text-zinc-900, bg-white); always use CSS var() inline styles; prose needs explicit overrides in index.css
 - [Auth page](auth-page.md) — /login and /signup both render Login.jsx (tab-based toggle); routes must be outside all Layout wrappers in App.jsx
-- [Neighborhood OS features](neighborhood-os.md) — Community has 4 tabs (Feed/Jobs/Events/Polls), inline comments, polls voting; NeighborhoodDashboard is a full OS hub; Events wired to Supabase
-- [System completion arch](system-completion.md) — Express+PostgreSQL adapted from Supabase spec; all new tables in server/db.js initNewTables(); wallet_mutate is a Postgres stored proc with FOR UPDATE locking
+- [Neighborhood OS features](neighborhood-os.md) — Community has 4 tabs (Feed/Jobs/Events/Polls), inline comments, polls voting; community_posts/neighborhood_polls/post_comments/events tables added to initExtendedTables() in server/db.js
+- [System completion arch](system-completion.md) — Express+PostgreSQL adapted from Supabase spec; new tables in server/db.js initExtendedTables(); wallet_mutate is a Postgres stored proc with FOR UPDATE locking
+- [Font size fix](font-size-fix.md) — Tailwind fontSize scale was custom-compact (xs=10.5px, sm=12px, base=13.5px); fixed to standard (xs=12, sm=14, base=16); body font-size 14px→16px; 154 JSX files had hardcoded inline fontSize scaled ~1.2x via perl
 - [Column name bug](column-name-bug.md) — DB users table uses full_name not name; always use u.full_name in SQL joins; GroupBuy/ServiceBundles use server API not Supabase client
 - [New feature routes](new-feature-routes.md) — Wallet /api/wallet, Marketplace /api/marketplace, Committee /api/committees, Bundles /api/bundles all wired in server/index.js; frontend at /wallet /marketplace /committee routes

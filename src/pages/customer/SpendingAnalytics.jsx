@@ -150,8 +150,8 @@ Be specific, data-driven, and actionable. Use markdown formatting.`;
                                     <stop offset="95%" stopColor="#7c6fcd" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Area type="monotone" dataKey="value" stroke="#7c6fcd" strokeWidth={2} fill="url(#spendGrad)" />
                         </AreaChart>

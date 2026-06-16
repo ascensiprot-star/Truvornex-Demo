@@ -571,6 +571,19 @@ app.patch('/api/neighborhood-polls/:id/vote', requireAuth, async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.post('/api/neighborhood-polls', requireAuth, async (req, res) => {
+    const { question, neighborhood, options } = req.body;
+    if (!question || !options || options.length < 2) return res.status(400).json({ error: 'question and at least 2 options required' });
+    try {
+        const { rows } = await pool.query(
+            `INSERT INTO neighborhood_polls (question, neighborhood, options, created_by_name, created_by_email, created_at)
+             VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING *`,
+            [question, neighborhood || null, JSON.stringify(options), req.session.user.full_name || req.session.user.email, req.session.user.email]
+        );
+        res.json({ data: rows[0] });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 /* ── Trust Passport (public, no auth) ────────────────────────────────────── */
 
 app.get('/api/trust-passport/:providerId', async (req, res) => {

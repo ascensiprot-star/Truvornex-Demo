@@ -9,7 +9,7 @@ const ADDR_TYPES = [
 ];
 
 const inputStyle = {
-    width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 13,
+    width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 16,
     backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
     color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
 };

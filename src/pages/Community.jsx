@@ -14,7 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 
 const POST_TYPES = {
@@ -48,6 +47,10 @@ const CAT_ICON_MAP = {
     festival: Sparkles, exhibition: ImageIcon, food: UtensilsCrossed, other: Calendar,
 };
 
+function userName(user) {
+    return user?.full_name || user?.email?.split('@')[0] || 'You';
+}
+
 function Avatar({ name, email, size = 8 }) {
     const initial = (name || email || 'A').charAt(0).toUpperCase();
     const colors = ['bg-violet-500','bg-rose-500','bg-amber-500','bg-emerald-500','bg-sky-500','bg-pink-500','bg-indigo-500'];
@@ -69,10 +72,11 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
 
     const load = async () => {
         setLoading(true);
-        const { data } = await supabase
-            .from('post_comments').select('*')
-            .eq('post_id', postId).order('created_at', { ascending: true }).limit(30);
-        if (data) setComments(data);
+        try {
+            const r = await fetch(`/api/post-comments/${postId}`);
+            const d = await r.json();
+            if (d.data) setComments(d.data);
+        } catch (_) {}
         setLoading(false);
     };
 
@@ -82,19 +86,22 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
         if (!input.trim()) return;
         if (!user) { toast.error('Sign in to comment'); return; }
         setSubmitting(true);
-        const comment = {
-            post_id: postId, author_email: user.email,
-            author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-            body: input.trim(), created_at: new Date().toISOString(), id: Date.now(),
+        const optimistic = {
+            id: Date.now(), post_id: postId,
+            author_email: user.email,
+            author_name: userName(user),
+            body: input.trim(), created_at: new Date().toISOString(),
         };
-        setComments(prev => [...prev, comment]);
+        setComments(prev => [...prev, optimistic]);
         onCountChange && onCountChange(1);
         setInput('');
-        await supabase.from('post_comments').insert([{
-            post_id: postId, author_email: user.email,
-            author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-            body: input.trim(),
-        }]);
+        try {
+            await fetch('/api/post-comments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_id: postId, body: optimistic.body }),
+            });
+        } catch (_) {}
         setSubmitting(false);
     };
 
@@ -111,23 +118,25 @@ function PostComments({ postId, user, replyCount, onCountChange }) {
                         <div key={c.id} className="flex gap-2 items-start">
                             <Avatar name={c.author_name} email={c.author_email} size={6} />
                             <div className="flex-1 min-w-0">
-                                <span className="text-xs font-semibold text-zinc-900 dark:text-white mr-1.5">
+                                <span className="text-xs font-semibold mr-1.5" style={{ color: 'var(--color-text)' }}>
                                     {c.author_name || c.author_email?.split('@')[0]}
                                 </span>
-                                <span className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed">{c.body}</span>
+                                <span className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{c.body}</span>
                             </div>
                         </div>
                     ))}
-                    <div className="flex gap-2 items-center pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                        {user && <Avatar name={user.user_metadata?.full_name} email={user.email} size={6} />}
+                    <div className="flex gap-2 items-center pt-1 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                        {user && <Avatar name={userName(user)} email={user.email} size={6} />}
                         <input value={input} onChange={e => setInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && submit()}
                             placeholder={user ? 'Add a comment' : 'Sign in to comment'}
                             disabled={!user || submitting}
-                            className="flex-1 text-xs bg-transparent outline-none border-b border-zinc-200 dark:border-zinc-700 py-1 text-zinc-900 dark:text-white placeholder:text-zinc-400" />
+                            className="flex-1 text-xs bg-transparent outline-none border-b py-1"
+                            style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text)' }} />
                         {input.trim() && (
                             <button onClick={submit} disabled={submitting}
-                                className="text-xs font-bold text-zinc-900 dark:text-white shrink-0 hover:opacity-70 transition-opacity">Post</button>
+                                className="text-xs font-bold shrink-0 hover:opacity-70 transition-opacity"
+                                style={{ color: 'var(--color-primary)' }}>Post</button>
                         )}
                     </div>
                 </div>
@@ -151,23 +160,23 @@ function PostCard({ post, onLike, likedPosts, user }) {
     })();
 
     return (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden">
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             <div className="flex items-center gap-2.5 px-4 pt-4 pb-3">
                 <Avatar name={post.author_name} email={post.author_email} size={9} />
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-zinc-900 dark:text-white leading-none">{authorName}</p>
+                    <p className="text-sm font-semibold leading-none" style={{ color: 'var(--color-text)' }}>{authorName}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                        {post.neighborhood && <span className="text-[10px] text-zinc-400 flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
-                        <span className="text-[10px] text-zinc-400">{timeAgo}</span>
+                        {post.neighborhood && <span className="text-[10px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
+                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{timeAgo}</span>
                     </div>
                 </div>
-                <span className="flex items-center gap-1 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
                     <cfg.icon className="h-3 w-3" /> {cfg.label}
                 </span>
             </div>
 
             {post.image_url && (
-                <div className="relative bg-zinc-100 dark:bg-zinc-800" style={{ aspectRatio: '4/3' }}>
+                <div className="relative" style={{ aspectRatio: '4/3', backgroundColor: 'var(--color-surface-high)' }}>
                     {!imgLoaded && <div className="absolute inset-0 skeleton-wave" />}
                     <img src={post.image_url} alt="" className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`} onLoad={() => setImgLoaded(true)} />
                 </div>
@@ -175,41 +184,41 @@ function PostCard({ post, onLike, likedPosts, user }) {
 
             <div className="flex items-center gap-3 px-4 pt-3 pb-2">
                 <button onClick={() => onLike(post)} className="transition-all active:scale-90">
-                    <Heart className={`h-5 w-5 transition-all ${isLiked ? 'fill-rose-500 text-rose-500 scale-110' : 'text-zinc-400 dark:text-zinc-500'}`} strokeWidth={isLiked ? 0 : 1.8} />
+                    <Heart className={`h-5 w-5 transition-all ${isLiked ? 'fill-rose-500 text-rose-500 scale-110' : ''}`} style={!isLiked ? { color: 'var(--color-text-subtle)' } : {}} strokeWidth={isLiked ? 0 : 1.8} />
                 </button>
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors">
+                <button style={{ color: 'var(--color-text-subtle)' }} className="hover:opacity-70 transition-opacity">
                     <MessageCircle className="h-5 w-5" strokeWidth={1.8} />
                 </button>
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors" onClick={() => { navigator.clipboard?.writeText(window.location.href); toast('Link copied'); }}>
+                <button style={{ color: 'var(--color-text-subtle)' }} className="hover:opacity-70 transition-opacity" onClick={() => { navigator.clipboard?.writeText(window.location.href); toast('Link copied'); }}>
                     <Share2 className="h-5 w-5" strokeWidth={1.8} />
                 </button>
                 <div className="flex-1" />
-                <button className="text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 transition-colors">
+                <button style={{ color: 'var(--color-text-subtle)' }} className="hover:opacity-70 transition-opacity">
                     <Bookmark className="h-5 w-5" strokeWidth={1.8} />
                 </button>
             </div>
 
             {(post.upvotes || 0) > 0 && (
-                <p className="px-4 text-xs font-semibold text-zinc-900 dark:text-white pb-1">{post.upvotes} {post.upvotes === 1 ? 'like' : 'likes'}</p>
+                <p className="px-4 text-xs font-semibold pb-1" style={{ color: 'var(--color-text)' }}>{post.upvotes} {post.upvotes === 1 ? 'like' : 'likes'}</p>
             )}
 
             <div className="px-4 pb-3">
-                {post.title && <p className="text-sm font-semibold text-zinc-900 dark:text-white mb-0.5">{post.title}</p>}
+                {post.title && <p className="text-sm font-semibold mb-0.5" style={{ color: 'var(--color-text)' }}>{post.title}</p>}
                 {post.body && (
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed line-clamp-3">
-                        <span className="font-semibold text-zinc-900 dark:text-white mr-1.5">{authorName}</span>{post.body}
+                    <p className="text-sm leading-relaxed line-clamp-3" style={{ color: 'var(--color-text-muted)' }}>
+                        <span className="font-semibold mr-1.5" style={{ color: 'var(--color-text)' }}>{authorName}</span>{post.body}
                     </p>
                 )}
                 {post.type === 'skill_exchange' && (post.skill_offer || post.skill_want) && (
                     <div className="mt-2 flex items-center gap-2 text-xs flex-wrap">
                         {post.skill_offer && (
-                            <span className="bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800 flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full border flex items-center gap-1" style={{ backgroundColor: 'rgba(110,231,183,0.08)', color: 'var(--color-success)', borderColor: 'rgba(110,231,183,0.2)' }}>
                                 <GraduationCap className="h-2.5 w-2.5" /> {post.skill_offer}
                             </span>
                         )}
-                        <ArrowRight className="h-3 w-3 text-zinc-300" />
+                        <ArrowRight className="h-3 w-3" style={{ color: 'var(--color-text-subtle)' }} />
                         {post.skill_want && (
-                            <span className="bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full border border-violet-200 dark:border-violet-800 flex items-center gap-1">
+                            <span className="px-2 py-0.5 rounded-full border flex items-center gap-1" style={{ backgroundColor: 'var(--color-info-bg)', color: 'var(--color-info)', borderColor: 'rgba(147,197,253,0.2)' }}>
                                 <Search className="h-2.5 w-2.5" /> {post.skill_want}
                             </span>
                         )}
@@ -226,26 +235,26 @@ function PostCard({ post, onLike, likedPosts, user }) {
 function JobCard({ post }) {
     const authorName = post.author_name || post.author_email?.split('@')[0] || 'Anonymous';
     return (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all group">
+        <div className="rounded-xl p-4 hover:scale-[1.005] transition-all group" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             <div className="flex items-start gap-3">
                 <Avatar name={post.author_name} email={post.author_email} size={10} />
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-zinc-900 dark:text-white line-clamp-1">{post.title}</p>
-                    <p className="text-xs text-zinc-400">{authorName}</p>
+                    <p className="font-semibold text-sm line-clamp-1" style={{ color: 'var(--color-text)' }}>{post.title}</p>
+                    <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>{authorName}</p>
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        {post.job_type && <span className="text-[10px] font-semibold border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded-full">{JOB_TYPES[post.job_type] || post.job_type}</span>}
-                        {post.neighborhood && <span className="text-[10px] text-zinc-400 flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
-                        {post.job_salary && <span className="text-[10px] font-semibold text-emerald-600">{post.job_salary}</span>}
+                        {post.job_type && <span className="text-[10px] font-semibold border px-2 py-0.5 rounded-full" style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}>{JOB_TYPES[post.job_type] || post.job_type}</span>}
+                        {post.neighborhood && <span className="text-[10px] flex items-center gap-1" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
+                        {post.job_salary && <span className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>{post.job_salary}</span>}
                     </div>
                 </div>
                 <Button size="sm" variant="outline" className="h-7 rounded-lg text-[10px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Apply</Button>
             </div>
-            {post.body && <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 line-clamp-2">{post.body}</p>}
+            {post.body && <p className="text-xs mt-2 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{post.body}</p>}
         </div>
     );
 }
 
-function PollCard({ poll, user }) {
+function PollCard({ poll, user, onVote }) {
     const [voted, setVoted] = useState(() => {
         try { return JSON.parse(localStorage.getItem('voted_polls') || '{}')[poll.id] ?? null; } catch { return null; }
     });
@@ -269,58 +278,58 @@ function PollCard({ poll, user }) {
         const stored = JSON.parse(localStorage.getItem('voted_polls') || '{}');
         stored[poll.id] = idx;
         localStorage.setItem('voted_polls', JSON.stringify(stored));
-        await supabase.from('neighborhood_polls').update({ options: updated }).eq('id', poll.id);
+        try {
+            await fetch(`/api/neighborhood-polls/${poll.id}/vote`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ options: updated }),
+            });
+        } catch (_) {}
     };
 
     return (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5">
+        <div className="rounded-2xl p-5" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             <div className="flex items-center gap-2.5 mb-4">
                 <Avatar name={poll.created_by_name} email={poll.created_by_email} size={8} />
                 <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-zinc-900 dark:text-white">{poll.created_by_name}</p>
-                    <p className="text-[10px] text-zinc-400">
+                    <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{poll.created_by_name}</p>
+                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
                         {poll.neighborhood && <><MapPin className="inline h-2.5 w-2.5 mr-0.5" />{poll.neighborhood} · </>}{timeAgo}
                     </p>
                 </div>
-                <span className="flex items-center gap-1 text-[10px] font-bold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-info-bg)', color: 'var(--color-info)' }}>
                     <Vote className="h-3 w-3" /> Poll
                 </span>
             </div>
-            <p className="font-semibold text-sm text-zinc-900 dark:text-white mb-3 leading-snug">{poll.question}</p>
+            <p className="font-semibold text-sm mb-3 leading-snug" style={{ color: 'var(--color-text)' }}>{poll.question}</p>
             <div className="space-y-2">
                 {options.map((opt, i) => {
                     const pct = totalVotes > 0 ? Math.round((opt.votes || 0) / totalVotes * 100) : 0;
                     const isChosen = voted === i;
                     return (
                         <button key={i} onClick={() => vote(i)} disabled={hasVoted}
-                            className={`w-full text-left rounded-xl overflow-hidden border transition-all relative ${hasVoted ? 'cursor-default' : 'hover:border-zinc-400 dark:hover:border-zinc-500'} ${isChosen ? 'border-zinc-900 dark:border-white' : 'border-zinc-200 dark:border-zinc-700'}`}>
+                            className={`w-full text-left rounded-xl overflow-hidden border transition-all relative ${hasVoted ? 'cursor-default' : 'hover:opacity-80'}`}
+                            style={{
+                                borderColor: isChosen ? 'var(--color-primary)' : 'var(--color-border-strong)',
+                            }}>
                             {hasVoted && (
                                 <div className="absolute inset-y-0 left-0 rounded-xl transition-all duration-700"
-                                    style={{ width: `${pct}%`, background: isChosen ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)' }} />
+                                    style={{ width: `${pct}%`, backgroundColor: isChosen ? 'var(--color-accent-light)' : 'rgba(0,0,0,0.03)' }} />
                             )}
                             <div className="relative flex items-center justify-between px-3 py-2.5">
                                 <div className="flex items-center gap-2">
-                                    {isChosen && <CheckCircle2 className="h-3.5 w-3.5 text-zinc-900 dark:text-white shrink-0" />}
-                                    <span className="text-sm text-zinc-900 dark:text-white">{opt.text}</span>
+                                    {isChosen && <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: 'var(--color-primary)' }} />}
+                                    <span className="text-sm" style={{ color: 'var(--color-text)' }}>{opt.text}</span>
                                 </div>
-                                {hasVoted && <span className="text-xs font-bold text-zinc-600 dark:text-zinc-300">{pct}%</span>}
+                                {hasVoted && <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>{pct}%</span>}
                             </div>
                         </button>
                     );
                 })}
             </div>
-            <p className="text-[10px] text-zinc-400 mt-3">{totalVotes} vote{totalVotes !== 1 ? 's' : ''} · {hasVoted ? 'You voted' : 'Tap to vote'}</p>
+            <p className="text-[10px] mt-3" style={{ color: 'var(--color-text-subtle)' }}>{totalVotes} vote{totalVotes !== 1 ? 's' : ''} · {hasVoted ? 'You voted' : 'Tap to vote'}</p>
         </div>
     );
-}
-
-async function uploadPostImage(file, userId) {
-    const ext = file.name.split('.').pop();
-    const path = `${userId || 'anon'}/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('community-posts').upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
-    if (error) throw error;
-    const { data } = supabase.storage.from('community-posts').getPublicUrl(path);
-    return data.publicUrl;
 }
 
 export default function Community() {
@@ -349,20 +358,31 @@ export default function Community() {
 
     const loadPosts = async () => {
         setLoading(true);
-        const { data } = await supabase.from('community_posts').select('*').order('created_date', { ascending: false }).limit(50);
-        if (data) setPosts(data);
+        try {
+            const r = await fetch('/api/community-posts');
+            const d = await r.json();
+            if (d.data) setPosts(d.data);
+        } catch (_) {}
         setLoading(false);
     };
+
     const loadEvents = async () => {
         setEventsLoading(true);
-        const { data } = await supabase.from('events').select('*').order('date', { ascending: true }).limit(20);
-        if (data) setEvents(data);
+        try {
+            const r = await fetch('/api/events');
+            const d = await r.json();
+            if (d.data) setEvents(d.data);
+        } catch (_) {}
         setEventsLoading(false);
     };
+
     const loadPolls = async () => {
         setPollsLoading(true);
-        const { data } = await supabase.from('neighborhood_polls').select('*').order('created_at', { ascending: false }).limit(20);
-        if (data) setPolls(data);
+        try {
+            const r = await fetch('/api/neighborhood-polls');
+            const d = await r.json();
+            if (d.data) setPolls(d.data);
+        } catch (_) {}
         setPollsLoading(false);
     };
 
@@ -388,6 +408,7 @@ export default function Community() {
     });
 
     const handleLike = async (post) => {
+        if (!user) { toast.error('Sign in to like'); return; }
         const alreadyLiked = likedPosts.has(post.id);
         const delta = alreadyLiked ? -1 : 1;
         const newLiked = new Set(likedPosts);
@@ -395,7 +416,13 @@ export default function Community() {
         setLikedPosts(newLiked);
         localStorage.setItem('likedPosts', JSON.stringify([...newLiked]));
         setPosts(prev => prev.map(p => p.id === post.id ? { ...p, upvotes: Math.max(0, (p.upvotes || 0) + delta) } : p));
-        await supabase.from('community_posts').update({ upvotes: Math.max(0, (post.upvotes || 0) + delta) }).eq('id', post.id);
+        try {
+            await fetch(`/api/community-posts/${post.id}/vote`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ delta }),
+            });
+        } catch (_) {}
     };
 
     const createPost = async () => {
@@ -403,24 +430,26 @@ export default function Community() {
         if (!user) { toast.error('Please sign in to post'); return; }
         setSaving(true);
         try {
-            let image_url = null;
-            if (imageFile) {
-                try { image_url = await uploadPostImage(imageFile, user.id); }
-                catch { toast.error('Image upload failed — posting without photo'); }
-            }
-            const { error } = await supabase.from('community_posts').insert([{
-                type: postForm.type, title: postForm.title || null, body: postForm.body || null,
-                neighborhood: postForm.neighborhood || null, contact_email: postForm.contact_email || null,
-                job_type: postForm.job_type || null, job_salary: postForm.job_salary || null,
-                skill_offer: postForm.skill_offer || null, skill_want: postForm.skill_want || null,
-                author_email: user.email,
-                author_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-                upvotes: 0, reply_count: 0, is_resolved: false,
-                created_date: new Date().toISOString(),
-                ...(image_url ? { image_url } : {}),
-            }]);
-            if (error) throw error;
-            toast.success('Post published');
+            const body = new FormData();
+            const payload = {
+                type: postForm.type,
+                title: postForm.title || null,
+                body: postForm.body || null,
+                neighborhood: postForm.neighborhood || null,
+                contact_email: postForm.contact_email || null,
+                job_type: postForm.job_type || null,
+                job_salary: postForm.job_salary || null,
+                skill_offer: postForm.skill_offer || null,
+                skill_want: postForm.skill_want || null,
+            };
+            const r = await fetch('/api/community-posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const d = await r.json();
+            if (d.error) throw new Error(d.error);
+            toast.success('Post published! 🎉');
             closePostDialog();
             loadPosts();
         } catch (err) { toast.error(err.message || 'Failed to post'); }
@@ -434,16 +463,18 @@ export default function Community() {
         if (!user) { toast.error('Sign in to create a poll'); return; }
         setSaving(true);
         try {
-            const { error } = await supabase.from('neighborhood_polls').insert([{
-                question: pollForm.question.trim(),
-                neighborhood: pollForm.neighborhood || null,
-                options: validOptions.map(text => ({ text, votes: 0 })),
-                created_by_email: user.email,
-                created_by_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-                created_at: new Date().toISOString(),
-            }]);
-            if (error) throw error;
-            toast.success('Poll created');
+            const r = await fetch('/api/neighborhood-polls', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: pollForm.question.trim(),
+                    neighborhood: pollForm.neighborhood || null,
+                    options: validOptions.map(text => ({ text, votes: 0 })),
+                }),
+            });
+            const d = await r.json();
+            if (d.error) throw new Error(d.error);
+            toast.success('Poll created!');
             setCreatePollDialog(false);
             setPollForm(EMPTY_POLL);
             loadPolls();
@@ -453,29 +484,38 @@ export default function Community() {
 
     const upcomingEvents = events.filter(e => !e.date || new Date(e.date) >= new Date(new Date().setHours(0,0,0,0)));
 
+    const displayName = userName(user);
+
     return (
         <div className="pb-8 space-y-5 max-w-xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between pt-1">
                 <div>
-                    <h1 className="font-bold text-2xl tracking-tight text-zinc-900 dark:text-white">Community</h1>
-                    <p className="text-zinc-400 dark:text-zinc-500 text-sm mt-0.5">Neighborhood feed · jobs · events · polls</p>
+                    <h1 className="font-bold text-2xl tracking-tight" style={{ color: 'var(--color-text)' }}>Community</h1>
+                    <p className="text-sm mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>Neighborhood feed · jobs · events · polls</p>
                 </div>
                 <button
-                    onClick={() => mainTab === 'polls'
-                        ? (user ? setCreatePollDialog(true) : toast.error('Sign in first'))
-                        : (user ? setCreatePostDialog(true) : toast.error('Sign in to post'))}
-                    className="h-9 px-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-semibold flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+                    onClick={() => {
+                        if (!user) { toast.error('Sign in first'); return; }
+                        mainTab === 'polls' ? setCreatePollDialog(true) : setCreatePostDialog(true);
+                    }}
+                    className="h-9 px-4 rounded-xl text-sm font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-80"
+                    style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                     <Plus className="h-4 w-4" />
                     {mainTab === 'polls' ? 'New Poll' : 'New Post'}
                 </button>
             </div>
 
             {/* Main tabs */}
-            <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl w-full overflow-x-auto">
+            <div className="flex gap-1 p-1 rounded-xl w-full overflow-x-auto" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                 {MAIN_TABS.map(t => (
                     <button key={t.key} onClick={() => setMainTab(t.key)}
-                        className={`h-8 px-4 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-1 ${mainTab === t.key ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'}`}>
+                        className="h-8 px-4 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex-1"
+                        style={{
+                            backgroundColor: mainTab === t.key ? 'var(--color-surface)' : 'transparent',
+                            color: mainTab === t.key ? 'var(--color-text)' : 'var(--color-text-muted)',
+                            boxShadow: mainTab === t.key ? 'var(--shadow-sm)' : 'none',
+                        }}>
                         {t.label}
                     </button>
                 ))}
@@ -488,25 +528,29 @@ export default function Community() {
                         <div className="flex gap-1.5 flex-wrap">
                             {FILTER_PILLS.map(pill => (
                                 <button key={pill} onClick={() => setFilterPill(pill)}
-                                    className={`h-7 px-3 rounded-full text-xs font-semibold transition-all ${filterPill === pill ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}>
+                                    className="h-7 px-3 rounded-full text-xs font-semibold transition-all"
+                                    style={{
+                                        backgroundColor: filterPill === pill ? 'var(--color-primary)' : 'var(--color-surface-high)',
+                                        color: filterPill === pill ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
+                                    }}>
                                     {pill}
                                 </button>
                             ))}
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
                             <Input placeholder="Search posts" value={search} onChange={e => setSearch(e.target.value)}
-                                className="pl-8 h-8 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800" />
+                                className="pl-8 h-8 text-xs rounded-xl" />
                         </div>
                     </div>
                     {loading ? (
                         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-64 rounded-2xl" />)}</div>
                     ) : feedPosts.length === 0 ? (
-                        <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 text-center bg-zinc-50 dark:bg-zinc-900/50">
-                            <Camera className="h-8 w-8 mx-auto mb-3 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />
-                            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium">No posts yet</p>
-                            <p className="text-zinc-400 dark:text-zinc-600 text-xs mt-1">Be the first to share something</p>
-                            {user && <button onClick={() => setCreatePostDialog(true)} className="mt-4 text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Create a post</button>}
+                        <div className="rounded-2xl p-12 text-center" style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                            <Camera className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} strokeWidth={1.5} />
+                            <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>No posts yet</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--color-text-subtle)' }}>Be the first to share something</p>
+                            {user && <button onClick={() => setCreatePostDialog(true)} className="mt-4 text-xs font-semibold underline underline-offset-2" style={{ color: 'var(--color-primary)' }}>Create a post</button>}
                         </div>
                     ) : (
                         <div className="space-y-4">{feedPosts.map(p => <PostCard key={p.id} post={p} onLike={handleLike} likedPosts={likedPosts} user={user} />)}</div>
@@ -518,17 +562,17 @@ export default function Community() {
             {mainTab === 'jobs' && (
                 <>
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
                         <Input placeholder="Search jobs" value={search} onChange={e => setSearch(e.target.value)}
-                            className="pl-8 h-8 text-xs rounded-xl bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800" />
+                            className="pl-8 h-8 text-xs rounded-xl" />
                     </div>
                     {loading ? (
                         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-20 rounded-xl" />)}</div>
                     ) : feedPosts.length === 0 ? (
-                        <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl p-12 text-center bg-zinc-50 dark:bg-zinc-900/50">
-                            <Briefcase className="h-8 w-8 mx-auto mb-3 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />
-                            <p className="text-zinc-400 text-sm">No jobs posted yet</p>
-                            {user && <button onClick={() => { setPostForm(p => ({ ...p, type: 'job' })); setCreatePostDialog(true); }} className="mt-3 text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Post a job</button>}
+                        <div className="rounded-xl p-12 text-center" style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                            <Briefcase className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} strokeWidth={1.5} />
+                            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No jobs posted yet</p>
+                            {user && <button onClick={() => { setPostForm(p => ({ ...p, type: 'job' })); setCreatePostDialog(true); }} className="mt-3 text-xs font-semibold underline underline-offset-2" style={{ color: 'var(--color-primary)' }}>Post a job</button>}
                         </div>
                     ) : (
                         <div className="space-y-2.5">{feedPosts.map(p => <JobCard key={p.id} post={p} />)}</div>
@@ -540,18 +584,18 @@ export default function Community() {
             {mainTab === 'events' && (
                 <>
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{upcomingEvents.length} upcoming events</p>
-                        <Link to="/events" className="flex items-center gap-1 text-xs font-semibold text-zinc-900 dark:text-white hover:opacity-70 transition-opacity">
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{upcomingEvents.length} upcoming events</p>
+                        <Link to="/events" className="flex items-center gap-1 text-xs font-semibold hover:opacity-70 transition-opacity" style={{ color: 'var(--color-text)' }}>
                             Full calendar <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
                     </div>
                     {eventsLoading ? (
                         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-28 rounded-2xl" />)}</div>
                     ) : upcomingEvents.length === 0 ? (
-                        <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 text-center bg-zinc-50 dark:bg-zinc-900/50">
-                            <Calendar className="h-8 w-8 mx-auto mb-3 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />
-                            <p className="text-zinc-500 text-sm font-medium">No upcoming events</p>
-                            <Link to="/events" className="mt-4 inline-block text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Browse all events</Link>
+                        <div className="rounded-2xl p-12 text-center" style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                            <Calendar className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} strokeWidth={1.5} />
+                            <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>No upcoming events</p>
+                            <Link to="/events" className="mt-4 inline-block text-xs font-semibold underline underline-offset-2" style={{ color: 'var(--color-primary)' }}>Browse all events</Link>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -560,23 +604,23 @@ export default function Community() {
                                 const soldOut = (ev.tickets_sold || 0) >= (ev.total_tickets || 9999);
                                 const pct = ev.total_tickets ? Math.round((ev.tickets_sold || 0) / ev.total_tickets * 100) : 0;
                                 return (
-                                    <div key={ev.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden flex">
-                                        <div className="w-20 shrink-0 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                            <CatIcon className="h-7 w-7 text-zinc-400 dark:text-zinc-500" />
+                                    <div key={ev.id} className="rounded-2xl overflow-hidden flex" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+                                        <div className="w-20 shrink-0 flex items-center justify-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
+                                            <CatIcon className="h-7 w-7" style={{ color: 'var(--color-text-subtle)' }} />
                                         </div>
                                         <div className="flex-1 p-3 min-w-0">
                                             <div className="flex items-start justify-between gap-2">
-                                                <p className="font-semibold text-sm text-zinc-900 dark:text-white line-clamp-1">{ev.title}</p>
-                                                <span className="text-[10px] font-bold shrink-0 text-emerald-600">{ev.is_free || !ev.ticket_price ? 'Free' : `$${ev.ticket_price}`}</span>
+                                                <p className="font-semibold text-sm line-clamp-1" style={{ color: 'var(--color-text)' }}>{ev.title}</p>
+                                                <span className="text-[10px] font-bold shrink-0" style={{ color: 'var(--color-success)' }}>{ev.is_free || !ev.ticket_price ? 'Free' : `PKR ${ev.ticket_price}`}</span>
                                             </div>
-                                            <div className="flex items-center gap-2 mt-1 text-[10px] text-zinc-400 flex-wrap">
+                                            <div className="flex items-center gap-2 mt-1 text-[10px] flex-wrap" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {ev.date && <span className="flex items-center gap-0.5"><Calendar className="h-2.5 w-2.5" /> {ev.date}</span>}
                                                 {ev.venue_name && <span className="flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" /> {ev.venue_name}</span>}
                                                 <span className="flex items-center gap-0.5"><Users className="h-2.5 w-2.5" /> {ev.tickets_sold || 0}/{ev.total_tickets}</span>
                                             </div>
                                             {ev.total_tickets && (
-                                                <div className="mt-2 h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-zinc-900 dark:bg-zinc-100 rounded-full" style={{ width: `${pct}%` }} />
+                                                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-surface-highest)' }}>
+                                                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: 'var(--color-primary)' }} />
                                                 </div>
                                             )}
                                         </div>
@@ -590,7 +634,7 @@ export default function Community() {
                                     </div>
                                 );
                             })}
-                            <Link to="/events" className="flex items-center justify-center gap-2 text-sm font-semibold text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors py-2">
+                            <Link to="/events" className="flex items-center justify-center gap-2 text-sm font-semibold hover:opacity-70 transition-colors py-2" style={{ color: 'var(--color-text-muted)' }}>
                                 See all events <ChevronRight className="h-4 w-4" />
                             </Link>
                         </div>
@@ -602,17 +646,17 @@ export default function Community() {
             {mainTab === 'polls' && (
                 <>
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">Vote on neighborhood decisions</p>
-                        <span className="text-[10px] text-zinc-400">{polls.length} active poll{polls.length !== 1 ? 's' : ''}</span>
+                        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Vote on neighborhood decisions</p>
+                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{polls.length} active poll{polls.length !== 1 ? 's' : ''}</span>
                     </div>
                     {pollsLoading ? (
                         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-40 rounded-2xl" />)}</div>
                     ) : polls.length === 0 ? (
-                        <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl p-12 text-center bg-zinc-50 dark:bg-zinc-900/50">
-                            <Vote className="h-8 w-8 mx-auto mb-3 text-zinc-300 dark:text-zinc-700" strokeWidth={1.5} />
-                            <p className="text-zinc-500 text-sm font-medium">No polls yet</p>
-                            <p className="text-zinc-400 text-xs mt-1">Create a poll to vote on neighborhood decisions</p>
-                            {user && <button onClick={() => setCreatePollDialog(true)} className="mt-4 text-xs font-semibold text-zinc-900 dark:text-white underline underline-offset-2">Create first poll</button>}
+                        <div className="rounded-2xl p-12 text-center" style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+                            <Vote className="h-8 w-8 mx-auto mb-3" style={{ color: 'var(--color-text-subtle)' }} strokeWidth={1.5} />
+                            <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>No polls yet</p>
+                            <p className="text-xs mt-1" style={{ color: 'var(--color-text-subtle)' }}>Create a poll to vote on neighborhood decisions</p>
+                            {user && <button onClick={() => setCreatePollDialog(true)} className="mt-4 text-xs font-semibold underline underline-offset-2" style={{ color: 'var(--color-primary)' }}>Create first poll</button>}
                         </div>
                     ) : (
                         <div className="space-y-4">{polls.map(poll => <PollCard key={poll.id} poll={poll} user={user} />)}</div>
@@ -624,20 +668,19 @@ export default function Community() {
             <Dialog open={createPostDialog} onOpenChange={closePostDialog}>
                 <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-0">
                     <DialogHeader className="px-5 pt-5 pb-0">
-                        <DialogTitle className="font-semibold text-base">New Post</DialogTitle>
+                        <DialogTitle className="font-semibold text-base" style={{ color: 'var(--color-text)' }}>New Post</DialogTitle>
                     </DialogHeader>
                     <div className="px-5 pt-4 pb-5 space-y-4">
                         <div ref={dropRef}
-                            onDragOver={e => { e.preventDefault(); dropRef.current?.classList.add('border-zinc-500'); }}
-                            onDragLeave={() => dropRef.current?.classList.remove('border-zinc-500')}
-                            onDrop={e => { e.preventDefault(); dropRef.current?.classList.remove('border-zinc-500'); handleImageSelect(e.dataTransfer.files[0]); }}>
+                            onDragOver={e => { e.preventDefault(); }}
+                            onDrop={e => { e.preventDefault(); handleImageSelect(e.dataTransfer.files[0]); }}>
                             {imagePreview ? (
-                                <div className="relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800" style={{ aspectRatio: '4/3' }}>
+                                <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: '4/3', backgroundColor: 'var(--color-surface-high)' }}>
                                     <img src={imagePreview} alt="" className="w-full h-full object-cover" />
                                     <button onClick={clearImage} className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"><X className="h-3.5 w-3.5" /></button>
                                 </div>
                             ) : (
-                                <button onClick={() => fileInputRef.current?.click()} className="w-full border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-400 hover:border-zinc-400 transition-all" style={{ minHeight: 100 }}>
+                                <button onClick={() => fileInputRef.current?.click()} className="w-full border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 hover:opacity-70 transition-all" style={{ minHeight: 100, borderColor: 'var(--color-border-strong)', color: 'var(--color-text-subtle)' }}>
                                     <ImageIcon className="h-6 w-6" />
                                     <p className="text-xs">Add a photo (optional)</p>
                                 </button>
@@ -645,28 +688,32 @@ export default function Community() {
                             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={e => handleImageSelect(e.target.files[0])} />
                         </div>
                         <div className="flex items-center gap-2.5">
-                            <Avatar name={user?.user_metadata?.full_name} email={user?.email} size={9} />
+                            <Avatar name={displayName} email={user?.email} size={9} />
                             <div>
-                                <p className="text-sm font-semibold text-zinc-900 dark:text-white">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'}</p>
-                                <p className="text-[10px] text-zinc-400">Posting to Community</p>
+                                <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{displayName}</p>
+                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Posting to Community</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-4 gap-1.5">
                             {Object.entries(POST_TYPES).map(([k, v]) => (
                                 <button key={k} onClick={() => setPostForm(p => ({ ...p, type: k }))}
-                                    className={`py-2.5 rounded-xl border text-center transition-all ${postForm.type === k ? 'border-zinc-900 dark:border-white bg-zinc-900/5 dark:bg-white/10' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'}`}>
-                                    <v.icon className="h-4 w-4 mx-auto mb-1 text-zinc-600 dark:text-zinc-400" />
-                                    <p className="text-[9px] font-semibold text-zinc-600 dark:text-zinc-400 leading-tight">{v.label}</p>
+                                    className="py-2.5 rounded-xl border text-center transition-all"
+                                    style={{
+                                        borderColor: postForm.type === k ? 'var(--color-primary)' : 'var(--color-border-strong)',
+                                        backgroundColor: postForm.type === k ? 'var(--color-accent-light)' : 'transparent',
+                                    }}>
+                                    <v.icon className="h-4 w-4 mx-auto mb-1" style={{ color: postForm.type === k ? 'var(--color-primary)' : 'var(--color-text-muted)' }} />
+                                    <p className="text-[9px] font-semibold leading-tight" style={{ color: postForm.type === k ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>{v.label}</p>
                                 </button>
                             ))}
                         </div>
                         <Input placeholder="Title (optional)" value={postForm.title} onChange={e => setPostForm(p => ({ ...p, title: e.target.value }))} className="rounded-xl" />
                         <div className="relative">
-                            <Textarea placeholder="Write a caption" value={postForm.body} onChange={e => setPostForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none pr-12" rows={3} />
-                            <span className="absolute bottom-2.5 right-3 text-[10px] text-zinc-300 dark:text-zinc-600">{postForm.body.length}/500</span>
+                            <Textarea placeholder="Write a caption or describe your post..." value={postForm.body} onChange={e => setPostForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none pr-12" rows={3} maxLength={500} />
+                            <span className="absolute bottom-2.5 right-3 text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{postForm.body.length}/500</span>
                         </div>
                         <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
                             <Input placeholder="Add location (optional)" value={postForm.neighborhood} onChange={e => setPostForm(p => ({ ...p, neighborhood: e.target.value }))} className="pl-8 rounded-xl" />
                         </div>
                         {postForm.type === 'job' && (
@@ -689,7 +736,7 @@ export default function Community() {
                             <Button variant="outline" className="flex-1 h-10 rounded-xl text-sm" onClick={closePostDialog}>Cancel</Button>
                             <Button className="flex-1 h-10 rounded-xl text-sm gap-2" onClick={createPost} disabled={saving || (!postForm.body && !imageFile)}>
                                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                                {saving ? 'Publishing' : 'Publish'}
+                                {saving ? 'Publishing…' : 'Publish'}
                             </Button>
                         </div>
                     </div>
@@ -700,24 +747,24 @@ export default function Community() {
             <Dialog open={createPollDialog} onOpenChange={setCreatePollDialog}>
                 <DialogContent className="max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2"><BarChart2 className="h-4 w-4" /> Create a Poll</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2" style={{ color: 'var(--color-text)' }}><BarChart2 className="h-4 w-4" /> Create a Poll</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-3 pt-2">
                         <div className="flex items-center gap-2.5">
-                            <Avatar name={user?.user_metadata?.full_name} email={user?.email} size={9} />
+                            <Avatar name={displayName} email={user?.email} size={9} />
                             <div>
-                                <p className="text-sm font-semibold text-zinc-900 dark:text-white">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'}</p>
-                                <p className="text-[10px] text-zinc-400">Neighborhood Poll</p>
+                                <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{displayName}</p>
+                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Neighborhood Poll</p>
                             </div>
                         </div>
                         <Textarea placeholder="Ask a question — e.g. Should we add a dog park to Riverside?" value={pollForm.question}
                             onChange={e => setPollForm(p => ({ ...p, question: e.target.value }))} className="rounded-xl resize-none" rows={2} />
                         <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
                             <Input placeholder="Neighborhood (optional)" value={pollForm.neighborhood} onChange={e => setPollForm(p => ({ ...p, neighborhood: e.target.value }))} className="pl-8 rounded-xl" />
                         </div>
                         <div className="space-y-2">
-                            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Options (min 2)</p>
+                            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-subtle)' }}>Options (min 2)</p>
                             {pollForm.options.map((opt, i) => (
                                 <div key={i} className="relative">
                                     <Input placeholder={i < 2 ? `Option ${i + 1} *` : `Option ${i + 1} (optional)`} value={opt}
@@ -725,7 +772,7 @@ export default function Community() {
                                         className="rounded-xl pr-8" />
                                     {opt && i >= 2 && (
                                         <button onClick={() => { const o = pollForm.options.map((x,j) => j === i ? '' : x); setPollForm(p => ({ ...p, options: o })); }}
-                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2 hover:opacity-70" style={{ color: 'var(--color-text-subtle)' }}>
                                             <X className="h-3.5 w-3.5" />
                                         </button>
                                     )}
@@ -736,7 +783,7 @@ export default function Community() {
                             <Button variant="outline" className="flex-1 h-10 rounded-xl text-sm" onClick={() => setCreatePollDialog(false)}>Cancel</Button>
                             <Button className="flex-1 h-10 rounded-xl text-sm gap-2" onClick={createPoll} disabled={saving}>
                                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BarChart2 className="h-3.5 w-3.5" />}
-                                {saving ? 'Creating' : 'Create Poll'}
+                                {saving ? 'Creating…' : 'Create Poll'}
                             </Button>
                         </div>
                     </div>

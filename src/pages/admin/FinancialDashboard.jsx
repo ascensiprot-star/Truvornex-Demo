@@ -38,7 +38,7 @@ export default function FinancialDashboard() {
             border: '1px solid var(--color-border)',
             borderRadius: 8,
             color: 'var(--color-text)',
-            fontSize: 12,
+            fontSize: 14,
         },
     };
 
@@ -172,8 +172,8 @@ export default function FinancialDashboard() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: colors.text }} interval="preserveStartEnd" />
-                        <YAxis tick={{ fontSize: 10, fill: colors.text }} />
+                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: colors.text }} interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 12, fill: colors.text }} />
                         <Tooltip {...tooltipStyle} formatter={(v) => [`$${v}`, 'Revenue']} />
                         <Area type="monotone" dataKey="revenue" stroke={colors.accent} strokeWidth={2} fill="url(#revGrad2)" />
                     </AreaChart>
@@ -186,8 +186,8 @@ export default function FinancialDashboard() {
                     <ResponsiveContainer width="100%" height={180}>
                         <BarChart data={metrics.dailyData}>
                             <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                            <XAxis dataKey="date" tick={{ fontSize: 10, fill: colors.text }} interval="preserveStartEnd" />
-                            <YAxis tick={{ fontSize: 10, fill: colors.text }} allowDecimals={false} />
+                            <XAxis dataKey="date" tick={{ fontSize: 12, fill: colors.text }} interval="preserveStartEnd" />
+                            <YAxis tick={{ fontSize: 12, fill: colors.text }} allowDecimals={false} />
                             <Tooltip {...tooltipStyle} />
                             <Bar dataKey="bookings" fill={colors.accent} radius={[3, 3, 0, 0]} />
                         </BarChart>

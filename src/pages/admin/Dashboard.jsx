@@ -34,7 +34,7 @@ const KPI = ({ label, value, sub, icon: Icon, accent, delta }) => (
     }}>
         <div className="flex items-center justify-between mb-3">
             <span style={{
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
@@ -48,8 +48,8 @@ const KPI = ({ label, value, sub, icon: Icon, accent, delta }) => (
                 <Icon style={{ width: 15, height: 15, color: accent ? 'rgba(255,255,255,0.7)' : 'var(--color-text-subtle)' }} />
             </div>
         </div>
-        <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: '-0.02em' }}>{value}</div>
-        {sub && <div style={{ fontSize: 11, marginTop: 4, color: accent ? 'rgba(255,255,255,0.5)' : 'var(--color-text-subtle)' }}>{sub}</div>}
+        <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-0.02em' }}>{value}</div>
+        {sub && <div style={{ fontSize: 13, marginTop: 4, color: accent ? 'rgba(255,255,255,0.5)' : 'var(--color-text-subtle)' }}>{sub}</div>}
     </div>
 );
 
@@ -221,8 +221,8 @@ export default function Dashboard() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: colors.text }} interval={3} />
-                        <YAxis tick={{ fontSize: 10, fill: colors.text }} allowDecimals={false} />
+                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: colors.text }} interval={3} />
+                        <YAxis tick={{ fontSize: 12, fill: colors.text }} allowDecimals={false} />
                         <Tooltip
                             contentStyle={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', borderRadius: 8, color: 'var(--color-text)' }}
                             formatter={(v) => [v, 'Bookings']} />
@@ -300,8 +300,8 @@ export default function Dashboard() {
                         <ResponsiveContainer width="100%" height={180}>
                             <BarChart data={metrics.demand} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} horizontal={false} />
-                                <XAxis type="number" tick={{ fontSize: 10, fill: colors.text }} allowDecimals={false} />
-                                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: colors.text }} width={80} />
+                                <XAxis type="number" tick={{ fontSize: 12, fill: colors.text }} allowDecimals={false} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: colors.text }} width={80} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', borderRadius: 8, color: 'var(--color-text)' }}
                                     formatter={(v) => [v, 'Forecast']} />

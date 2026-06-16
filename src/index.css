@@ -142,8 +142,8 @@
         background-color: var(--color-bg);
         color: var(--color-text);
         transition: background-color 0.3s var(--ease-out-expo), color 0.3s var(--ease-out-expo);
-        line-height: 1.55;
-        font-size: 14px;
+        line-height: 1.6;
+        font-size: 16px;
         letter-spacing: -0.011em;
     }
 
@@ -250,7 +250,7 @@ html.dark .border-zinc-200.rounded-xl { border-color: var(--color-border) !impor
         color: var(--color-on-primary);
         border-radius: 8px;
         font-weight: 600;
-        font-size: 13px;
+        font-size: 15px;
         padding: 8px 16px;
         letter-spacing: -0.012em;
         transition: all 0.18s var(--ease-out-expo);
@@ -265,7 +265,7 @@ html.dark .border-zinc-200.rounded-xl { border-color: var(--color-border) !impor
         background: transparent;
         color: var(--color-text-muted);
         border-radius: 7px;
-        font-size: 13px;
+        font-size: 15px;
         padding: 6px 12px;
         letter-spacing: -0.01em;
         transition: all 0.15s var(--ease-in-out);
@@ -336,7 +336,7 @@ html.dark .border-zinc-200.rounded-xl { border-color: var(--color-border) !impor
         border: 1px solid var(--color-border-strong);
         border-radius: 8px;
         padding: 8px 12px;
-        font-size: 13px;
+        font-size: 15px;
         color: var(--color-text);
         transition: border-color 0.18s var(--ease-out-quart), box-shadow 0.18s var(--ease-out-quart);
         outline: none;
@@ -347,15 +347,15 @@ html.dark .border-zinc-200.rounded-xl { border-color: var(--color-border) !impor
     .input-field:focus { border-color: var(--color-border-accent); box-shadow: 0 0 0 3px rgba(255,255,255,0.06), var(--shadow-glow); }
 
     /* Badges */
-    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 600; letter-spacing: 0.03em; }
-    .badge-success { background: var(--color-success-bg); color: var(--color-success); border: 1px solid rgba(110,231,183,0.2); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid rgba(252,211,77,0.2);  padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-    .badge-error   { background: var(--color-error-bg);   color: var(--color-error);   border: 1px solid rgba(252,165,165,0.2); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-    .badge-info    { background: var(--color-info-bg);    color: var(--color-info);    border: 1px solid rgba(147,197,253,0.2); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
-    .badge-accent  { background: var(--color-accent-light); color: var(--color-primary); border: 1px solid var(--color-border-accent); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 600; letter-spacing: 0.03em; }
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); border: 1px solid rgba(110,231,183,0.2); padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 700; }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid rgba(252,211,77,0.2);  padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 700; }
+    .badge-error   { background: var(--color-error-bg);   color: var(--color-error);   border: 1px solid rgba(252,165,165,0.2); padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 700; }
+    .badge-info    { background: var(--color-info-bg);    color: var(--color-info);    border: 1px solid rgba(147,197,253,0.2); padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 700; }
+    .badge-accent  { background: var(--color-accent-light); color: var(--color-primary); border: 1px solid var(--color-border-accent); padding: 2px 8px; border-radius: 999px; font-size: 14px; font-weight: 700; }
 
     /* Tabs */
-    .tab-pill { padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; transition: all 0.15s; cursor: pointer; border: none; letter-spacing: -0.01em; }
+    .tab-pill { padding: 5px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; transition: all 0.15s; cursor: pointer; border: none; letter-spacing: -0.01em; }
     .tab-pill-active { background: var(--color-primary); color: var(--color-on-primary); }
     .tab-pill-inactive { background: var(--color-surface-high); color: var(--color-text-muted); }
     .tab-pill-inactive:hover { background: var(--color-surface-highest); color: var(--color-text); }

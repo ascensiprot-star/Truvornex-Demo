@@ -62,7 +62,7 @@ export default function Analytics() {
             border: '1px solid var(--color-border)',
             borderRadius: 8,
             color: 'var(--color-text)',
-            fontSize: 12,
+            fontSize: 14,
         },
     };
 
@@ -150,8 +150,8 @@ export default function Analytics() {
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text }} />
-                                <YAxis tick={{ fontSize: 11, fill: colors.text }} />
+                                <XAxis dataKey="month" tick={{ fontSize: 13, fill: colors.text }} />
+                                <YAxis tick={{ fontSize: 13, fill: colors.text }} />
                                 <Tooltip {...tooltipStyle} formatter={(v) => [`$${v.toLocaleString()}`, 'Revenue']} />
                                 <Area type="monotone" dataKey="revenue" stroke={colors.accent} strokeWidth={2} fill="url(#revenueGrad)" />
                             </AreaChart>
@@ -178,8 +178,8 @@ export default function Analytics() {
                             <ResponsiveContainer width="100%" height={200}>
                                 <BarChart data={byDay}>
                                     <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: colors.text }} />
-                                    <YAxis tick={{ fontSize: 11, fill: colors.text }} />
+                                    <XAxis dataKey="day" tick={{ fontSize: 13, fill: colors.text }} />
+                                    <YAxis tick={{ fontSize: 13, fill: colors.text }} />
                                     <Tooltip {...tooltipStyle} />
                                     <Bar dataKey="bookings" fill={colors.accent} radius={[4, 4, 0, 0]} />
                                 </BarChart>
@@ -196,8 +196,8 @@ export default function Analytics() {
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={byCategory} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                <XAxis type="number" tick={{ fontSize: 11, fill: colors.text }} />
-                                <YAxis dataKey="category" type="category" tick={{ fontSize: 11, fill: colors.text }} width={100} />
+                                <XAxis type="number" tick={{ fontSize: 13, fill: colors.text }} />
+                                <YAxis dataKey="category" type="category" tick={{ fontSize: 13, fill: colors.text }} width={100} />
                                 <Tooltip {...tooltipStyle} formatter={(v) => [`$${v.toLocaleString()}`, 'Revenue']} />
                                 <Bar dataKey="revenue" fill={colors.accent} radius={[0, 4, 4, 0]} />
                             </BarChart>
@@ -208,8 +208,8 @@ export default function Analytics() {
                         <ResponsiveContainer width="100%" height={220}>
                             <LineChart data={monthly}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text }} />
-                                <YAxis tick={{ fontSize: 11, fill: colors.text }} />
+                                <XAxis dataKey="month" tick={{ fontSize: 13, fill: colors.text }} />
+                                <YAxis tick={{ fontSize: 13, fill: colors.text }} />
                                 <Tooltip {...tooltipStyle} />
                                 <Line type="monotone" dataKey="bookings" stroke={colors.accent} strokeWidth={2} dot={{ r: 4, fill: colors.accent }} />
                             </LineChart>
@@ -260,8 +260,8 @@ export default function Analytics() {
                         <ResponsiveContainer width="100%" height={260}>
                             <BarChart data={retention}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fill: colors.text }} />
-                                <YAxis tick={{ fontSize: 11, fill: colors.text }} />
+                                <XAxis dataKey="month" tick={{ fontSize: 13, fill: colors.text }} />
+                                <YAxis tick={{ fontSize: 13, fill: colors.text }} />
                                 <Tooltip {...tooltipStyle} />
                                 <Legend />
                                 <Bar dataKey="new" name="New" fill={colors.accent} radius={[4, 4, 0, 0]} stackId="a" />
@@ -292,8 +292,8 @@ export default function Analytics() {
                         <ResponsiveContainer width="100%" height={220}>
                             <BarChart data={byDay}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                                <XAxis dataKey="day" tick={{ fontSize: 11, fill: colors.text }} />
-                                <YAxis tick={{ fontSize: 11, fill: colors.text }} />
+                                <XAxis dataKey="day" tick={{ fontSize: 13, fill: colors.text }} />
+                                <YAxis tick={{ fontSize: 13, fill: colors.text }} />
                                 <Tooltip {...tooltipStyle} />
                                 <Bar dataKey="bookings" fill={colors.accent} radius={[4, 4, 0, 0]} />
                             </BarChart>

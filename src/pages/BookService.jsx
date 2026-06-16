@@ -86,7 +86,7 @@ export default function BookService() {
 
     const stepStyle = (n) => ({
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-        height: 36, borderRadius: 12, fontSize: 12, fontWeight: 600,
+        height: 36, borderRadius: 12, fontSize: 14, fontWeight: 600,
         border: 'none', cursor: n <= step ? 'pointer' : 'default',
         transition: 'all 0.2s',
         backgroundColor: step === n ? 'var(--color-primary)' : 'transparent',

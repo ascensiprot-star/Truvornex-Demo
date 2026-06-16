@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { LogOut, Camera, User, Mail, Phone, MapPin, Edit3 } from 'lucide-react';
 
-const labelStyle = { fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--color-text-subtle)' };
-const fieldStyle = { height: 44, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 12, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', fontSize: 13, color: 'var(--color-text-muted)' };
+const labelStyle = { fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--color-text-subtle)' };
+const fieldStyle = { height: 44, padding: '0 12px', display: 'flex', alignItems: 'center', borderRadius: 12, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', fontSize: 16, color: 'var(--color-text-muted)' };
 
 export default function CustomerProfile() {
     const [user, setUser] = useState(null);

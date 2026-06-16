@@ -7,8 +7,8 @@ import { LogOut, Camera, MapPin, Navigation, CheckCircle, Image, X, Info } from 
 
 const ALL_ICONS = ['scissors', 'stethoscope', 'wrench', 'zap', 'book', 'truck', 'dumbbell', 'utensils', 'shopping', 'droplets', 'paintbrush', 'car'];
 
-const labelStyle = { fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', display: 'block', marginBottom: 6 };
-const sectionTitle = { fontWeight: 700, fontSize: 14, color: 'var(--color-primary)', marginBottom: 4 };
+const labelStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text-muted)', display: 'block', marginBottom: 6 };
+const sectionTitle = { fontWeight: 700, fontSize: 17, color: 'var(--color-primary)', marginBottom: 4 };
 
 const btnBase = {
     border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600,
@@ -190,7 +190,7 @@ export default function ProviderProfile() {
             <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                 <div className="flex items-center justify-between">
                     <h2 style={sectionTitle}>Location</h2>
-                    <button style={{ ...btnBase, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)', padding: '5px 10px', fontSize: 11 }}
+                    <button style={{ ...btnBase, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)', padding: '5px 10px', fontSize: 13 }}
                         onClick={getMyLocation} disabled={geoLoading}
                         onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
                         onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
@@ -239,7 +239,7 @@ export default function ProviderProfile() {
                             <button key={c.slug} onClick={() => toggleCategory(c.slug)}
                                 style={{
                                     ...btnBase,
-                                    padding: '6px 12px', fontSize: 12,
+                                    padding: '6px 12px', fontSize: 14,
                                     backgroundColor: sel ? 'var(--color-primary)' : 'var(--color-surface-high)',
                                     color: sel ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
                                     border: `1px solid ${sel ? 'transparent' : 'var(--color-border-strong)'}`,

@@ -15,23 +15,23 @@ function StatCard({ label, value, sub, color }) {
             background: 'var(--color-surface)', border: '1px solid var(--color-border)',
             borderRadius: 12, padding: '18px 20px',
         }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-subtle)', marginBottom: 6 }}>{label}</div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: color || 'var(--color-text)', lineHeight: 1.1 }}>{value ?? '—'}</div>
-            {sub && <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginTop: 4 }}>{sub}</div>}
+            <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-subtle)', marginBottom: 6 }}>{label}</div>
+            <div style={{ fontSize: 30, fontWeight: 800, color: color || 'var(--color-text)', lineHeight: 1.1 }}>{value ?? '—'}</div>
+            {sub && <div style={{ fontSize: 14, color: 'var(--color-text-subtle)', marginTop: 4 }}>{sub}</div>}
         </div>
     );
 }
 
 function SectionHeader({ title }) {
     return (
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text-subtle)', margin: '28px 0 14px' }}>{title}</div>
+        <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text-subtle)', margin: '28px 0 14px' }}>{title}</div>
     );
 }
 
 function ChartContainer({ title, children, height = 220 }) {
     return (
         <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '18px 20px', marginBottom: 16 }}>
-            {title && <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 16 }}>{title}</div>}
+            {title && <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--color-text)', marginBottom: 16 }}>{title}</div>}
             <div style={{ height }}>
                 <ResponsiveContainer width="100%" height="100%">
                     {children}
@@ -70,14 +70,14 @@ export default function LabView() {
             border: '1px solid var(--color-border)',
             borderRadius: 8,
             color: 'var(--color-text)',
-            fontSize: 12,
+            fontSize: 14,
         },
     };
 
     if (loading) {
         return (
             <div style={{ padding: 32, color: 'var(--color-text-subtle)', textAlign: 'center' }}>
-                <div style={{ fontSize: 13 }}>Loading Lab View…</div>
+                <div style={{ fontSize: 16 }}>Loading Lab View…</div>
             </div>
         );
     }
@@ -85,8 +85,8 @@ export default function LabView() {
     if (!data) {
         return (
             <div style={{ padding: 32, color: 'var(--color-text-subtle)', textAlign: 'center' }}>
-                <div style={{ fontSize: 16, color: 'var(--color-text)', marginBottom: 8 }}>Lab data unavailable</div>
-                <button onClick={load} style={{ fontSize: 13, cursor: 'pointer', color: 'var(--color-primary)', background: 'none', border: 'none' }}>Retry</button>
+                <div style={{ fontSize: 19, color: 'var(--color-text)', marginBottom: 8 }}>Lab data unavailable</div>
+                <button onClick={load} style={{ fontSize: 16, cursor: 'pointer', color: 'var(--color-primary)', background: 'none', border: 'none' }}>Retry</button>
             </div>
         );
     }
@@ -100,12 +100,12 @@ export default function LabView() {
     return (
         <div style={{ padding: '24px 24px 60px', maxWidth: 1100, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text)' }}>Admin Lab View</div>
-                <div style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+                <div style={{ fontSize: 23, fontWeight: 800, color: 'var(--color-text)' }}>Admin Lab View</div>
+                <div style={{ fontSize: 13, color: 'var(--color-text-subtle)' }}>
                     Last updated {lastRefresh} · auto-refreshes every 30s
                 </div>
             </div>
-            <div style={{ fontSize: 13, color: 'var(--color-text-subtle)', marginBottom: 24 }}>Research layer — live platform metrics</div>
+            <div style={{ fontSize: 16, color: 'var(--color-text-subtle)', marginBottom: 24 }}>Research layer — live platform metrics</div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
                 <StatCard label="Total Users" value={platformStats.total_users?.toLocaleString()} />
@@ -123,8 +123,8 @@ export default function LabView() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     <ChartContainer title="Providers by Trust Tier" height={200}>
                         <BarChart data={trustDist} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                            <XAxis dataKey="tier" tick={{ fill: 'var(--color-text-subtle)', fontSize: 11 }} />
-                            <YAxis tick={{ fill: 'var(--color-text-subtle)', fontSize: 11 }} />
+                            <XAxis dataKey="tier" tick={{ fill: 'var(--color-text-subtle)', fontSize: 13 }} />
+                            <YAxis tick={{ fill: 'var(--color-text-subtle)', fontSize: 13 }} />
                             <Tooltip {...tooltipStyle} />
                             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                                 {trustDist.map((entry, i) => (
@@ -145,7 +145,7 @@ export default function LabView() {
                     </ChartContainer>
                 </div>
             ) : (
-                <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 24, color: 'var(--color-text-subtle)', fontSize: 13 }}>
+                <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 24, color: 'var(--color-text-subtle)', fontSize: 16 }}>
                     No provider trust data yet. Trust scores are computed after bookings complete.
                 </div>
             )}
@@ -153,11 +153,11 @@ export default function LabView() {
             <SectionHeader title="Zone Health Grid" />
             {zones.length > 0 ? (
                 <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 16 }}>
                         <thead>
                             <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
                                 {['Zone', 'Health Score', 'Demand Index', 'Status', 'Last Updated'].map(h => (
-                                    <th key={h} style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--color-text-subtle)', fontWeight: 600, fontSize: 11 }}>{h}</th>
+                                    <th key={h} style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--color-text-subtle)', fontWeight: 600, fontSize: 13 }}>{h}</th>
                                 ))}
                             </tr>
                         </thead>
@@ -176,7 +176,7 @@ export default function LabView() {
                                     <td style={{ padding: '10px 12px', color: 'var(--color-text)' }}>{z.demand_index || 0}</td>
                                     <td style={{ padding: '10px 12px' }}>
                                         <span style={{
-                                            fontSize: 11, fontWeight: 700, borderRadius: 6, padding: '2px 8px',
+                                            fontSize: 13, fontWeight: 700, borderRadius: 6, padding: '2px 8px',
                                             background: (z.health_score || 0) >= 70 ? '#10b98120' : (z.health_score || 0) >= 40 ? '#f59e0b20' : '#ef444420',
                                             color: (z.health_score || 0) >= 70 ? '#10b981' : (z.health_score || 0) >= 40 ? '#f59e0b' : '#ef4444',
                                         }}>{(z.health_score || 0) >= 70 ? 'Active' : (z.health_score || 0) >= 40 ? 'Moderate' : 'Quiet'}</span>
@@ -190,7 +190,7 @@ export default function LabView() {
                     </table>
                 </div>
             ) : (
-                <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 24, color: 'var(--color-text-subtle)', fontSize: 13 }}>
+                <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 12, padding: 24, color: 'var(--color-text-subtle)', fontSize: 16 }}>
                     No neighborhood zones configured yet.
                 </div>
             )}

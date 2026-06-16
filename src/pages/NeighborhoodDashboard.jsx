@@ -383,8 +383,8 @@ export default function NeighborhoodDashboard() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                        <XAxis dataKey="date" tick={{ fontSize:10 }} interval={3} />
-                        <YAxis tick={{ fontSize:10 }} allowDecimals={false} />
+                        <XAxis dataKey="date" tick={{ fontSize:12 }} interval={3} />
+                        <YAxis tick={{ fontSize:12 }} allowDecimals={false} />
                         <Tooltip formatter={v => [v, 'Bookings']} />
                         <Area type="monotone" dataKey="count" stroke="#18181b" strokeWidth={2} fill="url(#actGrad)" />
                     </AreaChart>
@@ -404,8 +404,8 @@ export default function NeighborhoodDashboard() {
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={metrics.demandChartData} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" horizontal={false} />
-                            <XAxis type="number" tick={{ fontSize:10 }} allowDecimals={false} />
-                            <YAxis type="category" dataKey="name" tick={{ fontSize:11 }} width={80} />
+                            <XAxis type="number" tick={{ fontSize:12 }} allowDecimals={false} />
+                            <YAxis type="category" dataKey="name" tick={{ fontSize:13 }} width={80} />
                             <Tooltip />
                             <Bar dataKey="demand" fill="#18181b" radius={[0,4,4,0]} />
                             <Bar dataKey="supply" fill="#d4d4d8" radius={[0,4,4,0]} />

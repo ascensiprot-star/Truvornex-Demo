@@ -32,7 +32,7 @@ export default function GiftCards() {
     };
 
     const inputStyle = {
-        width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 13,
+        width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 16,
         backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
         color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
         transition: 'border-color 0.18s',
@@ -133,7 +133,7 @@ export default function GiftCards() {
                     </div>
                     <input placeholder="Gift card code (e.g. TRV-XXXX-XXXX)"
                         value={redeemCode} onChange={e => setRedeemCode(e.target.value.toUpperCase())}
-                        style={{ ...inputStyle, height: 48, textAlign: 'center', fontSize: 14, fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                        style={{ ...inputStyle, height: 48, textAlign: 'center', fontSize: 17, fontFamily: 'monospace', letterSpacing: '0.05em' }}
                         onFocus={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
                         onBlur={e => (e.currentTarget.style.borderColor = 'var(--color-border-strong)')} />
                     <button className="w-full h-11 rounded-xl text-sm font-semibold transition-all"

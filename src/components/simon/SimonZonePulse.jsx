@@ -20,17 +20,17 @@ export default function SimonZonePulse() {
                     <span style={{ position: 'absolute', inset: '1px', borderRadius: '50%', backgroundColor: color }} />
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--color-text-muted)', lineHeight: 1.3 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--color-text-muted)', lineHeight: 1.3 }}>
                         Zone {label}
                         <span style={{ fontWeight: 400, color: 'var(--color-text-subtle)' }}> · {zoneHealth.activeProviders} providers</span>
                     </div>
                     {zoneHealth.trendingServices?.length > 0 && (
-                        <div style={{ fontSize: 9, color: 'var(--color-text-subtle)', marginTop: 1, lineHeight: 1.3 }}>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 1, lineHeight: 1.3 }}>
                             Trending: {zoneHealth.trendingServices.slice(0, 2).join(', ')}
                         </div>
                     )}
                 </div>
-                <span style={{ fontSize: 8, fontWeight: 800, color: '#7c6fcd', letterSpacing: '0.05em', flexShrink: 0 }}>SIMON</span>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#7c6fcd', letterSpacing: '0.05em', flexShrink: 0 }}>SIMON</span>
             </div>
         </div>
     );

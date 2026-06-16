@@ -189,7 +189,7 @@ export default function CustomerLayout() {
                                         justifyContent: slim ? 'center' : 'flex-start',
                                         color: active ? 'var(--color-primary)' : 'var(--color-text-muted)',
                                         backgroundColor: active ? 'var(--color-surface-high)' : 'transparent',
-                                        fontSize: 13,
+                                        fontSize: 16,
                                         fontWeight: active ? 600 : 450,
                                         animation: `navSlideIn 0.32s cubic-bezier(0.19,1,0.22,1) ${i * 0.045}s both`,
                                     }}
@@ -248,7 +248,7 @@ export default function CustomerLayout() {
                         <button onClick={() => { openModal('login'); onClose?.(); }}
                             className="w-full flex items-center rounded-lg transition-all mb-0.5"
                             title={slim ? 'Sign In' : undefined}
-                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-primary)', fontSize: 12, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-primary)', fontSize: 14, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                             onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
                             <LogIn style={{ width: 13, height: 13, flexShrink: 0 }} />
@@ -258,7 +258,7 @@ export default function CustomerLayout() {
                         <button onClick={() => { logout(); onClose?.(); }}
                             className="w-full flex items-center rounded-lg transition-all mb-0.5"
                             title={slim ? 'Sign Out' : undefined}
-                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-text-muted)', fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                            style={{ padding: slim ? '8px' : '8px 10px', gap: slim ? 0 : 10, justifyContent: slim ? 'center' : 'flex-start', color: 'var(--color-text-muted)', fontSize: 14, background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                             onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
                             <LogOut style={{ width: 13, height: 13, flexShrink: 0 }} />
@@ -273,7 +273,7 @@ export default function CustomerLayout() {
                             gap: slim ? 0 : 10,
                             justifyContent: slim ? 'center' : 'flex-start',
                             color: 'var(--color-text-muted)',
-                            fontSize: 12,
+                            fontSize: 14,
                         }}
                         onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                         onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -348,7 +348,7 @@ export default function CustomerLayout() {
                     <button
                         onClick={() => navigate('/provider')}
                         style={{ height: 44, paddingLeft: 10, paddingRight: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--color-text-muted)', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 999, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, padding: '3px 8px', borderRadius: 999, backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 3 }}>
                             <Briefcase style={{ width: 9, height: 9 }} />
                             Provider
                         </span>

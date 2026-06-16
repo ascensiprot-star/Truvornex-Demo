@@ -87,7 +87,7 @@ export default function SplashScreen({ onComplete }) {
                     textAlign: 'center',
                 }}>
                     <h1 style={{
-                        fontSize: 28, fontWeight: 900, letterSpacing: '-0.045em',
+                        fontSize: 32, fontWeight: 900, letterSpacing: '-0.045em',
                         color: '#ffffff', fontFamily: 'Inter, sans-serif', lineHeight: 1,
                         marginBottom: 7,
                     }}>
@@ -95,7 +95,7 @@ export default function SplashScreen({ onComplete }) {
                     </h1>
                     <p style={{
                         color: 'rgba(255,255,255,0.28)',
-                        fontSize: 10, letterSpacing: '0.2em',
+                        fontSize: 12, letterSpacing: '0.2em',
                         textTransform: 'uppercase', fontWeight: 500,
                         opacity: phase >= 3 ? 1 : 0,
                         transition: 'opacity 0.45s ease 0.25s',
