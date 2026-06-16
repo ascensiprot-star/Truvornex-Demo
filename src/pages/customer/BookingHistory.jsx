@@ -43,9 +43,9 @@ export default function BookingHistory() {
                     { label: 'Spent',     value: `$${totalSpent.toLocaleString()}`,                                      sub: 'lifetime'      },
                 ].map(s => (
                     <div key={s.label} className="rounded-xl shimmer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '14px 16px', boxShadow: 'var(--shadow-sm)' }}>
-                        <p className="text-[11px] font-semibold mb-1" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
+                        <p className="text-[16px] font-semibold mb-1" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
                         <p className="font-black text-2xl" style={{ color: 'var(--color-primary)', letterSpacing: '-0.04em' }}>{s.value}</p>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.sub}</p>
+                        <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{s.sub}</p>
                     </div>
                 ))}
             </div>
@@ -98,7 +98,7 @@ export default function BookingHistory() {
                                 </div>
                                 <div className="flex items-center gap-3 shrink-0">
                                     <span className="font-bold text-sm" style={{ color: 'var(--color-primary)' }}>${b.price || 0}</span>
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                    <span className="text-[15px] font-bold px-2 py-0.5 rounded-full"
                                         style={{ backgroundColor: st.bg, color: st.color, border: `1px solid ${st.border}` }}>
                                         {b.status}
                                     </span>

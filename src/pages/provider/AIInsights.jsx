@@ -144,7 +144,7 @@ export default function AIInsights() {
                                 </div>
                                 <div>
                                     <h2 className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>{type.label}</h2>
-                                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Simon AI · DeepSeek</p>
+                                    <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Simon AI · DeepSeek</p>
                                 </div>
                             </div>
                             <button onClick={() => getInsight(type)} disabled={loading[type.id]}

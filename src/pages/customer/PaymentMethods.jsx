@@ -64,7 +64,7 @@ export default function PaymentMethods() {
                             <div className="flex-1">
                                 <p className="font-semibold text-sm">{CARD_BRANDS[c.brand] || 'Card'} ending in {c.last4}</p>
                                 <p className="text-xs text-zinc-400">Expires {c.expiry}</p>
-                                {c.default && <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 font-bold mt-0.5"><CheckCircle className="h-3 w-3" /> Default</span>}
+                                {c.default && <span className="inline-flex items-center gap-1 text-[15px] text-emerald-700 font-bold mt-0.5"><CheckCircle className="h-3 w-3" /> Default</span>}
                             </div>
                             <div className="flex gap-1">
                                 {!c.default && <Button variant="outline" size="sm" className="rounded-xl text-xs" onClick={() => setDefault(c.id)}>Set Default</Button>}

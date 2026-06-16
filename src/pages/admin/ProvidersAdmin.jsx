@@ -98,7 +98,7 @@ export default function ProvidersAdmin() {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h3 className="font-semibold text-sm">{p.business_name}</h3>
                                         {p.verified && <Shield className="h-3.5 w-3.5 text-blue-500" />}
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[p.status] || ''}`}>{p.status}</span>
+                                        <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${STATUS_COLORS[p.status] || ''}`}>{p.status}</span>
                                     </div>
                                     <p className="text-xs text-muted-foreground truncate">{p.user_email}</p>
                                     <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">

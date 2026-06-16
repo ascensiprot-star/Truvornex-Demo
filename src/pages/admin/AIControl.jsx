@@ -140,7 +140,7 @@ export default function AIControl() {
                                         <div>
                                             <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text)' }}>{action.title}</h3>
                                             {action.danger && (
-                                                <span className="text-[10px] font-bold uppercase" style={{ color: 'var(--color-error)' }}>High Impact</span>
+                                                <span className="text-[15px] font-bold uppercase" style={{ color: 'var(--color-error)' }}>High Impact</span>
                                             )}
                                         </div>
                                     </div>
@@ -170,7 +170,7 @@ export default function AIControl() {
                                                 <span className="text-xs font-semibold" style={{ color: 'var(--color-accent)' }}>Simon's Report</span>
                                             </div>
                                             <button onClick={() => setExpanded(e => ({ ...e, [action.id]: !e[action.id] }))}
-                                                className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {expanded[action.id] ? 'Collapse' : 'Expand'}
                                             </button>
                                         </div>

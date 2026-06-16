@@ -74,7 +74,7 @@ function MessageBubble({ msg }) {
                     </ReactMarkdown>
                 )}
                 {!isUser && (
-                    <p className="text-[9px] mt-2 opacity-40 font-mono" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-[15px] mt-2 opacity-40 font-mono" style={{ color: 'var(--color-text-subtle)' }}>
                         SIMON · TRUVORNEX · DEEPSEEK
                     </p>
                 )}
@@ -183,18 +183,18 @@ Be precise, data-driven, use markdown formatting with headers and bullet points.
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="font-bold text-base tracking-tight" style={{ color: 'var(--color-primary)' }}>Simon AI</h1>
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-md tracking-wider uppercase"
+                            <span className="text-[15px] px-1.5 py-0.5 rounded-md tracking-wider uppercase"
                                 style={{ border: '1px solid var(--color-border)', color: 'var(--color-text-subtle)' }}>
                                 {isConfigured() ? 'DeepSeek' : 'Demo'}
                             </span>
                             <span className="flex items-center gap-1">
                                 <span className={`h-1.5 w-1.5 rounded-full ${isConfigured() ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'}`} />
-                                <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                     {isConfigured() ? 'Online' : 'Demo'}
                                 </span>
                             </span>
                         </div>
-                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                             {MODES.find(m2 => m2.id === mode)?.desc}
                         </p>
                     </div>
@@ -292,7 +292,7 @@ Be precise, data-driven, use markdown formatting with headers and bullet points.
                         {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" strokeWidth={2} />}
                     </button>
                 </div>
-                <p className="text-center text-[9px] mt-2 tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="text-center text-[15px] mt-2 tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
                     SIMON AI · TRUVORNEX INTELLIGENCE ENGINE · DEEPSEEK
                 </p>
             </div>

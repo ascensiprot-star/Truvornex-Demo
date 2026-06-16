@@ -34,7 +34,7 @@ const KPI = ({ label, value, sub, icon: Icon, accent, delta }) => (
     }}>
         <div className="flex items-center justify-between mb-3">
             <span style={{
-                fontSize: 12,
+                fontSize: 15,
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
@@ -49,7 +49,7 @@ const KPI = ({ label, value, sub, icon: Icon, accent, delta }) => (
             </div>
         </div>
         <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: '-0.02em' }}>{value}</div>
-        {sub && <div style={{ fontSize: 13, marginTop: 4, color: accent ? 'rgba(255,255,255,0.5)' : 'var(--color-text-subtle)' }}>{sub}</div>}
+        {sub && <div style={{ fontSize: 16, marginTop: 4, color: accent ? 'rgba(255,255,255,0.5)' : 'var(--color-text-subtle)' }}>{sub}</div>}
     </div>
 );
 
@@ -221,8 +221,8 @@ export default function Dashboard() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
-                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: colors.text }} interval={3} />
-                        <YAxis tick={{ fontSize: 12, fill: colors.text }} allowDecimals={false} />
+                        <XAxis dataKey="date" tick={{ fontSize: 15, fill: colors.text }} interval={3} />
+                        <YAxis tick={{ fontSize: 15, fill: colors.text }} allowDecimals={false} />
                         <Tooltip
                             contentStyle={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', borderRadius: 8, color: 'var(--color-text)' }}
                             formatter={(v) => [v, 'Bookings']} />
@@ -237,7 +237,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2 mb-3">
                         <AlertTriangle className="h-4 w-4" style={{ color: 'var(--color-warning)' }} />
                         <h2 className="font-bold text-base" style={{ color: 'var(--color-text)' }}>Anomaly Alerts</h2>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: 'var(--color-warning-bg)', color: 'var(--color-warning)' }}>{metrics.anomalies.length}</span>
+                        <span className="text-[15px] px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: 'var(--color-warning-bg)', color: 'var(--color-warning)' }}>{metrics.anomalies.length}</span>
                     </div>
                     {metrics.anomalies.length === 0 ? (
                         <div className="rounded-2xl p-4 flex items-center gap-3"
@@ -255,12 +255,12 @@ export default function Dashboard() {
                                         onClick={() => explainAnomaly(a)}>
                                         <div className="flex items-center justify-between mb-1">
                                             <span className="text-xs font-bold" style={{ color: s.text }}>{a.title}</span>
-                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                            <span className="text-[15px] font-bold px-2 py-0.5 rounded-full"
                                                 style={{ backgroundColor: s.bg, color: s.text, border: `1px solid ${s.border}` }}>{s.label}</span>
                                         </div>
                                         <p className="text-xs opacity-80" style={{ color: s.text }}>{a.detail}</p>
                                         {simonStatus().configured && (
-                                            <p className="text-[10px] mt-1.5 opacity-60" style={{ color: s.text }}>Click for Simon's analysis →</p>
+                                            <p className="text-[15px] mt-1.5 opacity-60" style={{ color: s.text }}>Click for Simon's analysis →</p>
                                         )}
                                     </div>
                                 );
@@ -277,7 +277,7 @@ export default function Dashboard() {
                                     <span className="text-xs font-bold" style={{ color: 'var(--color-accent)' }}>Simon's Analysis</span>
                                 </div>
                                 <button onClick={() => { setExplainedAnomaly(null); setAnomalyExplanation(''); }}
-                                    className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>✕ Close</button>
+                                    className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>✕ Close</button>
                             </div>
                             <div className="prose prose-xs max-w-none text-xs leading-relaxed">
                                 <ReactMarkdown>{anomalyExplanation || '⏳ Simon is analyzing…'}</ReactMarkdown>
@@ -291,7 +291,7 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2 mb-3">
                         <TrendingUp className="h-4 w-4" style={{ color: 'var(--color-accent)' }} />
                         <h2 className="font-bold text-base" style={{ color: 'var(--color-text)' }}>Demand Forecast</h2>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold capitalize"
+                        <span className="text-[15px] px-2 py-0.5 rounded-full font-bold capitalize"
                             style={{ backgroundColor: 'var(--color-accent-light)', color: 'var(--color-accent)' }}>
                             {new Date().toLocaleString('default', { month: 'long' })}
                         </span>
@@ -300,8 +300,8 @@ export default function Dashboard() {
                         <ResponsiveContainer width="100%" height={180}>
                             <BarChart data={metrics.demand} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} horizontal={false} />
-                                <XAxis type="number" tick={{ fontSize: 12, fill: colors.text }} allowDecimals={false} />
-                                <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: colors.text }} width={80} />
+                                <XAxis type="number" tick={{ fontSize: 15, fill: colors.text }} allowDecimals={false} />
+                                <YAxis type="category" dataKey="name" tick={{ fontSize: 16, fill: colors.text }} width={80} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', borderRadius: 8, color: 'var(--color-text)' }}
                                     formatter={(v) => [v, 'Forecast']} />
@@ -340,7 +340,7 @@ export default function Dashboard() {
                             <thead style={{ backgroundColor: 'var(--color-surface-low)' }}>
                                 <tr>
                                     {['Provider', 'AI Score', 'Trust', 'Completion'].map(h => (
-                                        <th key={h} className={`px-5 py-3 text-[11px] font-bold uppercase tracking-wider ${h === 'Provider' ? 'text-left' : 'text-right'}`}
+                                        <th key={h} className={`px-5 py-3 text-[16px] font-bold uppercase tracking-wider ${h === 'Provider' ? 'text-left' : 'text-right'}`}
                                             style={{ color: 'var(--color-text-subtle)' }}>{h}</th>
                                     ))}
                                 </tr>

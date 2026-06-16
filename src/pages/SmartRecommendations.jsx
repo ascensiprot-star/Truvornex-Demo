@@ -35,7 +35,7 @@ function ProviderAICard({ provider, rank }) {
                             {provider.business_name?.[0]}
                         </div>
                     )}
-                    <span className="absolute -top-1.5 -left-1.5 h-5 w-5 rounded-full text-[10px] font-black flex items-center justify-center"
+                    <span className="absolute -top-1.5 -left-1.5 h-5 w-5 rounded-full text-[15px] font-black flex items-center justify-center"
                         style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                         {rank}
                     </span>
@@ -46,7 +46,7 @@ function ProviderAICard({ provider, rank }) {
                         {provider.verified && <CheckCircle className="h-3.5 w-3.5 text-blue-500 shrink-0" />}
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${ts.bg} ${ts.text} ${ts.border}`}>
+                        <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full border ${ts.bg} ${ts.text} ${ts.border}`}>
                             {provider.trustLabel}
                         </span>
                         {provider.rating > 0 && (
@@ -63,7 +63,7 @@ function ProviderAICard({ provider, rank }) {
                 </div>
                 <div className="text-right shrink-0">
                     <div className="text-lg font-black" style={{ color: 'var(--color-primary)' }}>{provider.aiScore}</div>
-                    <div className="text-[10px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>AI Score</div>
+                    <div className="text-[15px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>AI Score</div>
                     <div className="h-1.5 w-12 rounded-full mt-1 overflow-hidden" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                         <div className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full" style={{ width: `${provider.aiScore}%` }} />
                     </div>
@@ -132,7 +132,7 @@ export default function SmartRecommendations() {
                     <div className="flex items-center gap-2 mb-4">
                         <RotateCcw className="h-4.5 w-4.5 text-indigo-500" />
                         <h2 className="font-inter font-bold text-lg">Predicted for You</h2>
-                        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">AI Prediction</span>
+                        <span className="text-[15px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold">AI Prediction</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {repeatPredictions.slice(0, 3).map((p, i) => (
@@ -141,7 +141,7 @@ export default function SmartRecommendations() {
                                     <div className="h-8 w-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
                                         <RefreshCw className="h-4 w-4 text-indigo-500" />
                                     </div>
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                    <span className="text-[15px] font-bold px-2 py-0.5 rounded-full"
                                         style={{
                                             backgroundColor: p.confidence === 'high' ? 'rgba(16,185,129,0.12)' : p.confidence === 'medium' ? 'rgba(245,158,11,0.12)' : 'var(--color-surface-high)',
                                             color: p.confidence === 'high' ? '#10b981' : p.confidence === 'medium' ? '#f59e0b' : 'var(--color-text-muted)',
@@ -156,7 +156,7 @@ export default function SmartRecommendations() {
                                 <div className="text-sm font-bold" style={{ color: p.daysUntil <= 3 ? '#ef4444' : p.daysUntil <= 7 ? '#f59e0b' : 'var(--color-primary)' }}>
                                     {p.daysUntil <= 0 ? 'Due now' : p.daysUntil === 1 ? 'Due tomorrow' : `Due in ${p.daysUntil} days`}
                                 </div>
-                                <div className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{format(new Date(p.nextDate + 'T12:00:00'), 'MMM d, yyyy')}</div>
+                                <div className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{format(new Date(p.nextDate + 'T12:00:00'), 'MMM d, yyyy')}</div>
                             </div>
                         ))}
                     </div>
@@ -168,7 +168,7 @@ export default function SmartRecommendations() {
                 <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="h-4.5 w-4.5 text-amber-500" />
                     <h2 className="font-inter font-bold text-lg">Seasonal Demand Forecast</h2>
-                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold capitalize">
+                    <span className="text-[15px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold capitalize">
                         {new Date().toLocaleString('default', { month: 'long' })}
                     </span>
                 </div>
@@ -179,7 +179,7 @@ export default function SmartRecommendations() {
                         return (
                             <Link key={cat.id} to={`/category/${cat.slug}`} className={`rounded-2xl border p-4 ${ds.bg} ${ds.border} hover:shadow-premium transition-all`}>
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${ds.text}`}>{ds.label}</span>
+                                    <span className={`text-[15px] font-bold uppercase tracking-wider ${ds.text}`}>{ds.label}</span>
                                     <Icon className={`h-3.5 w-3.5 ${ds.text}`} />
                                 </div>
                                 <p className={`font-bold text-sm ${ds.text}`}>{cat.name}</p>
@@ -202,7 +202,7 @@ export default function SmartRecommendations() {
                     <div className="flex items-center gap-2">
                         <Zap className="h-4.5 w-4.5 text-violet-500" />
                         <h2 className="font-inter font-bold text-lg">AI-Ranked Providers</h2>
-                        <span className="text-[10px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">Trust × Distance × Availability</span>
+                        <span className="text-[15px] bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-bold">Trust × Distance × Availability</span>
                     </div>
                     <div className="flex gap-1.5 flex-wrap">
                         {[['all', 'All'], ...categories.slice(0, 4).map(c => [c.slug, c.name.split(' ')[0]])].map(([v, l]) => (

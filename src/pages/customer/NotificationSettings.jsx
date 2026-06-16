@@ -70,7 +70,7 @@ export default function NotificationSettings() {
             </div>
 
             <div className="card-premium overflow-hidden">
-                <div className="grid grid-cols-[1fr_auto_auto_auto] px-5 py-3 border-b border-zinc-100 text-[10px] font-bold text-zinc-400 uppercase tracking-wider gap-4">
+                <div className="grid grid-cols-[1fr_auto_auto_auto] px-5 py-3 border-b border-zinc-100 text-[15px] font-bold text-zinc-400 uppercase tracking-wider gap-4">
                     <span>Notification</span>
                     {CHANNELS.map(c => <span key={c.key} className="text-center">{c.label}</span>)}
                 </div>

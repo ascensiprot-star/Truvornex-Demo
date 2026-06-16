@@ -195,8 +195,8 @@ export default function Events() {
                                                 {event.image_url
                                                     ? <img src={event.image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                                                     : <CatIcon className="h-12 w-12 text-zinc-300 dark:text-zinc-600" strokeWidth={1.5} />}
-                                                <span className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur text-[10px] font-bold px-2 py-1 rounded-full capitalize">{CATEGORY_LABELS[event.category] || event.category}</span>
-                                                {soldOut && <span className="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">SOLD OUT</span>}
+                                                <span className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur text-[15px] font-bold px-2 py-1 rounded-full capitalize">{CATEGORY_LABELS[event.category] || event.category}</span>
+                                                {soldOut && <span className="absolute top-3 right-3 bg-red-500 text-white text-[15px] font-bold px-2 py-1 rounded-full">SOLD OUT</span>}
                                             </div>
                                             <div className="p-4">
                                                 <h3 className="font-bold text-sm mb-2 line-clamp-1">{event.title}</h3>
@@ -207,7 +207,7 @@ export default function Events() {
                                                 </div>
                                                 {event.bundle_services?.length > 0 && (
                                                     <div className="flex gap-1 flex-wrap mb-3">
-                                                        {event.bundle_services.map(s => <span key={s} className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-1.5 py-0.5 rounded-full">{s}</span>)}
+                                                        {event.bundle_services.map(s => <span key={s} className="text-[15px] bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 px-1.5 py-0.5 rounded-full">{s}</span>)}
                                                     </div>
                                                 )}
                                                 <div className="h-1 bg-zinc-100 dark:bg-zinc-800 rounded-full mb-3 overflow-hidden">
@@ -238,7 +238,7 @@ export default function Events() {
                                                         <p className="text-sm font-medium line-clamp-1">{event.title}</p>
                                                         <p className="text-xs text-zinc-400">{event.date} · {event.venue_name}</p>
                                                     </div>
-                                                    <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full">Ended</span>
+                                                    <span className="text-[15px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full">Ended</span>
                                                 </div>
                                             );
                                         })}
@@ -270,7 +270,7 @@ export default function Events() {
                                     <p className="text-xs text-zinc-400 mt-0.5">Qty: {t.quantity} · Code: <span className="font-mono font-bold">{t.ticket_code}</span></p>
                                     <p className="text-xs text-zinc-400">{t.total_amount > 0 ? `$${t.total_amount} paid` : 'Free ticket'}</p>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-1 rounded-full shrink-0 ${t.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>{t.status}</span>
+                                <span className={`text-[15px] font-bold px-2 py-1 rounded-full shrink-0 ${t.status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>{t.status}</span>
                             </div>
                             <div className="mt-3 p-3 bg-zinc-50 dark:bg-zinc-800 rounded-xl">
                                 <p className="text-xs font-mono text-zinc-400 text-center tracking-widest">{t.ticket_code}</p>
@@ -291,7 +291,7 @@ export default function Events() {
                                 <p className="font-bold text-sm">{v.name}</p>
                                 <p className="text-xs text-zinc-400 mt-0.5">{VENUE_TYPES[v.type]} · Up to {v.cap.toLocaleString()} guests</p>
                                 <div className="flex flex-wrap gap-1 mt-2 mb-3">
-                                    {v.amenities.map(a => <span key={a} className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full">{a}</span>)}
+                                    {v.amenities.map(a => <span key={a} className="text-[15px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full">{a}</span>)}
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="font-bold text-sm">{v.price}</span>

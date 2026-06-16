@@ -42,7 +42,7 @@ export default function SimonBookingHint({ serviceType, date, timeSlot, price })
                 <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#7c6fcd', opacity: 0.35, animation: 'pingRing 1.4s ease-out infinite' }} />
                 <span style={{ position: 'absolute', inset: '1px', borderRadius: '50%', backgroundColor: '#7c6fcd' }} />
             </span>
-            <span style={{ fontSize: 13, color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: 16, color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>
                 Simon is analysing your booking…
             </span>
         </div>
@@ -66,11 +66,11 @@ export default function SimonBookingHint({ serviceType, date, timeSlot, price })
                         <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#7c6fcd', opacity: 0.3, animation: 'pingRing 1.8s ease-out infinite' }} />
                         <span style={{ position: 'absolute', inset: '1px', borderRadius: '50%', backgroundColor: '#7c6fcd' }} />
                     </span>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-subtle)' }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-subtle)' }}>
                         Simon · Booking Intelligence
                     </span>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, backgroundColor: demand.bg, color: demand.color, border: `1px solid ${demand.color}44` }}>
+                <span style={{ fontSize: 15, fontWeight: 700, padding: '2px 8px', borderRadius: 999, backgroundColor: demand.bg, color: demand.color, border: `1px solid ${demand.color}44` }}>
                     {demand.label}
                 </span>
             </div>
@@ -81,7 +81,7 @@ export default function SimonBookingHint({ serviceType, date, timeSlot, price })
                     <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(124,111,205,0.12)', border: '1px solid rgba(124,111,205,0.22)' }}>
                         <Activity style={{ width: 12, height: 12, color: '#7c6fcd' }} />
                     </div>
-                    <p style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--color-text-muted)', margin: 0 }}>
+                    <p style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--color-text-muted)', margin: 0 }}>
                         {hint.timingSuggestion}
                     </p>
                 </div>
@@ -91,7 +91,7 @@ export default function SimonBookingHint({ serviceType, date, timeSlot, price })
                         <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.22)' }}>
                             <TrendingUp style={{ width: 12, height: 12, color: '#06b6d4' }} />
                         </div>
-                        <p style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--color-text-muted)', margin: 0 }}>
+                        <p style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--color-text-muted)', margin: 0 }}>
                             {hint.savingsTip}
                         </p>
                     </div>
@@ -99,7 +99,7 @@ export default function SimonBookingHint({ serviceType, date, timeSlot, price })
 
                 <button
                     onClick={() => navigate('/ai')}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10, fontSize: 12, fontWeight: 600, color: '#7c6fcd', background: 'none', border: 'none', cursor: 'pointer', padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10, fontSize: 15, fontWeight: 600, color: '#7c6fcd', background: 'none', border: 'none', cursor: 'pointer', padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
                     Ask Simon more about this booking <ArrowRight style={{ width: 9, height: 9 }} />

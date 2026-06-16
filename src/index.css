@@ -139,12 +139,20 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: geometricPrecision;
-        background-color: var(--color-bg);
+        /* Dark mode: deep black → very dark gray gradient */
+        background: linear-gradient(160deg, #000000 0%, #0e0e0e 35%, #050505 65%, #0a0a0a 100%);
+        background-attachment: scroll;
         color: var(--color-text);
-        transition: background-color 0.3s var(--ease-out-expo), color 0.3s var(--ease-out-expo);
+        transition: background 0.4s var(--ease-out-expo), color 0.3s var(--ease-out-expo);
         line-height: 1.6;
         font-size: 16px;
         letter-spacing: -0.011em;
+    }
+
+    /* Light mode gradient: pure white → soft gray */
+    :root.light body {
+        background: linear-gradient(160deg, #ffffff 0%, #f2f2f2 35%, #fafafa 65%, #f5f5f5 100%);
+        background-attachment: scroll;
     }
 
     * { box-sizing: border-box; }

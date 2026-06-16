@@ -40,7 +40,7 @@ const BookingRow = ({ booking, onClick }) => {
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                     <p className="font-semibold text-sm text-zinc-900 truncate">{booking.service_name}</p>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${status.class}`}>{status.label}</span>
+                    <span className={`text-[15px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${status.class}`}>{status.label}</span>
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-zinc-400">
                     <span>{booking.provider_name}</span>
@@ -118,7 +118,7 @@ export default function CustomerDashboard() {
                             }`}
                     >
                         {f.label}
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeFilter === f.id ? 'bg-white/20' : 'bg-zinc-100 text-zinc-500'}`}>
+                        <span className={`text-[15px] px-1.5 py-0.5 rounded-full ${activeFilter === f.id ? 'bg-white/20' : 'bg-zinc-100 text-zinc-500'}`}>
                             {f.count}
                         </span>
 

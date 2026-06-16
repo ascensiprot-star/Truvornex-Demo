@@ -166,11 +166,11 @@ function PostCard({ post, onLike, likedPosts, user }) {
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold leading-none" style={{ color: 'var(--color-text)' }}>{authorName}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                        {post.neighborhood && <span className="text-[10px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
-                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{timeAgo}</span>
+                        {post.neighborhood && <span className="text-[15px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
+                        <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{timeAgo}</span>
                     </div>
                 </div>
-                <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
+                <span className="flex items-center gap-1 text-[15px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
                     <cfg.icon className="h-3 w-3" /> {cfg.label}
                 </span>
             </div>
@@ -242,12 +242,12 @@ function JobCard({ post }) {
                     <p className="font-semibold text-sm line-clamp-1" style={{ color: 'var(--color-text)' }}>{post.title}</p>
                     <p className="text-xs" style={{ color: 'var(--color-text-subtle)' }}>{authorName}</p>
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        {post.job_type && <span className="text-[10px] font-semibold border px-2 py-0.5 rounded-full" style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}>{JOB_TYPES[post.job_type] || post.job_type}</span>}
-                        {post.neighborhood && <span className="text-[10px] flex items-center gap-1" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
-                        {post.job_salary && <span className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>{post.job_salary}</span>}
+                        {post.job_type && <span className="text-[15px] font-semibold border px-2 py-0.5 rounded-full" style={{ borderColor: 'var(--color-border-strong)', color: 'var(--color-text-muted)' }}>{JOB_TYPES[post.job_type] || post.job_type}</span>}
+                        {post.neighborhood && <span className="text-[15px] flex items-center gap-1" style={{ color: 'var(--color-text-subtle)' }}><MapPin className="h-2.5 w-2.5" />{post.neighborhood}</span>}
+                        {post.job_salary && <span className="text-[15px] font-semibold" style={{ color: 'var(--color-success)' }}>{post.job_salary}</span>}
                     </div>
                 </div>
-                <Button size="sm" variant="outline" className="h-7 rounded-lg text-[10px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Apply</Button>
+                <Button size="sm" variant="outline" className="h-7 rounded-lg text-[15px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Apply</Button>
             </div>
             {post.body && <p className="text-xs mt-2 line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{post.body}</p>}
         </div>
@@ -293,11 +293,11 @@ function PollCard({ poll, user, onVote }) {
                 <Avatar name={poll.created_by_name} email={poll.created_by_email} size={8} />
                 <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{poll.created_by_name}</p>
-                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                         {poll.neighborhood && <><MapPin className="inline h-2.5 w-2.5 mr-0.5" />{poll.neighborhood} · </>}{timeAgo}
                     </p>
                 </div>
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-info-bg)', color: 'var(--color-info)' }}>
+                <span className="flex items-center gap-1 text-[15px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-info-bg)', color: 'var(--color-info)' }}>
                     <Vote className="h-3 w-3" /> Poll
                 </span>
             </div>
@@ -327,7 +327,7 @@ function PollCard({ poll, user, onVote }) {
                     );
                 })}
             </div>
-            <p className="text-[10px] mt-3" style={{ color: 'var(--color-text-subtle)' }}>{totalVotes} vote{totalVotes !== 1 ? 's' : ''} · {hasVoted ? 'You voted' : 'Tap to vote'}</p>
+            <p className="text-[15px] mt-3" style={{ color: 'var(--color-text-subtle)' }}>{totalVotes} vote{totalVotes !== 1 ? 's' : ''} · {hasVoted ? 'You voted' : 'Tap to vote'}</p>
         </div>
     );
 }
@@ -611,9 +611,9 @@ export default function Community() {
                                         <div className="flex-1 p-3 min-w-0">
                                             <div className="flex items-start justify-between gap-2">
                                                 <p className="font-semibold text-sm line-clamp-1" style={{ color: 'var(--color-text)' }}>{ev.title}</p>
-                                                <span className="text-[10px] font-bold shrink-0" style={{ color: 'var(--color-success)' }}>{ev.is_free || !ev.ticket_price ? 'Free' : `PKR ${ev.ticket_price}`}</span>
+                                                <span className="text-[15px] font-bold shrink-0" style={{ color: 'var(--color-success)' }}>{ev.is_free || !ev.ticket_price ? 'Free' : `PKR ${ev.ticket_price}`}</span>
                                             </div>
-                                            <div className="flex items-center gap-2 mt-1 text-[10px] flex-wrap" style={{ color: 'var(--color-text-subtle)' }}>
+                                            <div className="flex items-center gap-2 mt-1 text-[15px] flex-wrap" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {ev.date && <span className="flex items-center gap-0.5"><Calendar className="h-2.5 w-2.5" /> {ev.date}</span>}
                                                 {ev.venue_name && <span className="flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" /> {ev.venue_name}</span>}
                                                 <span className="flex items-center gap-0.5"><Users className="h-2.5 w-2.5" /> {ev.tickets_sold || 0}/{ev.total_tickets}</span>
@@ -626,7 +626,7 @@ export default function Community() {
                                         </div>
                                         <div className="flex items-center pr-3">
                                             <Link to="/events">
-                                                <Button size="sm" variant="outline" className="h-7 text-[10px] rounded-lg" disabled={soldOut}>
+                                                <Button size="sm" variant="outline" className="h-7 text-[15px] rounded-lg" disabled={soldOut}>
                                                     {soldOut ? 'Full' : <><Ticket className="h-3 w-3 mr-1" />Get</>}
                                                 </Button>
                                             </Link>
@@ -647,7 +647,7 @@ export default function Community() {
                 <>
                     <div className="flex items-center justify-between">
                         <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Vote on neighborhood decisions</p>
-                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{polls.length} active poll{polls.length !== 1 ? 's' : ''}</span>
+                        <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{polls.length} active poll{polls.length !== 1 ? 's' : ''}</span>
                     </div>
                     {pollsLoading ? (
                         <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton-wave h-40 rounded-2xl" />)}</div>
@@ -691,7 +691,7 @@ export default function Community() {
                             <Avatar name={displayName} email={user?.email} size={9} />
                             <div>
                                 <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{displayName}</p>
-                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Posting to Community</p>
+                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Posting to Community</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-4 gap-1.5">
@@ -703,14 +703,14 @@ export default function Community() {
                                         backgroundColor: postForm.type === k ? 'var(--color-accent-light)' : 'transparent',
                                     }}>
                                     <v.icon className="h-4 w-4 mx-auto mb-1" style={{ color: postForm.type === k ? 'var(--color-primary)' : 'var(--color-text-muted)' }} />
-                                    <p className="text-[9px] font-semibold leading-tight" style={{ color: postForm.type === k ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>{v.label}</p>
+                                    <p className="text-[15px] font-semibold leading-tight" style={{ color: postForm.type === k ? 'var(--color-primary)' : 'var(--color-text-muted)' }}>{v.label}</p>
                                 </button>
                             ))}
                         </div>
                         <Input placeholder="Title (optional)" value={postForm.title} onChange={e => setPostForm(p => ({ ...p, title: e.target.value }))} className="rounded-xl" />
                         <div className="relative">
                             <Textarea placeholder="Write a caption or describe your post..." value={postForm.body} onChange={e => setPostForm(p => ({ ...p, body: e.target.value }))} className="rounded-xl resize-none pr-12" rows={3} maxLength={500} />
-                            <span className="absolute bottom-2.5 right-3 text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{postForm.body.length}/500</span>
+                            <span className="absolute bottom-2.5 right-3 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{postForm.body.length}/500</span>
                         </div>
                         <div className="relative">
                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5" style={{ color: 'var(--color-text-subtle)' }} />
@@ -754,7 +754,7 @@ export default function Community() {
                             <Avatar name={displayName} email={user?.email} size={9} />
                             <div>
                                 <p className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>{displayName}</p>
-                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Neighborhood Poll</p>
+                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Neighborhood Poll</p>
                             </div>
                         </div>
                         <Textarea placeholder="Ask a question — e.g. Should we add a dog park to Riverside?" value={pollForm.question}

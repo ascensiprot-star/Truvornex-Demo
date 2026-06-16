@@ -9,7 +9,7 @@ const ADDR_TYPES = [
 ];
 
 const inputStyle = {
-    width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 16,
+    width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 18,
     backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
     color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
 };
@@ -93,7 +93,7 @@ export default function SavedAddresses() {
                                 <div className="flex-1 min-w-0">
                                     <p className="font-semibold text-sm capitalize" style={{ color: 'var(--color-primary)' }}>{type.label}</p>
                                     <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{a.address}</p>
-                                    {a.notes && <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{a.notes}</p>}
+                                    {a.notes && <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{a.notes}</p>}
                                 </div>
                                 <div className="flex gap-1 shrink-0">
                                     <button className="h-8 w-8 rounded-xl flex items-center justify-center transition-all"
@@ -127,7 +127,7 @@ export default function SavedAddresses() {
                         <h2 className="font-bold text-base" style={{ color: 'var(--color-primary)' }}>{editId ? 'Edit' : 'Add'} Address</h2>
 
                         <div>
-                            <label className="text-[10px] font-bold uppercase tracking-widest mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Type</label>
+                            <label className="text-[15px] font-bold uppercase tracking-widest mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Type</label>
                             <div className="flex gap-2">
                                 {ADDR_TYPES.map(t => {
                                     const active = form.label === t.value;

@@ -113,7 +113,7 @@ export default function ServiceVariants() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-0.5">
                                                 <span className="font-semibold text-sm">{v.name}</span>
-                                                {!v.is_active && <span className="text-[10px] bg-zinc-100 text-zinc-400 px-2 py-0.5 rounded-full font-medium">Inactive</span>}
+                                                {!v.is_active && <span className="text-[15px] bg-zinc-100 text-zinc-400 px-2 py-0.5 rounded-full font-medium">Inactive</span>}
                                             </div>
                                             {v.description && <p className="text-xs text-zinc-400 mb-1">{v.description}</p>}
                                             <div className="flex items-center gap-3">

@@ -84,7 +84,7 @@ export default function InvoiceManagement() {
             ) : (
                 <div className="card-premium overflow-hidden">
                     <table className="w-full text-sm">
-                        <thead className="bg-zinc-50 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <thead className="bg-zinc-50 text-[16px] font-bold text-zinc-400 uppercase tracking-wider">
                             <tr>
                                 <th className="text-left px-5 py-3">Invoice</th>
                                 <th className="text-left px-5 py-3">Customer</th>
@@ -102,7 +102,7 @@ export default function InvoiceManagement() {
                                     <td className="px-5 py-3 text-right font-bold">${(inv.total_amount || 0).toFixed(2)}</td>
                                     <td className="px-5 py-3 text-right text-zinc-500 text-xs">{inv.due_date || '—'}</td>
                                     <td className="px-5 py-3 text-right">
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_STYLES[inv.status] || ''}`}>{inv.status}</span>
+                                        <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${STATUS_STYLES[inv.status] || ''}`}>{inv.status}</span>
                                     </td>
                                     <td className="px-5 py-3 text-right">
                                         <div className="flex justify-end gap-1">

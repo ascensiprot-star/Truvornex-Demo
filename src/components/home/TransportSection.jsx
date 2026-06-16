@@ -73,8 +73,8 @@ export default function TransportSection({ user }) {
                     <button key={key} onClick={() => setActiveType(key)}
                         className={`rounded-xl p-2.5 text-center border-2 transition-all ${activeType === key ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900' : 'border-transparent bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300'}`}>
                         {Icon && <Icon className="h-4 w-4 mx-auto mb-0.5" />}
-                        <p className="text-[10px] font-bold">{label}</p>
-                        <p className="text-[10px] opacity-60">{counts[key] || 0}</p>
+                        <p className="text-[15px] font-bold">{label}</p>
+                        <p className="text-[15px] opacity-60">{counts[key] || 0}</p>
                     </button>
                 ))}
             </div>
@@ -113,7 +113,7 @@ export default function TransportSection({ user }) {
                                     </div>
                                     <div className="text-right shrink-0">
                                         <p className="font-bold text-sm">{ride.price_per_seat > 0 ? `$${ride.price_per_seat}` : 'Free'}</p>
-                                        {ride.type === 'carpool' && <p className="text-[10px] text-zinc-400">per seat</p>}
+                                        {ride.type === 'carpool' && <p className="text-[15px] text-zinc-400">per seat</p>}
                                         <Button size="sm" variant="outline" className="rounded-lg h-7 text-xs mt-1.5 gap-1" disabled={isFull}
                                             onClick={() => setRequestDialog(ride)}>
                                             {isFull ? 'Full' : ride.type === 'carpool' ? 'Request Seat' : 'Contact'}

@@ -214,11 +214,11 @@ export default function WalletPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3 relative">
                     <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(110,231,183,0.06)', border: '1px solid rgba(110,231,183,0.12)' }}>
-                        <p className="text-[10px] tracking-widest uppercase mb-1" style={{ color: 'var(--color-success)' }}>Received this month</p>
+                        <p className="text-[15px] tracking-widest uppercase mb-1" style={{ color: 'var(--color-success)' }}>Received this month</p>
                         <p className="font-bold text-sm" style={{ color: '#6ee7b7' }}>PKR {incomeThisMonth.toLocaleString()}</p>
                     </div>
                     <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(252,165,165,0.06)', border: '1px solid rgba(252,165,165,0.12)' }}>
-                        <p className="text-[10px] tracking-widest uppercase mb-1" style={{ color: 'var(--color-error)' }}>Spent this month</p>
+                        <p className="text-[15px] tracking-widest uppercase mb-1" style={{ color: 'var(--color-error)' }}>Spent this month</p>
                         <p className="font-bold text-sm" style={{ color: '#fca5a5' }}>PKR {spentThisMonth.toLocaleString()}</p>
                     </div>
                 </div>
@@ -242,7 +242,7 @@ export default function WalletPage() {
                             style={{ backgroundColor: a.color + '15' }}>
                             <a.icon className="h-4 w-4" style={{ color: a.color }} />
                         </div>
-                        <span className="text-[10px] font-semibold" style={{ color: 'var(--color-text-muted)' }}>{a.label}</span>
+                        <span className="text-[15px] font-semibold" style={{ color: 'var(--color-text-muted)' }}>{a.label}</span>
                     </button>
                 ))}
             </div>
@@ -281,7 +281,7 @@ export default function WalletPage() {
                                             <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>
                                                 {txn.description || cfg.label}
                                             </p>
-                                            <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                            <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {fmtTime(txn.created_at)} · <span style={{ color: stc.color }}>{stc.label}</span>
                                             </p>
                                         </div>
@@ -332,7 +332,7 @@ export default function WalletPage() {
                                             </div>
                                             <div>
                                                 <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{u.full_name || 'Unknown'}</p>
-                                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{u.email}</p>
+                                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{u.email}</p>
                                             </div>
                                         </button>
                                     ))}
@@ -348,7 +348,7 @@ export default function WalletPage() {
                             <div className="flex gap-1.5 mt-1.5 flex-wrap">
                                 {[100, 500, 1000, 2000, 5000].map(a => (
                                     <button key={a} onClick={() => setSendAmount(String(a))}
-                                        className="px-2 py-0.5 rounded-lg text-[10px] font-semibold"
+                                        className="px-2 py-0.5 rounded-lg text-[15px] font-semibold"
                                         style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
                                         {a.toLocaleString()}
                                     </button>
@@ -427,7 +427,7 @@ export default function WalletPage() {
                                 style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                         </div>
                         <div className="rounded-xl p-3" style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)' }}>
-                            <p className="text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                            <p className="text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>
                                 💡 Funds are instantly credited. No fees for top-up.
                             </p>
                         </div>
@@ -454,7 +454,7 @@ export default function WalletPage() {
                                 className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
                                 style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                             <button onClick={() => setWithdrawAmount(String(Math.floor(balance)))}
-                                className="text-[10px] mt-1 font-semibold" style={{ color: 'var(--color-primary)' }}>
+                                className="text-[15px] mt-1 font-semibold" style={{ color: 'var(--color-primary)' }}>
                                 Withdraw all →
                             </button>
                         </div>
@@ -480,7 +480,7 @@ export default function WalletPage() {
                                 style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                         </div>
                         <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(252,211,77,0.06)', border: '1px solid rgba(252,211,77,0.12)' }}>
-                            <p className="text-[11px]" style={{ color: 'var(--color-warning)' }}>
+                            <p className="text-[16px]" style={{ color: 'var(--color-warning)' }}>
                                 ⏱ Withdrawals typically arrive within 1–2 business days.
                             </p>
                         </div>
@@ -519,10 +519,10 @@ export default function WalletPage() {
                                                 {txn.description || cfg.label}
                                             </p>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{fmtTime(txn.created_at)}</p>
-                                                <span className="text-[10px] font-semibold" style={{ color: stc.color }}>{stc.label}</span>
+                                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{fmtTime(txn.created_at)}</p>
+                                                <span className="text-[15px] font-semibold" style={{ color: stc.color }}>{stc.label}</span>
                                             </div>
-                                            <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                            <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                 Balance: PKR {parseFloat(txn.balance_after).toLocaleString()}
                                             </p>
                                         </div>

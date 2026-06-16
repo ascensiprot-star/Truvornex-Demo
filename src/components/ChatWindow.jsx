@@ -95,7 +95,7 @@ export default function ChatWindow({ providerId, customerEmail, currentUserEmail
                                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-bl-sm'
                                     }`}>
                                     {msg.text}
-                                    <div className={`text-[10px] mt-1 ${isMe ? 'text-white/50 dark:text-zinc-500' : 'text-muted-foreground'}`}>
+                                    <div className={`text-[15px] mt-1 ${isMe ? 'text-white/50 dark:text-zinc-500' : 'text-muted-foreground'}`}>
                                         {new Date(msg.created_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                 </div>

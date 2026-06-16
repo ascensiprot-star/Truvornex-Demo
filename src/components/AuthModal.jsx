@@ -100,7 +100,7 @@ export default function AuthModal() {
     if (!open) return null;
 
     const inputStyle = {
-        width: '100%', padding: '12px 14px', borderRadius: 12, fontSize: 16,
+        width: '100%', padding: '12px 14px', borderRadius: 12, fontSize: 18,
         background: 'var(--color-surface)', border: '1.5px solid var(--color-border-strong)',
         color: 'var(--color-primary)', outline: 'none', boxSizing: 'border-box',
         transition: 'border-color 0.15s',
@@ -234,7 +234,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                     style={{ fontSize: 23, color: 'var(--color-primary)', letterSpacing: '-0.04em' }}>
                     {tab === 'login' ? 'Welcome back' : 'Create your account'}
                 </h2>
-                <p style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
+                <p style={{ fontSize: 16, color: 'var(--color-text-muted)' }}>
                     {tab === 'login' ? 'Sign in to access Simon AI & your services' : 'Join 2,400+ users on Truvornex today'}
                 </p>
             </div>
@@ -244,7 +244,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 {['login', 'signup'].map(t => (
                     <button key={t} onClick={() => setTab(t)}
                         style={{
-                            flex: 1, padding: '8px 0', fontSize: 14, fontWeight: 600, borderRadius: 10,
+                            flex: 1, padding: '8px 0', fontSize: 16, fontWeight: 600, borderRadius: 10,
                             border: 'none', cursor: 'pointer', transition: 'all 0.18s',
                             touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent',
                             ...(tab === t
@@ -260,12 +260,12 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 <div className="flex items-start gap-2 p-3 rounded-xl mb-4"
                     style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)' }}>
                     <CheckCircle style={{ width: 14, height: 14, marginTop: 1, flexShrink: 0, color: '#22c55e' }} />
-                    <p style={{ fontSize: 14, color: '#22c55e' }}>{success}</p>
+                    <p style={{ fontSize: 16, color: '#22c55e' }}>{success}</p>
                 </div>
             )}
             {error && (
                 <div className="p-3 rounded-xl mb-4"
-                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', fontSize: 14, color: 'var(--color-error)' }}>
+                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', fontSize: 16, color: 'var(--color-error)' }}>
                     {error}
                 </div>
             )}
@@ -273,7 +273,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {tab === 'signup' && (
                     <div>
-                        <label style={{ display: 'block', fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Full Name</label>
+                        <label style={{ display: 'block', fontSize: 15, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Full Name</label>
                         <input type="text" value={fullName} onChange={e => setFullName(e.target.value)}
                             placeholder="Alex Johnson" required={tab === 'signup'}
                             style={inputStyle}
@@ -284,7 +284,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 )}
 
                 <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Email</label>
+                    <label style={{ display: 'block', fontSize: 15, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Email</label>
                     <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                         placeholder="you@example.com" required
                         style={inputStyle}
@@ -294,7 +294,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 </div>
 
                 <div>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Password</label>
+                    <label style={{ display: 'block', fontSize: 15, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: 5 }}>Password</label>
                     <div style={{ position: 'relative' }}>
                         <input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
                             placeholder={tab === 'signup' ? 'Min. 8 characters' : '••••••••'} required minLength={6}
@@ -311,7 +311,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
 
                 {tab === 'login' && (
                     <div style={{ textAlign: 'right', marginTop: -4 }}>
-                        <button type="button" style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-accent)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}>
+                        <button type="button" style={{ fontSize: 16, fontWeight: 500, color: 'var(--color-accent)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}>
                             Forgot password?
                         </button>
                     </div>
@@ -319,7 +319,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
 
                 <button type="submit" disabled={loading}
                     style={{
-                        width: '100%', height: 46, borderRadius: 12, fontSize: 16, fontWeight: 700,
+                        width: '100%', height: 46, borderRadius: 12, fontSize: 18, fontWeight: 700,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                         background: 'var(--color-primary)', color: 'var(--color-on-primary)',
                         border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
@@ -336,7 +336,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 </button>
             </form>
 
-            <p style={{ textAlign: 'center', fontSize: 13, marginTop: 14, color: 'var(--color-text-subtle)' }}>
+            <p style={{ textAlign: 'center', fontSize: 16, marginTop: 14, color: 'var(--color-text-subtle)' }}>
                 {tab === 'login' ? "Don't have an account? " : 'Already have an account? '}
                 <button onClick={() => setTab(tab === 'login' ? 'signup' : 'login')}
                     style={{ fontWeight: 600, color: 'var(--color-accent)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}>
@@ -344,7 +344,7 @@ function ModalForm({ tab, setTab, email, setEmail, password, setPassword, fullNa
                 </button>
             </p>
 
-            <p style={{ textAlign: 'center', fontSize: 12, marginTop: 10, color: 'var(--color-text-subtle)', lineHeight: 1.5 }}>
+            <p style={{ textAlign: 'center', fontSize: 15, marginTop: 10, color: 'var(--color-text-subtle)', lineHeight: 1.5 }}>
                 By continuing you agree to our Terms of Service and Privacy Policy.
             </p>
         </>

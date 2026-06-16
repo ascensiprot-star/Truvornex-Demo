@@ -478,8 +478,8 @@ export default function Settings() {
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold truncate">{rule.name}</p>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <span className="text-[11px] bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">{TRIGGER_LABELS[rule.trigger] || rule.trigger}</span>
-                                                <span className="text-[11px] text-zinc-400 capitalize">{rule.recipient}</span>
+                                                <span className="text-[16px] bg-zinc-100 text-zinc-600 px-2 py-0.5 rounded-full">{TRIGGER_LABELS[rule.trigger] || rule.trigger}</span>
+                                                <span className="text-[16px] text-zinc-400 capitalize">{rule.recipient}</span>
                                             </div>
                                         </div>
                                         <div className="flex gap-1">

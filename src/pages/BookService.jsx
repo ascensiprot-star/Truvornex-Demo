@@ -86,7 +86,7 @@ export default function BookService() {
 
     const stepStyle = (n) => ({
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-        height: 36, borderRadius: 12, fontSize: 14, fontWeight: 600,
+        height: 36, borderRadius: 12, fontSize: 16, fontWeight: 600,
         border: 'none', cursor: n <= step ? 'pointer' : 'default',
         transition: 'all 0.2s',
         backgroundColor: step === n ? 'var(--color-primary)' : 'transparent',
@@ -108,7 +108,7 @@ export default function BookService() {
             <div className="card-premium p-5 mb-6">
                 <div className="flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-subtle)' }}>Booking</p>
+                        <p className="text-[15px] font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-subtle)' }}>Booking</p>
                         <h1 className="font-black text-xl" style={{ color: 'var(--color-primary)' }}>{service?.name || 'Service'}</h1>
                         <p className="text-xs mt-1 flex items-center gap-3" style={{ color: 'var(--color-text-muted)' }}>
                             <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{provider?.business_name || 'Provider'}</span>
@@ -117,7 +117,7 @@ export default function BookService() {
                     </div>
                     <div className="text-right shrink-0">
                         <span className="text-2xl font-black" style={{ color: 'var(--color-primary)' }}>${totalPrice}</span>
-                        {selectedAddons.length > 0 && <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>incl. {selectedAddons.length} add-on{selectedAddons.length > 1 ? 's' : ''}</p>}
+                        {selectedAddons.length > 0 && <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>incl. {selectedAddons.length} add-on{selectedAddons.length > 1 ? 's' : ''}</p>}
                     </div>
                 </div>
             </div>
@@ -126,7 +126,7 @@ export default function BookService() {
             <div className="glass rounded-2xl p-1.5 flex gap-1 mb-6 shadow-premium">
                 {[{ n: 1, label: 'Date' }, { n: 2, label: 'Time' }, { n: 3, label: 'Confirm' }].map(s => (
                     <button key={s.n} onClick={() => s.n < step && setStep(s.n)} style={stepStyle(s.n)}>
-                        <span className="h-4 w-4 rounded-full text-[10px] flex items-center justify-center font-bold"
+                        <span className="h-4 w-4 rounded-full text-[15px] flex items-center justify-center font-bold"
                             style={{
                                 backgroundColor: step === s.n ? 'rgba(0,0,0,0.15)' : step > s.n ? 'var(--color-surface-high)' : 'var(--color-surface-highest)',
                                 color: step === s.n ? 'var(--color-on-primary)' : 'var(--color-text-muted)',
@@ -176,7 +176,7 @@ export default function BookService() {
                             );
                         })}
                     </div>
-                    <p className="text-[10px] mt-2" style={{ color: 'var(--color-text-subtle)' }}>Grayed slots are already booked</p>
+                    <p className="text-[15px] mt-2" style={{ color: 'var(--color-text-subtle)' }}>Grayed slots are already booked</p>
                     {slot && date && (
                         <SimonBookingHint serviceType={service?.category_slug || service?.name || 'service'}
                             date={date.toISOString().split('T')[0]} timeSlot={slot} price={totalPrice} />
@@ -212,7 +212,7 @@ export default function BookService() {
                     </div>
                     {variants.filter(v => v.type === 'addon').length > 0 && (
                         <div>
-                            <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Add-ons</label>
+                            <label className="text-[15px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Add-ons</label>
                             <div className="space-y-2">
                                 {variants.filter(v => v.type === 'addon').map(v => {
                                     const sel = selectedAddons.some(a => a.id === v.id);
@@ -235,7 +235,7 @@ export default function BookService() {
                         </div>
                     )}
                     <div>
-                        <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Notes (optional)</label>
+                        <label className="text-[15px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: 'var(--color-text-subtle)' }}>Notes (optional)</label>
                         <Textarea value={notes} onChange={e => setNotes(e.target.value)}
                             placeholder="Any special requests or instructions..."
                             className="resize-none rounded-xl text-sm" rows={3} />

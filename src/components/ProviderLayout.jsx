@@ -50,7 +50,7 @@ export default function ProviderLayout() {
                     </div>
                     <div>
                         <h1 className="text-xs font-black" style={{ color: 'var(--color-primary)', letterSpacing: '-0.04em' }}>TRUVORNEX</h1>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                        <span className="text-[15px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
                             style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
                             Provider
                         </span>
@@ -66,13 +66,13 @@ export default function ProviderLayout() {
             <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
                 <div className="flex rounded-lg p-0.5 gap-0.5" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                     <button onClick={() => navigate('/')}
-                        className="flex-1 text-center text-[11px] font-medium py-1.5 rounded-md transition-all flex items-center justify-center gap-0.5"
+                        className="flex-1 text-center text-[16px] font-medium py-1.5 rounded-md transition-all flex items-center justify-center gap-0.5"
                         style={{ color: 'var(--color-text-muted)' }}
                         onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
                         onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
                         Customer
                     </button>
-                    <span className="flex-1 text-center text-[11px] font-semibold py-1.5 rounded-md"
+                    <span className="flex-1 text-center text-[16px] font-semibold py-1.5 rounded-md"
                         style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                         Provider
                     </span>
@@ -85,7 +85,7 @@ export default function ProviderLayout() {
                         const active = isActive(item);
                         return (
                             <Link key={item.path} to={item.path} onClick={onClose}
-                                className="relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+                                className="relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[15px] font-medium transition-all duration-150"
                                 style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-muted)', backgroundColor: active ? 'var(--color-surface-high)' : 'transparent' }}
                                 onMouseEnter={e => !active && (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                                 onMouseLeave={e => !active && (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -98,12 +98,12 @@ export default function ProviderLayout() {
                 </div>
 
                 <div className="px-2.5 pt-4 pb-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>Tools</span>
+                    <span className="text-[15px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>Tools</span>
                 </div>
                 <div className="space-y-0.5">
                     {MORE_ITEMS.map(item => (
                         <Link key={item.path} to={item.path} onClick={onClose}
-                            className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[12px] transition-all"
+                            className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[15px] transition-all"
                             style={{ color: 'var(--color-text-muted)' }}
                             onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -118,11 +118,11 @@ export default function ProviderLayout() {
                 <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg mb-1"
                     style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)' }}>
                     <div className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)', animation: 'rt-pulse 2s ease-in-out infinite' }} />
-                    <p className="text-[11px] font-medium flex-1" style={{ color: 'var(--color-text-muted)' }}>AI Copilot Active</p>
+                    <p className="text-[16px] font-medium flex-1" style={{ color: 'var(--color-text-muted)' }}>AI Copilot Active</p>
                     <Zap style={{ width: 10, height: 10, color: 'var(--color-text-subtle)', flexShrink: 0 }} />
                 </div>
                 <button onClick={toggleTheme}
-                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[15px] font-medium transition-all"
                     style={{ color: 'var(--color-text-muted)' }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -161,7 +161,7 @@ export default function ProviderLayout() {
                         {theme === 'dark' ? <Sun style={{ width: 13, height: 13 }} /> : <Moon style={{ width: 13, height: 13 }} />}
                     </button>
                     <button onClick={() => navigate('/')}
-                        className="h-6 px-2.5 rounded-full text-[10px] font-semibold flex items-center gap-1 ml-1"
+                        className="h-6 px-2.5 rounded-full text-[15px] font-semibold flex items-center gap-1 ml-1"
                         style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
                         <Home style={{ width: 9, height: 9 }} /> Customer
                     </button>
@@ -196,7 +196,7 @@ export default function ProviderLayout() {
                                 style={{ backgroundColor: active ? 'var(--color-surface-high)' : 'transparent' }}>
                                 <item.icon style={{ width: 17, height: 17, color: active ? 'var(--color-primary)' : 'var(--color-text-subtle)', strokeWidth: active ? 2.2 : 1.7 }} />
                             </div>
-                            <span className="text-[9px] font-medium leading-none"
+                            <span className="text-[15px] font-medium leading-none"
                                 style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-subtle)', fontWeight: active ? 700 : 500 }}>
                                 {item.label}
                             </span>

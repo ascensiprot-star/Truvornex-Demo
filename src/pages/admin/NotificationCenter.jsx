@@ -78,10 +78,10 @@ export default function AdminNotificationCenter() {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-0.5">
                                     <p className="font-semibold text-sm truncate">{n.title}</p>
-                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PRIORITY_STYLES[n.priority] || ''}`}>{n.priority}</span>
+                                    <span className={`text-[15px] font-bold px-1.5 py-0.5 rounded-full ${PRIORITY_STYLES[n.priority] || ''}`}>{n.priority}</span>
                                 </div>
                                 <p className="text-xs text-zinc-400 truncate">{n.body}</p>
-                                <p className="text-[10px] text-zinc-300 mt-0.5">{n.recipient_role} · {n.created_date?.slice(0, 10)}</p>
+                                <p className="text-[15px] text-zinc-300 mt-0.5">{n.recipient_role} · {n.created_date?.slice(0, 10)}</p>
                             </div>
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-red-400 hover:text-red-600 shrink-0" onClick={() => del(n.id)}>
                                 <Trash2 className="h-3.5 w-3.5" />

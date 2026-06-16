@@ -124,17 +124,17 @@ export default function Jury() {
                                 <div className="p-5">
                                     <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                                            <span className={`text-[15px] font-bold px-2.5 py-1 rounded-full ${
                                                 d.status === 'voting'
                                                     ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                                                     : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                                             }`}>
                                                 {d.status === 'voting' ? 'Voting in Progress' : 'Open for Review'}
                                             </span>
-                                            <span className="text-[10px] text-zinc-400">{timeAgo(d.created_at)}</span>
+                                            <span className="text-[15px] text-zinc-400">{timeAgo(d.created_at)}</span>
                                         </div>
                                         {evidence.length > 0 && (
-                                            <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                                            <span className="text-[15px] text-zinc-400 flex items-center gap-1">
                                                 <AlertCircle className="h-3 w-3" />
                                                 {evidence.length} evidence item{evidence.length !== 1 ? 's' : ''}
                                             </span>
@@ -157,13 +157,13 @@ export default function Jury() {
                                         <div className="flex items-center gap-2 text-sm text-zinc-500">
                                             <Check className="h-4 w-4 text-emerald-500 shrink-0" />
                                             <span>Your vote: <span className="font-semibold text-zinc-900 dark:text-white capitalize">{voted.replace('_', ' ')}</span></span>
-                                            <span className="ml-auto text-[10px] text-amber-600 flex items-center gap-1">
+                                            <span className="ml-auto text-[15px] text-amber-600 flex items-center gap-1">
                                                 <Star className="h-3 w-3" /> +1 credit
                                             </span>
                                         </div>
                                     ) : (
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-2.5">Cast your vote</p>
+                                            <p className="text-[15px] font-bold uppercase tracking-wider text-zinc-400 mb-2.5">Cast your vote</p>
                                             <div className="flex gap-2 flex-wrap">
                                                 {VOTE_OPTIONS.map(opt => (
                                                     <button

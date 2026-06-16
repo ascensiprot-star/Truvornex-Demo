@@ -177,11 +177,11 @@ export default function Transport() {
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                            <span className="text-[15px] font-bold px-2 py-0.5 rounded-full"
                                                 style={{ backgroundColor: seg.color + '20', color: seg.color }}>
                                                 {seg.label}
                                             </span>
-                                            {isDriver && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>Your listing</span>}
+                                            {isDriver && <span className="text-[15px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>Your listing</span>}
                                         </div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-text)' }}>
@@ -192,7 +192,7 @@ export default function Transport() {
                                                 {ride.to_location}
                                             </p>
                                         </div>
-                                        <div className="flex flex-wrap gap-3 text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                        <div className="flex flex-wrap gap-3 text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>
                                             {ride.departure_at && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{fmtDate(ride.departure_at)}</span>}
                                             {ride.type === 'carpool' && <span className="flex items-center gap-1"><Users className="h-3 w-3" />{seatsLeft}/{ride.seats_total} seats</span>}
                                             {ride.vehicle && <span className="flex items-center gap-1"><Car className="h-3 w-3" />{ride.vehicle}</span>}
@@ -200,8 +200,8 @@ export default function Transport() {
                                                 {ride.price_pkr > 0 ? `PKR ${ride.price_pkr}` : 'Free'}
                                             </span>
                                         </div>
-                                        {ride.notes && <p className="text-[11px] mt-1.5" style={{ color: 'var(--color-text-subtle)' }}>{ride.notes}</p>}
-                                        <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                        {ride.notes && <p className="text-[16px] mt-1.5" style={{ color: 'var(--color-text-subtle)' }}>{ride.notes}</p>}
+                                        <p className="text-[16px] mt-1" style={{ color: 'var(--color-text-subtle)' }}>
                                             Posted by {ride.driver_name || 'Unknown'}
                                         </p>
                                     </div>

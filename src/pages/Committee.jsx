@@ -42,7 +42,7 @@ function CommitteeCard({ committee, isMember, isOrganizer, onOpen }) {
                     )}
                 </div>
                 <div className="shrink-0 text-right">
-                    <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                    <span className="text-[15px] font-bold px-2 py-1 rounded-full"
                         style={{ backgroundColor: st.bg, color: st.color }}>
                         {st.label}
                     </span>
@@ -54,24 +54,24 @@ function CommitteeCard({ committee, isMember, isOrganizer, onOpen }) {
                     <p className="font-black text-base" style={{ color: 'var(--color-primary)' }}>
                         {fmtPKR(committee.monthly_amount_pkr).replace('PKR ', '')}
                     </p>
-                    <p className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>per month</p>
+                    <p className="text-[15px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>per month</p>
                 </div>
                 <div className="rounded-xl p-2 text-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                     <p className="font-black text-base" style={{ color: '#fcd34d' }}>
                         {committee.member_count || 0}/{committee.member_limit}
                     </p>
-                    <p className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>members</p>
+                    <p className="text-[15px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>members</p>
                 </div>
                 <div className="rounded-xl p-2 text-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                     <p className="font-black text-base" style={{ color: '#6ee7b7' }}>
                         {parseFloat(committee.monthly_amount_pkr * (committee.member_limit || 1)).toLocaleString()}
                     </p>
-                    <p className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>monthly pot</p>
+                    <p className="text-[15px] uppercase tracking-wide" style={{ color: 'var(--color-text-subtle)' }}>monthly pot</p>
                 </div>
             </div>
 
             <div className="mb-2">
-                <div className="flex items-center justify-between text-[10px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>
+                <div className="flex items-center justify-between text-[15px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>
                     <span>Members filled</span>
                     <span>{progress}%</span>
                 </div>
@@ -82,12 +82,12 @@ function CommitteeCard({ committee, isMember, isOrganizer, onOpen }) {
 
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                         Organizer: {committee.organizer_name}
                     </p>
                 </div>
                 {isMember && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    <span className="text-[15px] font-semibold px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: 'rgba(110,231,183,0.1)', color: '#6ee7b7' }}>
                         ✓ Member
                     </span>
@@ -277,7 +277,7 @@ export default function CommitteePage() {
                 <Info className="h-4 w-4 shrink-0 mt-0.5" style={{ color: '#fcd34d' }} />
                 <div>
                     <p className="text-xs font-semibold mb-0.5" style={{ color: '#fcd34d' }}>How Committee (Chit Fund) Works</p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-[16px] leading-relaxed" style={{ color: 'var(--color-text-subtle)' }}>
                         A group of neighbors each contribute a fixed amount monthly. Every month, one member receives the full pot. 
                         Over N months, everyone gets their turn once — guaranteed savings without a bank!
                     </p>
@@ -357,7 +357,7 @@ export default function CommitteePage() {
                                             { label: 'Pot', value: `PKR ${(parseFloat(detailData.committee.monthly_amount_pkr) * parseInt(detailData.committee.member_limit)).toLocaleString()}`, color: '#f97316' },
                                         ].map(s => (
                                             <div key={s.label} className="rounded-xl p-2.5 text-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
-                                                <p className="text-[10px] tracking-wide uppercase" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
+                                                <p className="text-[15px] tracking-wide uppercase" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
                                                 <p className="font-black text-xs mt-0.5" style={{ color: s.color }}>{s.value}</p>
                                             </div>
                                         ))}
@@ -372,7 +372,7 @@ export default function CommitteePage() {
                                                 <div className="h-full rounded-full"
                                                     style={{ width: `${Math.min(100, (detailData.members?.length / detailData.committee.member_limit) * 100)}%`, backgroundColor: '#93c5fd' }} />
                                             </div>
-                                            <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {detailData.members?.length || 0} of {detailData.committee.member_limit} spots filled
                                             </p>
                                             <div className="flex gap-2 mt-3">
@@ -404,7 +404,7 @@ export default function CommitteePage() {
                                                     Round {detailData.committee.current_round} of {detailData.committee.total_rounds}
                                                 </p>
                                                 {detailData.committee.next_payout_at && (
-                                                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                    <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                         Next payout: {new Date(detailData.committee.next_payout_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                                     </p>
                                                 )}
@@ -446,7 +446,7 @@ export default function CommitteePage() {
                                                             <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>
                                                                 {member.full_name || member.email || 'Member'} {isMe && '(You)'}
                                                             </p>
-                                                            <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                                 {member.contributed_rounds} contributions
                                                             </p>
                                                         </div>
@@ -480,7 +480,7 @@ export default function CommitteePage() {
                                                         style={{ backgroundColor: 'var(--color-surface-high)' }}>
                                                         <div>
                                                             <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{c.member_name || 'Member'}</p>
-                                                            <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Round {c.round_number} · {new Date(c.paid_at).toLocaleDateString()}</p>
+                                                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Round {c.round_number} · {new Date(c.paid_at).toLocaleDateString()}</p>
                                                         </div>
                                                         <p className="text-sm font-bold" style={{ color: '#6ee7b7' }}>+{fmtPKR(c.amount_pkr)}</p>
                                                     </div>
@@ -528,7 +528,7 @@ export default function CommitteePage() {
                                     className="w-full px-3 py-2.5 rounded-xl text-sm outline-none"
                                     style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
                                 {form.monthly_amount_pkr && form.member_limit && (
-                                    <p className="text-[10px] mt-1" style={{ color: 'var(--color-success)' }}>
+                                    <p className="text-[15px] mt-1" style={{ color: 'var(--color-success)' }}>
                                         Monthly pot = PKR {(parseFloat(form.monthly_amount_pkr) * parseInt(form.member_limit)).toLocaleString()}
                                     </p>
                                 )}
@@ -554,8 +554,8 @@ export default function CommitteePage() {
 
                             {form.monthly_amount_pkr && form.member_limit && (
                                 <div className="rounded-xl p-3" style={{ backgroundColor: 'rgba(252,211,77,0.06)', border: '1px solid rgba(252,211,77,0.12)' }}>
-                                    <p className="text-[11px] font-semibold mb-1" style={{ color: '#fcd34d' }}>Summary</p>
-                                    <p className="text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <p className="text-[16px] font-semibold mb-1" style={{ color: '#fcd34d' }}>Summary</p>
+                                    <p className="text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>
                                         {form.member_limit} members × PKR {parseFloat(form.monthly_amount_pkr).toLocaleString()}/month = 
                                         <strong style={{ color: '#fcd34d' }}> PKR {(parseFloat(form.monthly_amount_pkr) * parseInt(form.member_limit)).toLocaleString()}</strong> monthly pot.
                                         Each member waits their turn (max {form.member_limit} months) to receive the full amount.

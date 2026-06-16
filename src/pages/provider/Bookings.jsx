@@ -58,7 +58,7 @@ export default function ProviderBookings() {
                                         <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{b.time_slot}</span>
                                     </div>
                                 </div>
-                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${status.class}`}>{status.label}</span>
+                                <span className={`text-[15px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${status.class}`}>{status.label}</span>
                             </div>
                         );
                     })}

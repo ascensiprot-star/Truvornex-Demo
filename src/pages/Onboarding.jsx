@@ -104,7 +104,7 @@ export default function Onboarding() {
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-5"
                         style={{
                             ...anim(0),
-                            fontSize: 12, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
+                            fontSize: 15, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase',
                             backgroundColor: 'var(--color-surface-high)',
                             color: 'var(--color-text-subtle)',
                             border: '1px solid var(--color-border-strong)',
@@ -118,7 +118,7 @@ export default function Onboarding() {
                         How will you use<br />
                         <span className="hero-gradient-text">Truvornex?</span>
                     </h1>
-                    <p style={{ ...anim(0.09), fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                    <p style={{ ...anim(0.09), fontSize: 18, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                         Simon will personalise your entire experience based on your role.
                     </p>
                 </div>
@@ -157,7 +157,7 @@ export default function Onboarding() {
                         </div>
 
                         <div className="mb-1" style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em', color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-primary)' }}>Customer</div>
-                        <div className="mb-3" style={{ fontSize: 13, color: selected === 'customer' ? 'rgba(0,0,0,0.5)' : 'var(--color-text-muted)', ...(isDark && selected === 'customer' ? { color: 'rgba(255,255,255,0.55)' } : {}) }}>
+                        <div className="mb-3" style={{ fontSize: 16, color: selected === 'customer' ? 'rgba(0,0,0,0.5)' : 'var(--color-text-muted)', ...(isDark && selected === 'customer' ? { color: 'rgba(255,255,255,0.55)' } : {}) }}>
                             Book local services with AI guidance
                         </div>
 
@@ -174,7 +174,7 @@ export default function Onboarding() {
                                         <Icon style={{ width: 10, height: 10, color: selected === 'customer' ? 'var(--color-on-primary)' : 'var(--color-text)' }} />
                                     </div>
                                     <span style={{
-                                        fontSize: 13, lineHeight: 1.5, flex: 1,
+                                        fontSize: 16, lineHeight: 1.5, flex: 1,
                                         color: selected === 'customer'
                                             ? (isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)')
                                             : (isDark ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.65)'),
@@ -212,7 +212,7 @@ export default function Onboarding() {
                         </div>
 
                         <div className="mb-1" style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em', color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-primary)' }}>Provider</div>
-                        <div className="mb-3" style={{ fontSize: 13, color: selected === 'provider' ? (isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)') : 'var(--color-text-muted)' }}>
+                        <div className="mb-3" style={{ fontSize: 16, color: selected === 'provider' ? (isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)') : 'var(--color-text-muted)' }}>
                             Offer services, managed by AI
                         </div>
 
@@ -229,7 +229,7 @@ export default function Onboarding() {
                                         <Icon style={{ width: 10, height: 10, color: selected === 'provider' ? 'var(--color-on-primary)' : 'var(--color-text)' }} />
                                     </div>
                                     <span style={{
-                                        fontSize: 13, lineHeight: 1.5, flex: 1,
+                                        fontSize: 16, lineHeight: 1.5, flex: 1,
                                         color: selected === 'provider'
                                             ? (isDark ? 'rgba(255,255,255,0.75)' : 'rgba(0,0,0,0.65)')
                                             : (isDark ? 'rgba(255,255,255,0.70)' : 'rgba(0,0,0,0.65)'),
@@ -246,7 +246,7 @@ export default function Onboarding() {
                     disabled={!selected || loading}
                     style={{
                         ...anim(0.24),
-                        width: '100%', height: 48, borderRadius: 14, fontSize: 16, fontWeight: 600,
+                        width: '100%', height: 48, borderRadius: 14, fontSize: 18, fontWeight: 600,
                         letterSpacing: '-0.01em', border: 'none', cursor: selected ? 'pointer' : 'not-allowed',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                         transition: 'all 0.2s cubic-bezier(0.25,1,0.5,1)',
@@ -278,7 +278,7 @@ export default function Onboarding() {
                         { icon: Cpu,     label: 'Powered by Simon AI' },
                     ].map(({ icon: Icon, label }) => (
                         <div key={label} className="flex items-center gap-1"
-                            style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>
+                            style={{ fontSize: 15, color: 'var(--color-text-subtle)' }}>
                             <Icon style={{ width: 10, height: 10 }} />
                             {label}
                         </div>
@@ -288,7 +288,7 @@ export default function Onboarding() {
                 {/* Back link */}
                 <div className="text-center mt-4">
                     <button onClick={() => navigate('/')}
-                        style={{ fontSize: 13, color: 'var(--color-text-subtle)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}
+                        style={{ fontSize: 16, color: 'var(--color-text-subtle)', background: 'none', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}
                         onMouseEnter={e => e.currentTarget.style.color = 'var(--color-text-muted)'}
                         onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-subtle)'}>
                         ← Back to home

@@ -32,7 +32,7 @@ export default function GiftCards() {
     };
 
     const inputStyle = {
-        width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 16,
+        width: '100%', height: 40, padding: '0 12px', borderRadius: 10, fontSize: 18,
         backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)',
         color: 'var(--color-text)', outline: 'none', fontFamily: 'Inter,sans-serif',
         transition: 'border-color 0.18s',
@@ -65,14 +65,14 @@ export default function GiftCards() {
                     {/* Gift card preview */}
                     <div className="rounded-2xl p-7 shimmer" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border-accent)', boxShadow: 'var(--shadow-card-hover)' }}>
                         <Gift className="h-7 w-7 mb-3" style={{ color: 'var(--color-text-muted)' }} />
-                        <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-subtle)' }}>Gift Card Value</p>
+                        <p className="text-[15px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-text-subtle)' }}>Gift Card Value</p>
                         <p className="font-black text-5xl" style={{ color: 'var(--color-primary)', letterSpacing: '-0.05em' }}>${selectedAmount}</p>
                         <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Truvornex Services Gift Card</p>
                     </div>
 
                     {/* Amount selector */}
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>Select Amount</p>
+                        <p className="text-[15px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>Select Amount</p>
                         <div className="grid grid-cols-3 gap-2 mb-3">
                             {AMOUNTS.map(a => {
                                 const selected = amount === a && !customAmount;

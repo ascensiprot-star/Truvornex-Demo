@@ -150,8 +150,8 @@ Be specific, data-driven, and actionable. Use markdown formatting.`;
                                     <stop offset="95%" stopColor="#7c6fcd" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <XAxis dataKey="name" tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Area type="monotone" dataKey="value" stroke="#7c6fcd" strokeWidth={2} fill="url(#spendGrad)" />
                         </AreaChart>
@@ -205,7 +205,7 @@ Be specific, data-driven, and actionable. Use markdown formatting.`;
                         </div>
                         <div>
                             <h2 className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>Simon's Savings Advice</h2>
-                            <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Powered by DeepSeek AI</p>
+                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Powered by DeepSeek AI</p>
                         </div>
                     </div>
                     <button onClick={getAiInsight} disabled={aiLoading}

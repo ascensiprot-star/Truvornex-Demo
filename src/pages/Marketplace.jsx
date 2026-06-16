@@ -295,7 +295,7 @@ export default function Marketplace() {
                                     <div className="flex flex-wrap gap-1.5">
                                         {Object.entries(CONDITION_LABELS).map(([k, v]) => (
                                             <button key={k} onClick={() => setCondition(condition === k ? '' : k)}
-                                                className="px-2 py-0.5 rounded-lg text-[10px] font-semibold"
+                                                className="px-2 py-0.5 rounded-lg text-[15px] font-semibold"
                                                 style={{ backgroundColor: condition === k ? v.color + '20' : 'var(--color-surface-high)', color: condition === k ? v.color : 'var(--color-text-muted)', border: `1px solid ${condition === k ? v.color + '30' : 'var(--color-border)'}` }}>
                                                 {v.label}
                                             </button>
@@ -374,12 +374,12 @@ export default function Marketplace() {
                                             ) : (
                                                 <cat.icon className="h-10 w-10 opacity-30" style={{ color: cat.color || '#666' }} />
                                             )}
-                                            <span className="absolute top-2 left-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                                            <span className="absolute top-2 left-2 text-[15px] font-bold px-1.5 py-0.5 rounded-full"
                                                 style={{ backgroundColor: STATUS_COLORS[listing.status] + '20', color: STATUS_COLORS[listing.status] }}>
                                                 {listing.status === 'active' ? condCfg.label : listing.status}
                                             </span>
                                             {listing.negotiable && (
-                                                <span className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                                                <span className="absolute top-2 right-2 text-[15px] font-bold px-1.5 py-0.5 rounded-full"
                                                     style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff' }}>
                                                     Negotiable
                                                 </span>
@@ -389,10 +389,10 @@ export default function Marketplace() {
                                             <p className="text-xs font-bold line-clamp-2 mb-1" style={{ color: 'var(--color-text)' }}>{listing.title}</p>
                                             <p className="text-sm font-black" style={{ color: 'var(--color-primary)' }}>PKR {parseFloat(listing.price_pkr).toLocaleString()}</p>
                                             <div className="flex items-center justify-between mt-1">
-                                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.seller_name || 'Unknown'}</p>
+                                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.seller_name || 'Unknown'}</p>
                                                 <div className="flex items-center gap-0.5">
                                                     <Eye className="h-2.5 w-2.5" style={{ color: 'var(--color-text-subtle)' }} />
-                                                    <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.views || 0}</span>
+                                                    <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.views || 0}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -421,19 +421,19 @@ export default function Marketplace() {
                                             <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{listing.title}</p>
                                             <p className="text-xs truncate mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{listing.description?.slice(0, 60)}{listing.description?.length > 60 ? '…' : ''}</p>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                                                <span className="text-[15px] font-semibold px-1.5 py-0.5 rounded-full"
                                                     style={{ backgroundColor: condCfg.color + '20', color: condCfg.color }}>
                                                     {condCfg.label}
                                                 </span>
-                                                <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.seller_name}</span>
-                                                <span className="text-[10px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                                <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{listing.seller_name}</span>
+                                                <span className="text-[15px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                     <Eye className="h-2.5 w-2.5" />{listing.views || 0}
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="shrink-0 text-right">
                                             <p className="font-black text-base" style={{ color: 'var(--color-primary)' }}>PKR {parseFloat(listing.price_pkr).toLocaleString()}</p>
-                                            {listing.negotiable && <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Negotiable</p>}
+                                            {listing.negotiable && <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Negotiable</p>}
                                         </div>
                                     </button>
                                 );
@@ -481,9 +481,9 @@ export default function Marketplace() {
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{l.title}</p>
                                                     <div className="flex items-center gap-2 mt-0.5">
-                                                        <span className="text-[10px] font-semibold" style={{ color: STATUS_COLORS[l.status] }}>{l.status}</span>
-                                                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{l.order_count || 0} offers</span>
-                                                        <span className="text-[10px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                                        <span className="text-[15px] font-semibold" style={{ color: STATUS_COLORS[l.status] }}>{l.status}</span>
+                                                        <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{l.order_count || 0} offers</span>
+                                                        <span className="text-[15px] flex items-center gap-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                             <Eye className="h-2.5 w-2.5" />{l.views || 0}
                                                         </span>
                                                     </div>
@@ -492,7 +492,7 @@ export default function Marketplace() {
                                                     <p className="font-black text-sm" style={{ color: 'var(--color-primary)' }}>PKR {parseFloat(l.price_pkr).toLocaleString()}</p>
                                                     {l.status === 'active' && (
                                                         <button onClick={() => markSold(l.id)}
-                                                            className="text-[10px] font-semibold px-2 py-1 rounded-lg"
+                                                            className="text-[15px] font-semibold px-2 py-1 rounded-lg"
                                                             style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
                                                             Mark Sold
                                                         </button>
@@ -514,14 +514,14 @@ export default function Marketplace() {
                                                 <Package className="h-5 w-5 shrink-0" style={{ color: 'var(--color-text-subtle)' }} />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>{o.title}</p>
-                                                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                                    <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                         {o.buyer_id === user?.id ? `You offered` : `Offer from ${o.buyer_name}`}
                                                         {o.message ? ` — "${o.message}"` : ''}
                                                     </p>
                                                 </div>
                                                 <div className="shrink-0 text-right">
                                                     <p className="text-xs font-bold" style={{ color: 'var(--color-primary)' }}>PKR {parseFloat(o.amount_pkr).toLocaleString()}</p>
-                                                    <span className="text-[10px] font-semibold" style={{ color: STATUS_COLORS[o.status] || '#888' }}>{o.status}</span>
+                                                    <span className="text-[15px] font-semibold" style={{ color: STATUS_COLORS[o.status] || '#888' }}>{o.status}</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -587,11 +587,11 @@ export default function Marketplace() {
                                 </div>
                                 <div>
                                     <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{selected.seller_name || 'Unknown Seller'}</p>
-                                    <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{selected.seller_email}</p>
+                                    <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{selected.seller_email}</p>
                                 </div>
                                 <div className="ml-auto flex items-center gap-1">
                                     <Eye className="h-3 w-3" style={{ color: 'var(--color-text-subtle)' }} />
-                                    <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{selected.views || 0} views</span>
+                                    <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{selected.views || 0} views</span>
                                 </div>
                             </div>
 

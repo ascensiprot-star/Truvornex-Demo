@@ -96,7 +96,7 @@ function StatPill({ value, label, color }) {
             border: '1px solid var(--color-border-strong)',
         }}>
             <span style={{ fontSize: 21, fontWeight: 800, letterSpacing: '-0.04em', color: color || 'var(--color-primary)' }}>{value}</span>
-            <span style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginTop: 1, fontWeight: 500 }}>{label}</span>
+            <span style={{ fontSize: 15, color: 'var(--color-text-subtle)', marginTop: 1, fontWeight: 500 }}>{label}</span>
         </div>
     );
 }
@@ -118,7 +118,7 @@ function CategoryChip({ icon: Icon, label, index }) {
             }}>
                 <Icon style={{ width: 15, height: 15, color: '#93c5fd' }} />
             </div>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
         </div>
     );
 }
@@ -141,8 +141,8 @@ function HighlightCard({ icon: Icon, title, desc, color, index }) {
                 <Icon style={{ width: 14, height: 14, color: color || '#6ee7b7' }} />
             </div>
             <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.01em', marginBottom: 2 }}>{title}</p>
-                <p style={{ fontSize: 13, color: 'var(--color-text-subtle)', lineHeight: 1.4 }}>{desc}</p>
+                <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.01em', marginBottom: 2 }}>{title}</p>
+                <p style={{ fontSize: 16, color: 'var(--color-text-subtle)', lineHeight: 1.4 }}>{desc}</p>
             </div>
         </div>
     );
@@ -230,12 +230,12 @@ export default function IntroFlow({ onComplete }) {
                     }}>
                         <Building2 style={{ width: 13, height: 13, color: 'var(--color-primary)' }} />
                     </div>
-                    <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--color-primary)' }}>Truvornex</span>
+                    <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--color-primary)' }}>Truvornex</span>
                 </div>
 
                 {/* Skip */}
                 <button onClick={finish} style={{
-                    fontSize: 13, fontWeight: 600, letterSpacing: '0.02em',
+                    fontSize: 16, fontWeight: 600, letterSpacing: '0.02em',
                     color: 'var(--color-text-subtle)', background: 'none', border: 'none',
                     cursor: 'pointer', padding: '5px 10px', borderRadius: 8,
                     touchAction: 'manipulation',
@@ -271,7 +271,7 @@ export default function IntroFlow({ onComplete }) {
                     <div style={{ textAlign: 'center', marginBottom: 12 }}>
                         <span style={{
                             display: 'inline-block',
-                            fontSize: 11, fontWeight: 700, letterSpacing: '0.12em',
+                            fontSize: 15, fontWeight: 700, letterSpacing: '0.12em',
                             textTransform: 'uppercase',
                             color: slide.accentColor,
                             backgroundColor: `${slide.accentColor}12`,
@@ -300,7 +300,7 @@ export default function IntroFlow({ onComplete }) {
 
                     {/* Subtitle */}
                     <p style={{
-                        fontSize: 15, lineHeight: 1.6,
+                        fontSize: 18, lineHeight: 1.6,
                         color: 'var(--color-text-muted)',
                         textAlign: 'center',
                         margin: '0 auto 18px',
@@ -366,7 +366,7 @@ export default function IntroFlow({ onComplete }) {
                                     <Icon style={{ width: 13, height: 13, color: slide.accentColor }} />
                                 </div>
                                 <span style={{
-                                    fontSize: 14, lineHeight: 1.45,
+                                    fontSize: 16, lineHeight: 1.45,
                                     color: 'var(--color-text-muted)',
                                     fontWeight: 500,
                                     letterSpacing: '-0.01em',
@@ -417,7 +417,7 @@ export default function IntroFlow({ onComplete }) {
                 </button>
 
                 <p style={{
-                    textAlign: 'center', fontSize: 12, marginTop: 10,
+                    textAlign: 'center', fontSize: 15, marginTop: 10,
                     color: 'var(--color-text-subtle)', fontWeight: 500,
                     letterSpacing: '0.03em',
                 }}>

@@ -110,12 +110,12 @@ export default function NotificationCenter() {
                                     <div className="flex items-start justify-between gap-2">
                                         <p className="text-sm font-semibold" style={{ color: n.is_read ? 'var(--color-text-muted)' : 'var(--color-primary)' }}>{n.title}</p>
                                         <div className="flex items-center gap-1.5 shrink-0">
-                                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={badgeStyle}>{n.priority}</span>
+                                            <span className="text-[15px] font-semibold px-1.5 py-0.5 rounded-full" style={badgeStyle}>{n.priority}</span>
                                         </div>
                                     </div>
                                     <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{n.body}</p>
                                     <div className="flex items-center justify-between mt-2">
-                                        <span className="text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                        <span className="text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>
                                             {new Date(n.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                         {n.action_url && (

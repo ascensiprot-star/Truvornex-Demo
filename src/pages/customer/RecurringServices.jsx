@@ -51,7 +51,7 @@ export default function RecurringServices() {
                                     <p className="font-bold text-sm">{r.service_name}</p>
                                     <p className="text-xs text-zinc-400 mt-0.5">{r.provider_name}</p>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${FREQ_COLORS[r.frequency] || 'bg-zinc-100 text-zinc-600'}`}>{FREQ_LABELS[r.frequency] || r.frequency}</span>
+                                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${FREQ_COLORS[r.frequency] || 'bg-zinc-100 text-zinc-600'}`}>{FREQ_LABELS[r.frequency] || r.frequency}</span>
                             </div>
                             <div className="flex items-center gap-4 text-xs text-zinc-400 mb-3">
                                 <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {r.day_of_week}</span>

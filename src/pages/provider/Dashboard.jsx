@@ -24,7 +24,7 @@ const KPICard = ({ icon: Icon, label, value, trend }) => (
             )}
         </div>
         <div className="font-black text-2xl mb-1" style={{ color: 'var(--color-primary)', letterSpacing: '-0.04em' }}>{value}</div>
-        <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
+        <div className="text-[16px] font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</div>
     </div>
 );
 
@@ -39,12 +39,12 @@ const BookingItem = ({ booking, last }) => {
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                     <p className="font-semibold text-sm truncate" style={{ color: 'var(--color-primary)' }}>{booking.service_name}</p>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                    <span className="text-[15px] font-semibold px-2 py-0.5 rounded-full shrink-0"
                         style={{ backgroundColor: status.bg, color: status.color, border: `1px solid ${status.border}` }}>
                         {status.label}
                     </span>
                 </div>
-                <div className="flex items-center gap-3 mt-0.5 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+                <div className="flex items-center gap-3 mt-0.5 text-[16px]" style={{ color: 'var(--color-text-muted)' }}>
                     <span className="truncate">{booking.customer_email}</span>
                     <span className="flex items-center gap-1 shrink-0"><CalendarDays className="h-3 w-3" />{booking.date}</span>
                     <span className="flex items-center gap-1 shrink-0"><Clock className="h-3 w-3" />{booking.time_slot}</span>

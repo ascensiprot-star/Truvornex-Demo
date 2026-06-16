@@ -116,14 +116,14 @@ export default function CommunitySection({ user }) {
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${cfg.color}`}>{cfg.label}</span>
+                                                    <span className={`text-[15px] font-bold px-1.5 py-0.5 rounded-full ${cfg.color}`}>{cfg.label}</span>
                                                     {post.neighborhood && (
-                                                        <span className="text-[10px] text-zinc-400 flex items-center gap-0.5">
+                                                        <span className="text-[15px] text-zinc-400 flex items-center gap-0.5">
                                                             <MapPin className="h-2.5 w-2.5" /> {post.neighborhood}
                                                         </span>
                                                     )}
-                                                    {post.is_resolved && <span className="text-[10px] text-emerald-600">Resolved</span>}
-                                                    {post.type === 'job' && post.job_salary && <span className="text-[10px] text-emerald-600 font-semibold">{post.job_salary}</span>}
+                                                    {post.is_resolved && <span className="text-[15px] text-emerald-600">Resolved</span>}
+                                                    {post.type === 'job' && post.job_salary && <span className="text-[15px] text-emerald-600 font-semibold">{post.job_salary}</span>}
                                                 </div>
                                                 <p className="font-semibold text-sm line-clamp-1">{post.title}</p>
                                                 <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2">{post.body}</p>
@@ -144,14 +144,14 @@ export default function CommunitySection({ user }) {
                                                 )}
                                             </div>
                                             <div className="flex flex-col items-end gap-1.5 shrink-0">
-                                                <span className="text-[10px] text-zinc-300">{post.created_date?.slice(0, 10)}</span>
+                                                <span className="text-[15px] text-zinc-300">{post.created_date?.slice(0, 10)}</span>
                                                 <button onClick={() => upvote(post)}
                                                     className="flex items-center gap-1 text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
                                                     <ThumbsUp className="h-3 w-3" /> {post.upvotes || 0}
                                                 </button>
                                             </div>
                                         </div>
-                                        <p className="text-[11px] text-zinc-400 mt-1.5">{post.author_name || post.author_email?.split('@')[0]}</p>
+                                        <p className="text-[16px] text-zinc-400 mt-1.5">{post.author_name || post.author_email?.split('@')[0]}</p>
                                     </div>
                                 </div>
                             </div>

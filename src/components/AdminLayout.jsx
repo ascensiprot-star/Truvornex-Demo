@@ -68,7 +68,7 @@ export default function AdminLayout() {
                     </div>
                     <div>
                         <h1 className="text-xs font-black" style={{ color: 'var(--color-primary)', letterSpacing: '-0.04em' }}>TRUVORNEX</h1>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                        <span className="text-[15px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
                             style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)' }}>
                             Admin
                         </span>
@@ -83,7 +83,7 @@ export default function AdminLayout() {
 
             <div className="px-3 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
                 <button onClick={() => navigate('/')}
-                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all"
+                    className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[15px] font-medium transition-all"
                     style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -96,7 +96,7 @@ export default function AdminLayout() {
                 {NAV_GROUPS.map((group) => (
                     <div key={group.label} className="mb-3">
                         <div className="px-2.5 py-1">
-                            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
+                            <span className="text-[15px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
                                 {group.label}
                             </span>
                         </div>
@@ -105,7 +105,7 @@ export default function AdminLayout() {
                                 const active = isActive(item);
                                 return (
                                     <Link key={item.path} to={item.path} onClick={onClose}
-                                        className="relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150"
+                                        className="relative flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[15px] font-medium transition-all duration-150"
                                         style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-muted)', backgroundColor: active ? 'var(--color-surface-high)' : 'transparent' }}
                                         onMouseEnter={e => !active && (e.currentTarget.style.backgroundColor = 'var(--color-surface-high)', e.currentTarget.style.color = 'var(--color-text)')}
                                         onMouseLeave={e => !active && (e.currentTarget.style.backgroundColor = 'transparent', e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -124,7 +124,7 @@ export default function AdminLayout() {
                 <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg"
                     style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)' }}>
                     <div className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)', animation: 'rt-pulse 2s ease-in-out infinite' }} />
-                    <p className="text-[11px] font-medium flex-1" style={{ color: 'var(--color-text-muted)' }}>Simon AI Active</p>
+                    <p className="text-[16px] font-medium flex-1" style={{ color: 'var(--color-text-muted)' }}>Simon AI Active</p>
                     <Zap style={{ width: 10, height: 10, color: 'var(--color-text-subtle)', flexShrink: 0 }} />
                 </div>
             </div>
@@ -155,7 +155,7 @@ export default function AdminLayout() {
                     </div>
                 </div>
                 <button onClick={() => navigate('/')}
-                    className="h-6 px-2.5 rounded-full text-[10px] font-semibold flex items-center gap-1"
+                    className="h-6 px-2.5 rounded-full text-[15px] font-semibold flex items-center gap-1"
                     style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
                     <Home style={{ width: 9, height: 9 }} /> App
                 </button>
@@ -174,7 +174,7 @@ export default function AdminLayout() {
 
             <main className="md:ml-52 pt-12 md:pt-0 pb-6" style={{ minHeight: '100vh' }}>
                 <div className="max-w-5xl mx-auto px-4 md:px-7 py-5 md:py-7">
-                    <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium"
+                    <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[16px] font-medium"
                         style={{ backgroundColor: 'var(--color-surface-high)', border: '1px solid var(--color-border-strong)', color: 'var(--color-text-muted)' }}>
                         <Shield className="h-3 w-3 shrink-0" style={{ opacity: 0.5 }} />
                         <span>Admin Panel — changes affect all platform users and data</span>

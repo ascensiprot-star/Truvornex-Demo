@@ -848,6 +848,27 @@ export async function initExtendedTables() {
             )
         `);
 
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS referrals (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                referrer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                referred_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                referral_code TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','completed','expired')),
+                credit_amount NUMERIC(10,2) DEFAULT 10.00,
+                created_at TIMESTAMPTZ DEFAULT NOW(),
+                completed_at TIMESTAMPTZ
+            )
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON referrals(referrer_id)
+        `);
+
+        await client.query(`
+            CREATE INDEX IF NOT EXISTS idx_referrals_code ON referrals(referral_code)
+        `);
+
         await client.query('COMMIT');
     } catch (err) {
         await client.query('ROLLBACK');

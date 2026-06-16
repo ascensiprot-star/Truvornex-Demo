@@ -151,30 +151,30 @@ export default function Committees() {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <p className="font-bold text-sm truncate" style={{ color: 'var(--color-text)' }}>{c.name}</p>
-                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                                                    <span className="text-[15px] font-bold px-2 py-0.5 rounded-full shrink-0"
                                                         style={{ backgroundColor: statusColor + '20', color: statusColor }}>
                                                         {STATUS_LABELS[c.status]}
                                                     </span>
                                                 </div>
-                                                <div className="flex flex-wrap gap-3 text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                <div className="flex flex-wrap gap-3 text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                     <span className="font-semibold" style={{ color: '#10B981' }}>
                                                         PKR {parseFloat(c.monthly_amount_pkr).toLocaleString()}/mo
                                                     </span>
                                                     <span className="flex items-center gap-1"><Users className="h-3 w-3" />{memberCount}/{c.member_limit}</span>
                                                     <span className="flex items-center gap-1"><Trophy className="h-3 w-3" />Pot: PKR {payout.toLocaleString()}</span>
                                                 </div>
-                                                {c.description && <p className="text-[11px] mt-1 line-clamp-1" style={{ color: 'var(--color-text-subtle)' }}>{c.description}</p>}
+                                                {c.description && <p className="text-[16px] mt-1 line-clamp-1" style={{ color: 'var(--color-text-subtle)' }}>{c.description}</p>}
                                             </div>
                                             <div className="flex flex-col items-end gap-1.5 shrink-0">
                                                 {isMember ? (
-                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"
+                                                    <span className="text-[15px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"
                                                         style={{ backgroundColor: '#10B98120', color: '#10B981' }}>
                                                         <CheckCircle className="h-3 w-3" /> Member
                                                     </span>
                                                 ) : c.status === 'recruiting' && !isOrganizer ? (
                                                     <button onClick={e => { e.stopPropagation(); join(c); }}
                                                         disabled={joining === c.id || memberCount >= c.member_limit}
-                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-xl"
+                                                        className="text-[15px] font-bold px-2.5 py-1 rounded-xl"
                                                         style={{ backgroundColor: '#10B981', color: '#fff', opacity: joining === c.id ? 0.7 : 1 }}>
                                                         {joining === c.id ? '…' : memberCount >= c.member_limit ? 'Full' : 'Join'}
                                                     </button>
@@ -189,7 +189,7 @@ export default function Committees() {
                                                 <div className="h-full rounded-full transition-all"
                                                     style={{ width: `${(memberCount / c.member_limit) * 100}%`, backgroundColor: '#10B981' }} />
                                             </div>
-                                            <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                            <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
                                                 {memberCount}/{c.member_limit} members • Payout day {c.payout_day} of each month
                                             </p>
                                         </div>
@@ -233,7 +233,7 @@ export default function Committees() {
                                             <div key={s.label} className="rounded-xl p-2 text-center"
                                                 style={{ backgroundColor: 'var(--color-surface-high)' }}>
                                                 <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>{s.value}</p>
-                                                <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
+                                                <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{s.label}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -247,13 +247,13 @@ export default function Committees() {
                                             {detail.members.map((m, i) => (
                                                 <div key={m.id} className="flex items-center gap-2.5 rounded-lg p-2"
                                                     style={{ backgroundColor: m.has_received_payout ? '#10B98112' : 'var(--color-surface-high)' }}>
-                                                    <div className="h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0"
+                                                    <div className="h-7 w-7 rounded-full flex items-center justify-center text-[16px] font-bold shrink-0"
                                                         style={{ backgroundColor: '#10B981', color: '#fff' }}>
                                                         {i + 1}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>{m.name || m.email}</p>
-                                                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                             {m.contributed_rounds} contributions
                                                             {m.payout_position && ` • Payout #${m.payout_position}`}
                                                         </p>

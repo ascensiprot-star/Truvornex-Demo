@@ -94,7 +94,7 @@ export default function TrustPassport() {
     };
 
     const labelStyle = {
-        fontSize: 13,
+        fontSize: 16,
         fontWeight: 700,
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
@@ -109,7 +109,7 @@ export default function TrustPassport() {
         lineHeight: 1.1,
     };
 
-    const subStyle = { fontSize: 16, color: 'var(--color-text-subtle)', marginTop: 4 };
+    const subStyle = { fontSize: 18, color: 'var(--color-text-subtle)', marginTop: 4 };
 
     if (loading) {
         return (
@@ -145,20 +145,20 @@ export default function TrustPassport() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
                     <span style={{ fontSize: 23, fontWeight: 800, color: 'var(--color-text)' }}>TrustPassport</span>
-                    <span style={{ fontSize: 14, background: 'var(--color-primary)', color: '#fff', borderRadius: 6, padding: '2px 8px', fontWeight: 700 }}>Truvornex</span>
+                    <span style={{ fontSize: 16, background: 'var(--color-primary)', color: '#fff', borderRadius: 6, padding: '2px 8px', fontWeight: 700 }}>Truvornex</span>
                 </div>
 
                 <div style={{ ...cardStyle, background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-raised) 100%)', marginBottom: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 25, fontWeight: 800, color: 'var(--color-text)' }}>{passport.provider_name}</div>
-                            <div style={{ fontSize: 16, color: 'var(--color-text-subtle)', marginTop: 4 }}>
+                            <div style={{ fontSize: 18, color: 'var(--color-text-subtle)', marginTop: 4 }}>
                                 {passport.city ? `${passport.city}, ` : ''}{passport.country || 'PK'}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
                                 <span style={{ fontSize: 23 }}>{tier.icon}</span>
                                 <span style={{
-                                    fontSize: 16, fontWeight: 700, color: tier.color,
+                                    fontSize: 18, fontWeight: 700, color: tier.color,
                                     background: tier.color + '20', borderRadius: 6, padding: '3px 10px',
                                 }}>{tier.label}</span>
                             </div>
@@ -175,7 +175,7 @@ export default function TrustPassport() {
                                 <div style={{ fontSize: 32, fontWeight: 900, color: scoreColor, lineHeight: 1 }}>
                                     <AnimatedScore target={Math.round(passport.score || 0)} />
                                 </div>
-                                <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', letterSpacing: '0.05em' }}>SCORE</div>
+                                <div style={{ fontSize: 15, color: 'var(--color-text-subtle)', letterSpacing: '0.05em' }}>SCORE</div>
                             </div>
                         </div>
                     </div>
@@ -227,7 +227,7 @@ export default function TrustPassport() {
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             {passport.badges.map((b, i) => (
                                 <span key={i} style={{
-                                    fontSize: 14, fontWeight: 600,
+                                    fontSize: 16, fontWeight: 600,
                                     background: 'var(--color-surface-raised)',
                                     border: '1px solid var(--color-border)',
                                     borderRadius: 8, padding: '4px 12px',
@@ -245,15 +245,15 @@ export default function TrustPassport() {
                             <QRCode value={shareUrl} size={100} level="M" />
                         </div>
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 16, color: 'var(--color-text)', marginBottom: 4 }}>
+                            <div style={{ fontSize: 18, color: 'var(--color-text)', marginBottom: 4 }}>
                                 This credential is verifiable by any third party at:
                             </div>
-                            <div style={{ fontSize: 13, color: 'var(--color-primary)', wordBreak: 'break-all' }}>{shareUrl}</div>
+                            <div style={{ fontSize: 16, color: 'var(--color-primary)', wordBreak: 'break-all' }}>{shareUrl}</div>
                             {passport.verification_hash && (
                                 <div style={{ marginTop: 8 }}>
                                     <div style={labelStyle}>Credential Hash</div>
                                     <div style={{
-                                        fontSize: 12, fontFamily: 'monospace',
+                                        fontSize: 15, fontFamily: 'monospace',
                                         color: 'var(--color-text-subtle)',
                                         wordBreak: 'break-all', marginTop: 2,
                                     }}>{passport.verification_hash.slice(0, 32)}…</div>
@@ -308,13 +308,13 @@ export default function TrustPassport() {
                         border: `1px solid ${verifyResult.error ? 'var(--color-border)' : '#10b98140'}`,
                     }}>
                         {verifyResult.error ? (
-                            <p style={{ fontSize: 16, color: 'var(--color-text-subtle)', margin: 0 }}>{verifyResult.error}</p>
+                            <p style={{ fontSize: 18, color: 'var(--color-text-subtle)', margin: 0 }}>{verifyResult.error}</p>
                         ) : (
                             <>
-                                <div style={{ fontSize: 16, fontWeight: 700, color: '#10b981', marginBottom: 4 }}>
+                                <div style={{ fontSize: 18, fontWeight: 700, color: '#10b981', marginBottom: 4 }}>
                                     ✓ Credential Verified
                                 </div>
-                                <div style={{ fontSize: 14, color: 'var(--color-text-subtle)' }}>
+                                <div style={{ fontSize: 16, color: 'var(--color-text-subtle)' }}>
                                     Status: {verifyResult.status || 'valid'} · Hash: {verifyResult.credential_hash?.slice(0, 16) || verifyResult.hash?.slice(0, 16) || 'confirmed'}…
                                 </div>
                             </>
@@ -322,7 +322,7 @@ export default function TrustPassport() {
                     </div>
                 )}
 
-                <div style={{ marginTop: 24, textAlign: 'center', fontSize: 13, color: 'var(--color-text-subtle)' }}>
+                <div style={{ marginTop: 24, textAlign: 'center', fontSize: 16, color: 'var(--color-text-subtle)' }}>
                     Last updated {passport.last_computed_at
                         ? new Date(passport.last_computed_at).toLocaleDateString()
                         : 'recently'} · Powered by Truvornex

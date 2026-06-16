@@ -65,7 +65,7 @@ export default function ProviderPayouts() {
             ) : (
                 <div className="card-premium overflow-hidden">
                     <table className="w-full text-sm">
-                        <thead className="bg-zinc-50 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <thead className="bg-zinc-50 text-[16px] font-bold text-zinc-400 uppercase tracking-wider">
                             <tr>
                                 <th className="text-left px-5 py-3">Provider</th>
                                 <th className="text-right px-5 py-3">Bookings</th>

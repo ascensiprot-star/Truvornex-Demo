@@ -43,7 +43,7 @@ export default function AuditLogs() {
                 {['debug', 'info', 'warn', 'error', 'critical'].map(s => (
                     <div key={s} className={`rounded-xl p-3 text-center ${SEVERITY_STYLES[s]}`}>
                         <p className="font-black text-xl">{logs.filter(l => l.severity === s).length}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-wider mt-0.5">{s}</p>
+                        <p className="text-[15px] font-bold uppercase tracking-wider mt-0.5">{s}</p>
                     </div>
                 ))}
             </div>
@@ -67,7 +67,7 @@ export default function AuditLogs() {
             ) : (
                 <div className="card-premium overflow-hidden">
                     <table className="w-full text-sm">
-                        <thead className="bg-zinc-50 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <thead className="bg-zinc-50 text-[16px] font-bold text-zinc-400 uppercase tracking-wider">
                             <tr>
                                 <th className="text-left px-5 py-3">Timestamp</th>
                                 <th className="text-left px-5 py-3">Actor</th>
@@ -84,7 +84,7 @@ export default function AuditLogs() {
                                     <td className="px-5 py-2.5 text-zinc-600">{log.action}</td>
                                     <td className="px-5 py-2.5 text-zinc-500">{log.resource_type} {log.resource_id ? `#${log.resource_id?.slice(0, 6)}` : ''}</td>
                                     <td className="px-5 py-2.5 text-right">
-                                        <span className={`font-sans text-[10px] font-bold px-2 py-0.5 rounded-full ${SEVERITY_STYLES[log.severity] || ''}`}>{log.severity}</span>
+                                        <span className={`font-sans text-[15px] font-bold px-2 py-0.5 rounded-full ${SEVERITY_STYLES[log.severity] || ''}`}>{log.severity}</span>
                                     </td>
                                 </tr>
                             ))}

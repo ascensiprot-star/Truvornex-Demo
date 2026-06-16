@@ -95,7 +95,7 @@ export default function SplashScreen({ onComplete }) {
                     </h1>
                     <p style={{
                         color: 'rgba(255,255,255,0.28)',
-                        fontSize: 12, letterSpacing: '0.2em',
+                        fontSize: 15, letterSpacing: '0.2em',
                         textTransform: 'uppercase', fontWeight: 500,
                         opacity: phase >= 3 ? 1 : 0,
                         transition: 'opacity 0.45s ease 0.25s',

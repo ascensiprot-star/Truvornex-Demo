@@ -66,7 +66,7 @@ export default function UsersAdmin() {
                             </Select>
                         </div>
                         <div className="mt-2">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_STYLES[u.role || 'user'] || ''}`}>{u.role || 'user'}</span>
+                            <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${ROLE_STYLES[u.role || 'user'] || ''}`}>{u.role || 'user'}</span>
                         </div>
                     </div>
                 ))}

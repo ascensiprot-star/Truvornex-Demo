@@ -23,7 +23,7 @@ function KPICard({ label, value, sub, icon: Icon, accent, trend }) {
                 ? { background: 'var(--color-primary)', border: '1px solid var(--color-border)' }
                 : { background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
             <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold uppercase tracking-widest"
+                <span className="text-[16px] font-bold uppercase tracking-widest"
                     style={{ color: accent ? 'var(--color-on-primary)' : 'var(--color-text-subtle)', opacity: accent ? 0.6 : 1 }}>
                     {label}
                 </span>
@@ -210,8 +210,8 @@ Give:
                                         <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                                <XAxis dataKey="name" tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                                 <Tooltip content={<CustomTooltip />} />
                                 <Area type="monotone" dataKey="value" stroke="#22c55e" strokeWidth={2} fill="url(#earnGrad)" />
                             </AreaChart>
@@ -289,8 +289,8 @@ Give:
                     <h2 className="font-semibold text-sm mb-4" style={{ color: 'var(--color-primary)' }}>Monthly Revenue</h2>
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={metrics.trendData}>
-                            <XAxis dataKey="name" tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
-                            <YAxis tick={{ fontSize: 13, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <XAxis dataKey="name" tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
+                            <YAxis tick={{ fontSize: 16, fill: 'var(--color-text-subtle)' }} axisLine={false} tickLine={false} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="value" fill="#7c6fcd" radius={[6, 6, 0, 0]} />
                         </BarChart>
@@ -308,7 +308,7 @@ Give:
                         </div>
                         <div>
                             <h2 className="font-semibold text-sm" style={{ color: 'var(--color-primary)' }}>Simon's Earnings Analysis</h2>
-                            <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Powered by DeepSeek AI</p>
+                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Powered by DeepSeek AI</p>
                         </div>
                     </div>
                     <button onClick={getAiInsight} disabled={aiLoading}

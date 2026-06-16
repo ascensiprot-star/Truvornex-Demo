@@ -21,7 +21,7 @@ export default function BookingCard({ booking, onClick, showProvider = true }) {
                     <h4 className="font-inter font-semibold text-sm">{booking.service_name}</h4>
                     {showProvider && <p className="text-xs text-muted-foreground">{booking.provider_name}</p>}
                 </div>
-                <Badge className={`text-[10px] font-inter ${STATUS_STYLES[booking.status] || ''}`}>
+                <Badge className={`text-[15px] font-inter ${STATUS_STYLES[booking.status] || ''}`}>
                     {booking.status?.replace('_', ' ')}
                 </Badge>
             </div>

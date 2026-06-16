@@ -253,7 +253,7 @@ export default function Login() {
                         </button>
                     </p>
 
-                    <p className="text-center text-[10px] mt-8 leading-relaxed" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-center text-[15px] mt-8 leading-relaxed" style={{ color: 'var(--color-text-subtle)' }}>
                         By continuing you agree to our Terms of Service and Privacy Policy.
                         <br />Powered by Simon AI · Truvornex © 2026
                     </p>

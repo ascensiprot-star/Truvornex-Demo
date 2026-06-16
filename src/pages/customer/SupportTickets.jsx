@@ -65,7 +65,7 @@ export default function SupportTickets() {
                                     <p className="font-semibold text-sm truncate">{t.subject}</p>
                                     <p className="text-xs text-zinc-400">{t.id} · {t.category} · {new Date(t.created_at).toLocaleDateString()}</p>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${STATUS_STYLES[t.status] || ''}`}>{t.status}</span>
+                                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full shrink-0 ${STATUS_STYLES[t.status] || ''}`}>{t.status}</span>
                             </div>
                         );
                     })}

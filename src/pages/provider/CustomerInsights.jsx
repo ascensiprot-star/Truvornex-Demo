@@ -73,7 +73,7 @@ export default function CustomerInsights() {
                         </div>
                         <div className="text-right shrink-0">
                             <p className="text-sm font-bold text-zinc-900">${c.spent.toFixed(0)}</p>
-                            {c.bookings.length > 2 && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>VIP</span>}
+                            {c.bookings.length > 2 && <span className="text-[15px] px-1.5 py-0.5 rounded-full font-bold" style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>VIP</span>}
                         </div>
                     </div>
                 ))}

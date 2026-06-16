@@ -39,7 +39,7 @@ function StatCard({ label, value, sub, icon: Icon, accent, trend }) {
     return (
         <div className={`rounded-2xl p-5 border ${accent ? 'bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 border-zinc-800 dark:border-zinc-200' : 'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800'}`}>
             <div className="flex items-center justify-between mb-3">
-                <span className={`text-[11px] font-bold uppercase tracking-widest ${accent ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-400'}`}>{label}</span>
+                <span className={`text-[16px] font-bold uppercase tracking-widest ${accent ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-400'}`}>{label}</span>
                 <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${accent ? 'bg-white/10 dark:bg-black/10' : 'bg-zinc-50 dark:bg-zinc-800'}`}>
                     <Icon className={`h-4 w-4 ${accent ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500 dark:text-zinc-400'}`} />
                 </div>
@@ -78,7 +78,7 @@ function GapBadge({ category, demand, supply }) {
         <div className={`rounded-xl border px-4 py-3 ${styles[level]}`}>
             <div className="flex items-center justify-between mb-1">
                 <span className="font-semibold text-sm capitalize">{category.replace('_', ' ')}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider">{labels[level]}</span>
+                <span className="text-[15px] font-bold uppercase tracking-wider">{labels[level]}</span>
             </div>
             <div className="flex items-center gap-4 text-xs opacity-80">
                 <span>{demand} pending requests</span>
@@ -240,7 +240,7 @@ export default function NeighborhoodDashboard() {
                             </div>
                             <div>
                                 <p className="text-xs font-bold text-zinc-900 dark:text-white leading-tight">{m.label}</p>
-                                <p className="text-[10px] text-zinc-400 mt-0.5 leading-tight">{m.desc}</p>
+                                <p className="text-[15px] text-zinc-400 mt-0.5 leading-tight">{m.desc}</p>
                             </div>
                         </Link>
                     ))}
@@ -256,7 +256,7 @@ export default function NeighborhoodDashboard() {
                             <MessageSquare className="h-3.5 w-3.5 text-violet-500" />
                             <span className="text-xs font-bold">Community Pulse</span>
                         </div>
-                        <Link to="/community" className="text-[10px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">View all <ArrowRight className="h-3 w-3" /></Link>
+                        <Link to="/community" className="text-[15px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">View all <ArrowRight className="h-3 w-3" /></Link>
                     </div>
                     <div className="divide-y divide-zinc-50 dark:divide-zinc-800">
                         {posts.length === 0 ? (
@@ -265,9 +265,9 @@ export default function NeighborhoodDashboard() {
                             <div key={p.id} className="px-4 py-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                                 <p className="text-xs font-medium text-zinc-900 dark:text-white line-clamp-1">{p.title || p.body}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                    <span className="text-[10px] text-zinc-400">{p.author_name}</span>
-                                    {p.upvotes > 0 && <span className="text-[10px] text-rose-400">♥ {p.upvotes}</span>}
-                                    {p.reply_count > 0 && <span className="text-[10px] text-zinc-400">{p.reply_count} replies</span>}
+                                    <span className="text-[15px] text-zinc-400">{p.author_name}</span>
+                                    {p.upvotes > 0 && <span className="text-[15px] text-rose-400">♥ {p.upvotes}</span>}
+                                    {p.reply_count > 0 && <span className="text-[15px] text-zinc-400">{p.reply_count} replies</span>}
                                 </div>
                             </div>
                         ))}
@@ -281,14 +281,14 @@ export default function NeighborhoodDashboard() {
                             <Calendar className="h-3.5 w-3.5 text-sky-500" />
                             <span className="text-xs font-bold">Upcoming Events</span>
                         </div>
-                        <Link to="/events" className="text-[10px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">See all <ArrowRight className="h-3 w-3" /></Link>
+                        <Link to="/events" className="text-[15px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">See all <ArrowRight className="h-3 w-3" /></Link>
                     </div>
                     <div className="divide-y divide-zinc-50 dark:divide-zinc-800">
                         {upcomingEvents.length === 0 ? (
                             <div className="px-4 py-8 text-center">
                                 <Calendar className="h-6 w-6 mx-auto mb-2 text-zinc-200 dark:text-zinc-700" strokeWidth={1.5} />
                                 <p className="text-xs text-zinc-400">No events yet</p>
-                                <Link to="/events" className="text-[10px] font-semibold text-zinc-900 dark:text-white underline underline-offset-2 mt-1 inline-block">Create one</Link>
+                                <Link to="/events" className="text-[15px] font-semibold text-zinc-900 dark:text-white underline underline-offset-2 mt-1 inline-block">Create one</Link>
                             </div>
                         ) : upcomingEvents.slice(0,5).map(ev => (
                             <div key={ev.id} className="px-4 py-2.5 flex items-center gap-2.5">
@@ -296,8 +296,8 @@ export default function NeighborhoodDashboard() {
                                 <div className="flex-1 min-w-0">
                                     <p className="text-xs font-medium text-zinc-900 dark:text-white line-clamp-1">{ev.title}</p>
                                     <div className="flex items-center gap-1.5 mt-0.5">
-                                        {ev.date && <span className="text-[10px] text-zinc-400">{ev.date}</span>}
-                                        <span className="text-[10px] font-semibold text-emerald-600">{ev.is_free || !ev.ticket_price ? 'Free' : `$${ev.ticket_price}`}</span>
+                                        {ev.date && <span className="text-[15px] text-zinc-400">{ev.date}</span>}
+                                        <span className="text-[15px] font-semibold text-emerald-600">{ev.is_free || !ev.ticket_price ? 'Free' : `$${ev.ticket_price}`}</span>
                                     </div>
                                 </div>
                             </div>
@@ -311,16 +311,16 @@ export default function NeighborhoodDashboard() {
                         <div className="flex items-center gap-2">
                             <Vote className="h-3.5 w-3.5 text-amber-500" />
                             <span className="text-xs font-bold">Active Polls</span>
-                            {totalPollVotes > 0 && <span className="text-[10px] text-zinc-400">{totalPollVotes} votes</span>}
+                            {totalPollVotes > 0 && <span className="text-[15px] text-zinc-400">{totalPollVotes} votes</span>}
                         </div>
-                        <Link to="/community" className="text-[10px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">Vote <ArrowRight className="h-3 w-3" /></Link>
+                        <Link to="/community" className="text-[15px] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-0.5">Vote <ArrowRight className="h-3 w-3" /></Link>
                     </div>
                     <div className="p-3 space-y-2">
                         {polls.length === 0 ? (
                             <div className="py-6 text-center">
                                 <Vote className="h-6 w-6 mx-auto mb-2 text-zinc-200 dark:text-zinc-700" strokeWidth={1.5} />
                                 <p className="text-xs text-zinc-400">No polls yet</p>
-                                <Link to="/community" className="text-[10px] font-semibold text-zinc-900 dark:text-white underline underline-offset-2 mt-1 inline-block">Create a poll</Link>
+                                <Link to="/community" className="text-[15px] font-semibold text-zinc-900 dark:text-white underline underline-offset-2 mt-1 inline-block">Create a poll</Link>
                             </div>
                         ) : polls.map(poll => {
                             const total = (poll.options||[]).reduce((s,o) => s+(o.votes||0), 0);
@@ -333,7 +333,7 @@ export default function NeighborhoodDashboard() {
                                         const pct = total > 0 ? Math.round((opt.votes||0)/total*100) : 0;
                                         return (
                                             <div key={i} className="mb-1">
-                                                <div className="flex justify-between text-[10px] text-zinc-500 mb-0.5">
+                                                <div className="flex justify-between text-[15px] text-zinc-500 mb-0.5">
                                                     <span className="truncate">{opt.text}</span>
                                                     <span className="font-semibold ml-1">{pct}%</span>
                                                 </div>
@@ -343,7 +343,7 @@ export default function NeighborhoodDashboard() {
                                             </div>
                                         );
                                     })}
-                                    <p className="text-[10px] text-zinc-400 mt-1">{total} votes · tap to vote</p>
+                                    <p className="text-[15px] text-zinc-400 mt-1">{total} votes · tap to vote</p>
                                 </Link>
                             );
                         })}
@@ -356,7 +356,7 @@ export default function NeighborhoodDashboard() {
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-sm text-zinc-900 dark:text-white">Service Demand by Category</h2>
-                        <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Active requests</span>
+                        <span className="text-[15px] font-semibold text-zinc-400 uppercase tracking-wider">Active requests</span>
                     </div>
                     <div className="space-y-3">
                         {metrics.categoryActivity.map(([cat,count]) => (
@@ -383,8 +383,8 @@ export default function NeighborhoodDashboard() {
                             </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                        <XAxis dataKey="date" tick={{ fontSize:12 }} interval={3} />
-                        <YAxis tick={{ fontSize:12 }} allowDecimals={false} />
+                        <XAxis dataKey="date" tick={{ fontSize:15 }} interval={3} />
+                        <YAxis tick={{ fontSize:15 }} allowDecimals={false} />
                         <Tooltip formatter={v => [v, 'Bookings']} />
                         <Area type="monotone" dataKey="count" stroke="#18181b" strokeWidth={2} fill="url(#actGrad)" />
                     </AreaChart>
@@ -396,7 +396,7 @@ export default function NeighborhoodDashboard() {
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-sm text-zinc-900 dark:text-white">Demand vs Supply by Service</h2>
-                        <div className="flex items-center gap-3 text-[11px] text-zinc-500">
+                        <div className="flex items-center gap-3 text-[16px] text-zinc-500">
                             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-zinc-900 dark:bg-zinc-100 inline-block" /> Demand</span>
                             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-zinc-300 dark:bg-zinc-600 inline-block" /> Supply</span>
                         </div>
@@ -404,8 +404,8 @@ export default function NeighborhoodDashboard() {
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={metrics.demandChartData} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" horizontal={false} />
-                            <XAxis type="number" tick={{ fontSize:12 }} allowDecimals={false} />
-                            <YAxis type="category" dataKey="name" tick={{ fontSize:13 }} width={80} />
+                            <XAxis type="number" tick={{ fontSize:15 }} allowDecimals={false} />
+                            <YAxis type="category" dataKey="name" tick={{ fontSize:16 }} width={80} />
                             <Tooltip />
                             <Bar dataKey="demand" fill="#18181b" radius={[0,4,4,0]} />
                             <Bar dataKey="supply" fill="#d4d4d8" radius={[0,4,4,0]} />
@@ -420,7 +420,7 @@ export default function NeighborhoodDashboard() {
                     <div className="flex items-center gap-2.5 mb-4">
                         <AlertCircle className="h-5 w-5 text-amber-500" />
                         <h2 className="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Service Gap Alerts</h2>
-                        <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold">{metrics.gaps.length} gaps</span>
+                        <span className="text-[15px] bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold">{metrics.gaps.length} gaps</span>
                     </div>
                     <div className="space-y-2.5">
                         {metrics.gaps.map((gap,i) => <GapBadge key={i} category={gap.category} demand={gap.demand} supply={gap.supply} />)}
@@ -446,7 +446,7 @@ export default function NeighborhoodDashboard() {
                         {bundles.filter(b => ['forming','confirmed'].includes(b.status)).slice(0,3).map(b => (
                             <Link key={b.id} to="/bundles" className="card-premium p-4 block group">
                                 <div className="flex items-start justify-between mb-2">
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${b.status==='confirmed' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'}`}>{b.status}</span>
+                                    <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${b.status==='confirmed' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'}`}>{b.status}</span>
                                     <span className="text-xs font-bold text-blue-600">Save {b.discount_percentage||20}%</span>
                                 </div>
                                 <h3 className="font-semibold text-sm mb-1 text-zinc-900 dark:text-white">{b.title}</h3>
@@ -455,7 +455,7 @@ export default function NeighborhoodDashboard() {
                                     <div className="h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                                         <div className="h-full bg-blue-500 rounded-full" style={{ width:`${((b.current_participants||1)/(b.max_participants||5))*100}%` }} />
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 mt-1">{b.current_participants||1}/{b.max_participants} participants</p>
+                                    <p className="text-[15px] text-zinc-400 mt-1">{b.current_participants||1}/{b.max_participants} participants</p>
                                 </div>
                             </Link>
                         ))}
@@ -488,7 +488,7 @@ export default function NeighborhoodDashboard() {
                                         <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">{b.service_name || 'Service'}</p>
                                         <p className="text-xs text-zinc-400">{b.date}{b.time_slot && ` at ${b.time_slot}`}</p>
                                     </div>
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${statusColors[b.status] || 'text-zinc-500 bg-zinc-100'}`}>{b.status}</span>
+                                    <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full capitalize ${statusColors[b.status] || 'text-zinc-500 bg-zinc-100'}`}>{b.status}</span>
                                 </div>
                             );
                         })}

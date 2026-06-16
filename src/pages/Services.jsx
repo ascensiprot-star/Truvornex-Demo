@@ -109,7 +109,7 @@ export default function Services() {
             {/* Category grid */}
             {filteredCategories.length > 0 ? (
                 <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-4"
+                    <p className="text-[15px] font-bold uppercase tracking-[0.12em] mb-4"
                         style={{ color: 'var(--color-text-subtle)' }}>
                         {activeCategory === 'All' ? 'All Categories' : activeCategory} ({filteredCategories.length})
                     </p>
@@ -199,7 +199,7 @@ export default function Services() {
                         <div className="flex-1 p-5 space-y-6 overflow-y-auto">
                             {/* Rating */}
                             <div>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-3"
+                                <p className="text-[15px] font-bold uppercase tracking-[0.12em] mb-3"
                                     style={{ color: 'var(--color-text-subtle)' }}>Minimum Rating</p>
                                 <div className="flex gap-2">
                                     {[0, 3, 4, 4.5].map(r => (
@@ -216,7 +216,7 @@ export default function Services() {
 
                             {/* Distance */}
                             <div>
-                                <p className="text-[10px] font-bold uppercase tracking-[0.12em] mb-3"
+                                <p className="text-[15px] font-bold uppercase tracking-[0.12em] mb-3"
                                     style={{ color: 'var(--color-text-subtle)' }}>
                                     Max Distance: <span style={{ color: 'var(--color-primary)' }}>{filters.maxDistance} km</span>
                                 </p>

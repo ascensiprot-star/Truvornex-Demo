@@ -143,7 +143,7 @@ export default function GroupBuy() {
                             <item.icon className="h-4 w-4" style={{ color: item.color }} />
                         </div>
                         <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>{item.label}</p>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{item.sub}</p>
+                        <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{item.sub}</p>
                     </div>
                 ))}
             </div>
@@ -176,12 +176,12 @@ export default function GroupBuy() {
                                     </div>
                                     <div className="shrink-0 text-right">
                                         <span className="text-2xl font-black" style={{ color: '#6ee7b7' }}>{buy.discount_percent}%</span>
-                                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>off</p>
+                                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>off</p>
                                     </div>
                                 </div>
 
                                 <div className="mb-3">
-                                    <div className="flex items-center justify-between text-[10px] mb-1.5" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <div className="flex items-center justify-between text-[15px] mb-1.5" style={{ color: 'var(--color-text-subtle)' }}>
                                         <span className="flex items-center gap-1">
                                             <Users className="h-3 w-3" />
                                             {buy.current_participants || 0}/{buy.target_participants} joined
@@ -192,7 +192,7 @@ export default function GroupBuy() {
                                         <div className="h-full rounded-full transition-all duration-500"
                                             style={{ width: `${pct}%`, backgroundColor: pct >= 100 ? '#6ee7b7' : '#fcd34d' }} />
                                     </div>
-                                    <p className="text-[10px] mt-1" style={{ color: 'var(--color-text-subtle)' }}>{pct}% to unlock deal</p>
+                                    <p className="text-[15px] mt-1" style={{ color: 'var(--color-text-subtle)' }}>{pct}% to unlock deal</p>
                                 </div>
 
                                 {isLocked && (

@@ -82,7 +82,7 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                                 borderLeft: '1px solid var(--color-border)',
                                 backgroundColor: isToday ? 'var(--color-primary)' : 'transparent',
                             }}>
-                            <span className="text-[9px] font-bold uppercase tracking-widest"
+                            <span className="text-[15px] font-bold uppercase tracking-widest"
                                 style={{ color: isToday ? 'var(--color-on-primary)' : 'var(--color-text-subtle)' }}>
                                 {format(day, 'EEE')}
                             </span>
@@ -102,7 +102,7 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                     <div>
                         {hours.map(h => (
                             <div key={h} style={{ height: HOUR_HEIGHT }} className="flex items-start justify-end pr-2.5 pt-1.5">
-                                <span className="text-[10px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>{fmtHour(h)}</span>
+                                <span className="text-[15px] font-medium" style={{ color: 'var(--color-text-subtle)' }}>{fmtHour(h)}</span>
                             </div>
                         ))}
                     </div>
@@ -127,7 +127,7 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                                             key={b.id}
                                             onClick={() => onBookingClick?.(b)}
                                             style={{ top: top + 2, height, left: 2, right: 2 }}
-                                            className={`absolute rounded-lg border text-left px-1.5 py-1 text-[10px] font-semibold overflow-hidden hover:opacity-80 transition-opacity cursor-pointer ${style}`}
+                                            className={`absolute rounded-lg border text-left px-1.5 py-1 text-[15px] font-semibold overflow-hidden hover:opacity-80 transition-opacity cursor-pointer ${style}`}
                                         >
                                             <div className="truncate font-bold">{b.time_slot}</div>
                                             <div className="truncate opacity-80">{b.service_name}</div>
@@ -147,7 +147,7 @@ export default function WeekCalendar({ bookings = [], onBookingClick }) {
                 {Object.entries(STATUS_STYLES).map(([status, cls]) => (
                     <div key={status} className="flex items-center gap-1.5">
                         <div className={`h-3 w-3 rounded border ${cls}`} />
-                        <span className="text-[10px] capitalize" style={{ color: 'var(--color-text-subtle)' }}>{status.replace('_', ' ')}</span>
+                        <span className="text-[15px] capitalize" style={{ color: 'var(--color-text-subtle)' }}>{status.replace('_', ' ')}</span>
                     </div>
                 ))}
             </div>

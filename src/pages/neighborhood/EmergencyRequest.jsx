@@ -149,7 +149,7 @@ export default function EmergencyRequest() {
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <p className="font-semibold text-zinc-900 dark:text-white">Active Request</p>
-                        <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${
+                        <span className={`text-[15px] font-bold px-2.5 py-1 rounded-full uppercase ${
                             activeReq.status === 'resolved'
                                 ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                                 : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
@@ -176,7 +176,7 @@ export default function EmergencyRequest() {
                                         }`}>
                                             {done && <CheckCircle className="h-3.5 w-3.5 text-white dark:text-zinc-900" />}
                                         </div>
-                                        <p className="text-[9px] text-zinc-400 text-center w-16 leading-tight">{STATUS_LABELS[step]}</p>
+                                        <p className="text-[15px] text-zinc-400 text-center w-16 leading-tight">{STATUS_LABELS[step]}</p>
                                     </div>
                                     {!isLast && (
                                         <div className={`h-0.5 flex-1 mx-1 mt-3 rounded-full transition-all ${
@@ -239,7 +239,7 @@ export default function EmergencyRequest() {
                                     <p className={`font-bold text-xs ${form.urgency === u.id ? 'text-white dark:text-zinc-900' : 'text-zinc-900 dark:text-white'}`}>
                                         {u.label}
                                     </p>
-                                    <p className={`text-[10px] mt-0.5 ${form.urgency === u.id ? 'text-white/70 dark:text-zinc-900/70' : 'text-zinc-400'}`}>
+                                    <p className={`text-[15px] mt-0.5 ${form.urgency === u.id ? 'text-white/70 dark:text-zinc-900/70' : 'text-zinc-400'}`}>
                                         {u.sub}
                                     </p>
                                 </button>
@@ -292,7 +292,7 @@ export default function EmergencyRequest() {
                                     <p className="text-sm font-medium text-zinc-900 dark:text-white capitalize">{r.category}</p>
                                     <p className="text-xs text-zinc-400 line-clamp-1">{r.description}</p>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${
                                     r.status === 'resolved'
                                         ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'

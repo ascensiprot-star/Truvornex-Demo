@@ -77,7 +77,7 @@ export default function ContentManagement() {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
                                             <p className="font-bold text-sm">{page.title}</p>
-                                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${page.published ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{page.published ? 'Published' : 'Draft'}</span>
+                                            <span className={`text-[15px] font-bold px-1.5 py-0.5 rounded-full ${page.published ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>{page.published ? 'Published' : 'Draft'}</span>
                                         </div>
                                         <p className="text-sm text-zinc-500 line-clamp-2">{page.content}</p>
                                     </div>

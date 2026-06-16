@@ -51,8 +51,8 @@ export default function ServiceHistory() {
                     <ResponsiveContainer width="100%" height={200}>
                         <BarChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" />
-                            <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-                            <YAxis tick={{ fontSize: 13 }} allowDecimals={false} />
+                            <XAxis dataKey="name" tick={{ fontSize: 16 }} />
+                            <YAxis tick={{ fontSize: 16 }} allowDecimals={false} />
                             <Tooltip />
                             <Bar dataKey="count" fill="#18181b" radius={[4, 4, 0, 0]} />
                         </BarChart>

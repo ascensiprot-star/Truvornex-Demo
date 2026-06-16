@@ -260,16 +260,16 @@ export default function Chat() {
                                                 <p className="text-xs font-semibold truncate" style={{ color: 'var(--color-text)' }}>
                                                     {c.other_name || c.other_email || 'Unknown'}
                                                 </p>
-                                                <span className="text-[10px] shrink-0 ml-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                                <span className="text-[15px] shrink-0 ml-1" style={{ color: 'var(--color-text-subtle)' }}>
                                                     {formatTime(c.last_message_at)}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <p className="text-[11px] truncate" style={{ color: 'var(--color-text-subtle)' }}>
+                                                <p className="text-[16px] truncate" style={{ color: 'var(--color-text-subtle)' }}>
                                                     {c.last_message || 'Say hello!'}
                                                 </p>
                                                 {unread > 0 && (
-                                                    <span className="h-4.5 min-w-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center shrink-0 ml-1"
+                                                    <span className="h-4.5 min-w-[18px] px-1 rounded-full text-[15px] font-bold flex items-center justify-center shrink-0 ml-1"
                                                         style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>
                                                         {unread}
                                                     </span>
@@ -323,7 +323,7 @@ export default function Chat() {
                                     return (
                                         <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                                             {!isMe && (
-                                                <div className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mr-1.5 mt-auto mb-4"
+                                                <div className="h-6 w-6 rounded-full flex items-center justify-center text-[15px] font-bold shrink-0 mr-1.5 mt-auto mb-4"
                                                     style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
                                                     {getInitial(selected.other_name, selected.other_email)}
                                                 </div>
@@ -338,7 +338,7 @@ export default function Chat() {
                                                     {msg.content}
                                                 </div>
                                                 <div className={`flex items-center gap-1 mt-0.5 ${isMe ? 'justify-end' : 'justify-start'} px-1`}>
-                                                    <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                                    <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                                         {formatTime(msg.created_at)}
                                                     </span>
                                                     {isMe && (
@@ -429,7 +429,7 @@ export default function Chat() {
                                     </div>
                                     <div>
                                         <p className="text-xs font-semibold" style={{ color: 'var(--color-text)' }}>{u.full_name || u.email}</p>
-                                        <p className="text-[11px]" style={{ color: 'var(--color-text-subtle)' }}>{u.email} · {u.role}</p>
+                                        <p className="text-[16px]" style={{ color: 'var(--color-text-subtle)' }}>{u.email} · {u.role}</p>
                                     </div>
                                 </button>
                             ))}

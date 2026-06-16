@@ -125,7 +125,7 @@ export default function SkillSwap() {
                                     <Search className="h-2.5 w-2.5" /> {s.seeking}
                                 </span>
                                 <div className="ml-auto">
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.open}`}>
+                                    <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${STATUS_BADGE[s.status] || STATUS_BADGE.open}`}>
                                         {s.status}
                                     </span>
                                 </div>
@@ -139,7 +139,7 @@ export default function SkillSwap() {
             <div>
                 <div className="flex items-center justify-between mb-3">
                     <p className="text-xs font-bold uppercase tracking-widest text-zinc-400">Available Swaps</p>
-                    <span className="text-[10px] text-zinc-400">{swaps.length} posted</span>
+                    <span className="text-[15px] text-zinc-400">{swaps.length} posted</span>
                 </div>
 
                 {loading ? (
@@ -174,7 +174,7 @@ export default function SkillSwap() {
                                         <Star className="h-3 w-3 text-amber-500" />
                                         {s.time_credits_offered} credit{s.time_credits_offered !== 1 ? 's' : ''}
                                     </span>
-                                    <Button size="sm" className="h-7 rounded-xl text-[10px] gap-1"
+                                    <Button size="sm" className="h-7 rounded-xl text-[15px] gap-1"
                                         disabled={proposing === s.id} onClick={() => propose(s)}>
                                         {proposing === s.id
                                             ? <Loader2 className="h-3 w-3 animate-spin" />

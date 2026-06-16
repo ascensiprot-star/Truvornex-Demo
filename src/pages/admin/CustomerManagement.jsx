@@ -79,7 +79,7 @@ export default function CustomerManagement() {
             ) : (
                 <div className="card-premium overflow-hidden">
                     <table className="w-full text-sm">
-                        <thead className="bg-zinc-50 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <thead className="bg-zinc-50 text-[16px] font-bold text-zinc-400 uppercase tracking-wider">
                             <tr>
                                 <th className="text-left px-5 py-3">Customer</th>
                                 <th className="text-right px-5 py-3">Bookings</th>
@@ -108,7 +108,7 @@ export default function CustomerManagement() {
                                         </div>
                                     </td>
                                     <td className="px-5 py-3 text-right">
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${TIER_STYLES[m.loyalty_tier] || 'bg-zinc-100 text-zinc-600'}`}>{m.loyalty_tier || 'new'}</span>
+                                        <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full capitalize ${TIER_STYLES[m.loyalty_tier] || 'bg-zinc-100 text-zinc-600'}`}>{m.loyalty_tier || 'new'}</span>
                                     </td>
                                 </tr>
                             ))}

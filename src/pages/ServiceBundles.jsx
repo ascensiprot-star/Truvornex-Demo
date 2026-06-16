@@ -147,7 +147,7 @@ export default function ServiceBundles() {
                             <item.icon className="h-4 w-4" style={{ color: item.color }} />
                         </div>
                         <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>{item.label}</p>
-                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{item.sub}</p>
+                        <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{item.sub}</p>
                     </div>
                 ))}
             </div>
@@ -200,26 +200,26 @@ export default function ServiceBundles() {
                                 <div className="flex items-start justify-between gap-3 mb-3">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                            <span className="text-[15px] font-bold px-2 py-0.5 rounded-full"
                                                 style={{ backgroundColor: st.bg, color: st.color }}>
                                                 {st.label}
                                             </span>
-                                            {joined && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(110,231,183,0.1)', color: '#6ee7b7' }}>✓ Joined</span>}
-                                            {organizer && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>Organizer</span>}
+                                            {joined && <span className="text-[15px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(110,231,183,0.1)', color: '#6ee7b7' }}>✓ Joined</span>}
+                                            {organizer && <span className="text-[15px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)' }}>Organizer</span>}
                                         </div>
                                         <h3 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>{bundle.title}</h3>
                                         {bundle.description && <p className="text-xs mt-0.5 line-clamp-2" style={{ color: 'var(--color-text-subtle)' }}>{bundle.description}</p>}
                                     </div>
                                     <div className="shrink-0 text-right">
                                         <span className="text-xl font-black" style={{ color: '#6ee7b7' }}>{bundle.discount_percentage}%</span>
-                                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>off</p>
+                                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>off</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-3 gap-2 mb-3">
                                     <div className="rounded-xl p-2 text-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
                                         <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>{current}/{max}</p>
-                                        <p className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>neighbors</p>
+                                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>neighbors</p>
                                     </div>
                                     {bundle.base_price && (
                                         <div className="rounded-xl p-2 text-center" style={{ backgroundColor: 'var(--color-surface-high)' }}>
@@ -232,13 +232,13 @@ export default function ServiceBundles() {
                                             <p className="text-xs font-bold" style={{ color: 'var(--color-text)' }}>
                                                 {new Date(bundle.scheduled_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                                             </p>
-                                            <p className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>scheduled</p>
+                                            <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>scheduled</p>
                                         </div>
                                     )}
                                 </div>
 
                                 <div className="mb-3">
-                                    <div className="flex items-center justify-between text-[10px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <div className="flex items-center justify-between text-[15px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>
                                         <span>Spots filled</span>
                                         <span>{pct}%</span>
                                     </div>

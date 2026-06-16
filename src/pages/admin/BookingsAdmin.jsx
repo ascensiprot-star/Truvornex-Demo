@@ -84,7 +84,7 @@ export default function BookingsAdmin() {
                     <button key={s} onClick={() => setFilter(filter === s ? 'all' : s)}
                         className={`p-2 rounded-xl text-center transition-all border ${filter === s ? 'border-foreground' : 'border-border'}`}>
                         <div className="text-lg font-black">{counts[s] || 0}</div>
-                        <div className="text-[10px] text-muted-foreground">{c.label}</div>
+                        <div className="text-[15px] text-muted-foreground">{c.label}</div>
                     </button>
                 ))}
             </div>
@@ -102,7 +102,7 @@ export default function BookingsAdmin() {
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <h4 className="font-semibold text-sm">{b.service_name || 'Unknown Service'}</h4>
-                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${STATUS_CONFIG[b.status]?.color || ''}`}>
+                                        <span className={`text-[15px] font-bold px-2 py-0.5 rounded-full ${STATUS_CONFIG[b.status]?.color || ''}`}>
                                             {STATUS_CONFIG[b.status]?.label || b.status}
                                         </span>
                                     </div>

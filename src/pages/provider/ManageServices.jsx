@@ -46,7 +46,7 @@ export default function ManageServices() {
     const btnStyle = {
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
         backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)',
-        border: 'none', borderRadius: 10, padding: '0 14px', height: 34, fontSize: 14,
+        border: 'none', borderRadius: 10, padding: '0 14px', height: 34, fontSize: 16,
         fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'opacity 0.15s',
     };
 
@@ -103,7 +103,7 @@ export default function ManageServices() {
                                 <div className="min-w-0">
                                     <h3 className="font-semibold text-sm truncate" style={{ color: 'var(--color-primary)' }}>{s.name}</h3>
                                     <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>${s.price} · {s.duration_minutes}min · {s.category_slug} · {s.type}</p>
-                                    <span className="text-[10px] font-medium" style={{ color: s.is_active ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
+                                    <span className="text-[15px] font-medium" style={{ color: s.is_active ? 'var(--color-success)' : 'var(--color-text-subtle)' }}>
                                         {s.is_active ? 'Active' : 'Inactive'}
                                     </span>
                                 </div>

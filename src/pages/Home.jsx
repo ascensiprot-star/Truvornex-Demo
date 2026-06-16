@@ -103,7 +103,7 @@ function SimonInsightsWidget() {
                         style={{ background: 'rgba(124,111,205,0.2)' }}>
                         <Cpu style={{ width: 9, height: 9, color: '#7c6fcd' }} />
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-subtle)' }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-subtle)' }}>
                         Simon AI · Live Intelligence
                     </span>
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse ml-0.5" />
@@ -123,12 +123,12 @@ function SimonInsightsWidget() {
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
-                        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: ins.color }}>{ins.tag}</span>
+                        <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: ins.color }}>{ins.tag}</span>
                     </div>
-                    <p style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--color-text-muted)' }}>{ins.msg}</p>
+                    <p style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--color-text-muted)' }}>{ins.msg}</p>
                     <button onClick={() => navigate('/ai')}
                         className="flex items-center gap-1 mt-2"
-                        style={{ fontSize: 12, fontWeight: 600, color: '#7c6fcd', background: 'none', border: 'none', cursor: 'pointer', padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        style={{ fontSize: 15, fontWeight: 600, color: '#7c6fcd', background: 'none', border: 'none', cursor: 'pointer', padding: 0, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                         onMouseEnter={e => e.currentTarget.style.opacity = '0.75'}
                         onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
                         Ask Simon about this <ArrowRight style={{ width: 9, height: 9 }} />
@@ -221,7 +221,7 @@ function SectionHeader({ title, href, label = 'See all' }) {
     return (
         <div className="flex items-center justify-between mb-2.5">
             <h2 className="text-sm font-bold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.03em' }}>{title}</h2>
-            <Link to={href} className="flex items-center gap-0.5 text-[11px] font-medium transition-colors"
+            <Link to={href} className="flex items-center gap-0.5 text-[16px] font-medium transition-colors"
                 style={{ color: 'var(--color-text-subtle)', textDecoration: 'none' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-subtle)')}>
@@ -295,7 +295,7 @@ export default function Home() {
 
                 {/* pill */}
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-semibold mb-3"
-                    style={{ ...anim(0), fontSize: 12, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)' }}>
+                    style={{ ...anim(0), fontSize: 15, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-strong)' }}>
                     <Sparkles style={{ width: 9, height: 9 }} />
                     AI-powered neighborhood services
                 </div>
@@ -309,7 +309,7 @@ export default function Home() {
 
                 {/* short subtitle */}
                 <p className="leading-relaxed mb-3"
-                    style={{ ...anim(0.06), fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 400 }}>
+                    style={{ ...anim(0.06), fontSize: 16, color: 'var(--color-text-muted)', fontWeight: 400 }}>
                     Real people, real skills — ready when you need them most.
                 </p>
 
@@ -318,7 +318,7 @@ export default function Home() {
                     {['Verified', 'Insured', 'Instant Booking'].map((label) => (
                         <div key={label} className="flex items-center gap-1">
                             <CheckCircle2 style={{ width: 10, height: 10, color: '#22c55e', flexShrink: 0 }} />
-                            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
+                            <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '0.01em' }}>{label}</span>
                         </div>
                     ))}
                 </div>
@@ -328,7 +328,7 @@ export default function Home() {
                     <button
                         onClick={() => navigate('/services')}
                         className="flex items-center justify-center gap-1.5 px-5 rounded-xl font-semibold transition-all"
-                        style={{ fontSize: 14, height: 40, backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', letterSpacing: '-0.01em' }}
+                        style={{ fontSize: 16, height: 40, backgroundColor: 'var(--color-primary)', color: 'var(--color-on-primary)', border: 'none', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.18)', letterSpacing: '-0.01em' }}
                         onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                         <Zap style={{ width: 12, height: 12 }} />
@@ -337,7 +337,7 @@ export default function Home() {
                     <button
                         onClick={() => navigate('/onboarding')}
                         className="flex items-center justify-center gap-1.5 px-5 rounded-xl font-semibold transition-all"
-                        style={{ fontSize: 14, height: 40, backgroundColor: 'transparent', color: 'var(--color-primary)', border: '1.5px solid var(--color-primary)', cursor: 'pointer', letterSpacing: '-0.01em' }}
+                        style={{ fontSize: 16, height: 40, backgroundColor: 'transparent', color: 'var(--color-primary)', border: '1.5px solid var(--color-primary)', cursor: 'pointer', letterSpacing: '-0.01em' }}
                         onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--color-surface-high)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.transform = 'translateY(0)'; }}>
                         <Users style={{ width: 12, height: 12 }} />
@@ -348,7 +348,7 @@ export default function Home() {
                 {/* city chip */}
                 {city && (
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium mb-3"
-                        style={{ fontSize: 12, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
+                        style={{ fontSize: 15, backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
                         <Navigation style={{ width: 9, height: 9 }} /> {city}
                     </div>
                 )}
@@ -362,7 +362,7 @@ export default function Home() {
                         onFocus={() => setSearchFocused(true)} onBlur={() => setSearchFocused(false)}
                         className="w-full outline-none"
                         style={{
-                            height: 42, paddingLeft: 36, paddingRight: 80, fontSize: 16,
+                            height: 42, paddingLeft: 36, paddingRight: 80, fontSize: 18,
                             backgroundColor: 'var(--color-surface)', color: 'var(--color-text)',
                             border: `1px solid ${searchFocused ? 'var(--color-border-accent)' : 'var(--color-border-strong)'}`,
                             borderRadius: 10, boxShadow: searchFocused ? 'var(--shadow-glow), 0 0 0 3px rgba(255,255,255,0.05)' : 'var(--shadow-sm)',
@@ -380,7 +380,7 @@ export default function Home() {
                 <div className="flex flex-wrap justify-center gap-1.5 mt-2.5" style={anim(0.16)}>
                     {['Cleaning', 'Plumbing', 'Chef', 'Moving', 'Fitness'].map(tag => (
                         <button key={tag} onClick={() => navigate(`/services?q=${encodeURIComponent(tag)}`)}
-                            className="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all"
+                            className="px-2.5 py-1 rounded-full text-[16px] font-medium transition-all"
                             style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
                             onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-border-accent)', e.currentTarget.style.color = 'var(--color-primary)')}
                             onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)',        e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -401,7 +401,7 @@ export default function Home() {
                         <div className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
                             style={{ background: isDark ? 'radial-gradient(circle at top right,rgba(255,255,255,0.055) 0%,transparent 70%)' : 'radial-gradient(circle at top right,rgba(0,0,0,0.04) 0%,transparent 70%)' }} />
                         <div className="text-lg font-black mb-0.5" style={{ letterSpacing: '-0.045em', color: 'var(--color-primary)' }}>{s.value}</div>
-                        <div className="text-[10px]" style={{ color: 'var(--color-text-muted)', letterSpacing: '0.005em' }}>{s.label}</div>
+                        <div className="text-[15px]" style={{ color: 'var(--color-text-muted)', letterSpacing: '0.005em' }}>{s.label}</div>
                     </div>
                 ))}
             </section>
@@ -420,7 +420,7 @@ export default function Home() {
                                 style={{ width: 30, height: 30, backgroundColor: 'var(--color-surface-high)', transition: 'background-color 0.2s' }}>
                                 <cat.icon style={{ width: 14, height: 14, color: 'var(--color-text-muted)' }} />
                             </div>
-                            <span className="text-[10px] font-semibold leading-tight" style={{ color: 'var(--color-text-muted)' }}>{cat.label}</span>
+                            <span className="text-[15px] font-semibold leading-tight" style={{ color: 'var(--color-text-muted)' }}>{cat.label}</span>
                         </Link>
                     ))}
                 </div>
@@ -442,20 +442,20 @@ export default function Home() {
                                         <Ticket style={{ width: 13, height: 13, color: 'var(--color-text-muted)' }} />
                                     </div>
                                     <div>
-                                        <div className="text-[11px] font-bold leading-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{ev.title}</div>
-                                        <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{ev.venue}</div>
+                                        <div className="text-[16px] font-bold leading-tight" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{ev.title}</div>
+                                        <div className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{ev.venue}</div>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+                                <span className="text-[15px] font-bold px-1.5 py-0.5 rounded shrink-0"
                                     style={{ backgroundColor: ev.free ? 'rgba(110,231,183,0.1)' : 'var(--color-surface-high)', color: ev.free ? 'var(--color-success)' : 'var(--color-text-muted)', border: `1px solid ${ev.free ? 'rgba(110,231,183,0.2)' : 'var(--color-border)'}` }}>
                                     {ev.free ? 'Free' : `$${ev.price}`}
                                 </span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                <span className="flex items-center gap-1 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                     <CalendarDays style={{ width: 9, height: 9 }} />{ev.date}
                                 </span>
-                                <span className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                <span className="flex items-center gap-1 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                     <Users style={{ width: 9, height: 9 }} />{ev.attendees} going
                                 </span>
                             </div>
@@ -463,7 +463,7 @@ export default function Home() {
                     ))}
                 </div>
                 <button onClick={() => navigate('/events')}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-lg text-[12px] font-semibold transition-all"
+                    className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-lg text-[15px] font-semibold transition-all"
                     style={{ padding: '8px', backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)', e.currentTarget.style.borderColor = 'var(--color-border-accent)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)', e.currentTarget.style.borderColor = 'var(--color-border)')}>
@@ -477,7 +477,7 @@ export default function Home() {
                 <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
                     <div className="flex items-center gap-2 px-3.5 py-2.5" style={{ borderBottom: '1px solid var(--color-border)' }}>
                         <Layers style={{ width: 13, height: 13, color: 'var(--color-text-muted)', flexShrink: 0 }} />
-                        <span className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+                        <span className="text-[15px]" style={{ color: 'var(--color-text-muted)' }}>
                             Group up with neighbors and <strong style={{ color: 'var(--color-primary)' }}>save up to 30%</strong> on shared bookings.
                         </span>
                     </div>
@@ -492,19 +492,19 @@ export default function Home() {
                                     <Package style={{ width: 12, height: 12, color: 'var(--color-text-muted)' }} />
                                 </div>
                                 <div className="min-w-0">
-                                    <div className="text-[12px] font-600 truncate" style={{ color: 'var(--color-primary)', fontWeight: 600, letterSpacing: '-0.01em' }}>{b.title}</div>
-                                    <div className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{b.service} · {b.slots} of {b.total} slots left</div>
+                                    <div className="text-[15px] font-600 truncate" style={{ color: 'var(--color-primary)', fontWeight: 600, letterSpacing: '-0.01em' }}>{b.title}</div>
+                                    <div className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>{b.service} · {b.slots} of {b.total} slots left</div>
                                 </div>
                             </div>
                             <div className="text-right shrink-0">
-                                <div className="text-[12px] font-bold" style={{ color: 'var(--color-primary)' }}>${b.price}</div>
-                                <div className="text-[10px] font-semibold" style={{ color: 'var(--color-success)' }}>−{b.discount}%</div>
+                                <div className="text-[15px] font-bold" style={{ color: 'var(--color-primary)' }}>${b.price}</div>
+                                <div className="text-[15px] font-semibold" style={{ color: 'var(--color-success)' }}>−{b.discount}%</div>
                             </div>
                         </div>
                     ))}
                     <div className="flex items-center justify-between px-3.5 py-2.5" style={{ borderTop: '1px solid var(--color-border)' }}>
                         <button onClick={() => navigate('/bundles')}
-                            className="flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                            className="flex items-center gap-1 text-[16px] font-semibold transition-colors"
                             style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                             onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
                             onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -534,13 +534,13 @@ export default function Home() {
                                 <div className="flex items-center justify-center rounded-lg" style={{ width: 28, height: 28, backgroundColor: 'var(--color-surface-high)' }}>
                                     <item.icon style={{ width: 13, height: 13, color: 'var(--color-text-muted)' }} />
                                 </div>
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                                <span className="text-[15px] font-bold px-1.5 py-0.5 rounded"
                                     style={{ backgroundColor: 'var(--color-surface-high)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
                                     {item.badge}
                                 </span>
                             </div>
-                            <div className="text-[12px] font-bold mb-1" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{item.title}</div>
-                            <p className="text-[10px] leading-relaxed m-0" style={{ color: 'var(--color-text-muted)' }}>{item.desc}</p>
+                            <div className="text-[15px] font-bold mb-1" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{item.title}</div>
+                            <p className="text-[15px] leading-relaxed m-0" style={{ color: 'var(--color-text-muted)' }}>{item.desc}</p>
                         </div>
                     ))}
                 </div>
@@ -557,14 +557,14 @@ export default function Home() {
                             {...rowHover}>
                             <span className="text-base shrink-0 leading-tight mt-0.5">{post.emoji}</span>
                             <div className="flex-1 min-w-0">
-                                <div className="text-[11px] font-bold truncate mb-0.5" style={{ color: 'var(--color-primary)', letterSpacing: '-0.01em' }}>{post.title}</div>
-                                <p className="text-[10px] m-0 truncate" style={{ color: 'var(--color-text-muted)' }}>{post.body}</p>
+                                <div className="text-[16px] font-bold truncate mb-0.5" style={{ color: 'var(--color-primary)', letterSpacing: '-0.01em' }}>{post.title}</div>
+                                <p className="text-[15px] m-0 truncate" style={{ color: 'var(--color-text-muted)' }}>{post.body}</p>
                                 <div className="flex items-center gap-3 mt-1.5">
-                                    <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>{post.author}</span>
-                                    <span className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>{post.author}</span>
+                                    <span className="flex items-center gap-1 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                         <ThumbsUp style={{ width: 8, height: 8 }} />{post.likes}
                                     </span>
-                                    <span className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <span className="flex items-center gap-1 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                         <MessageSquare style={{ width: 8, height: 8 }} />{post.replies}
                                     </span>
                                 </div>
@@ -572,9 +572,9 @@ export default function Home() {
                         </div>
                     ))}
                     <div className="flex items-center justify-between px-3.5 py-2.5" style={{ borderTop: '1px solid var(--color-border)' }}>
-                        <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Jobs · Lost & Found · Announcements</span>
+                        <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Jobs · Lost & Found · Announcements</span>
                         <button onClick={() => navigate('/community')}
-                            className="flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                            className="flex items-center gap-1 text-[16px] font-semibold transition-colors"
                             style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                             onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
                             onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -598,10 +598,10 @@ export default function Home() {
                                     /* bottom border on mobile 2-col: first row (0,1) */
                                     borderBottom: i < 2 ? '1px solid var(--color-border)' : 'none',
                                 }}>
-                                <div className="text-[10px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>{item.label}</div>
+                                <div className="text-[15px] mb-1" style={{ color: 'var(--color-text-subtle)' }}>{item.label}</div>
                                 <div className="text-base font-extrabold" style={{ letterSpacing: '-0.03em', color: 'var(--color-primary)' }}>{item.value}</div>
                                 {item.delta && (
-                                    <div className="flex items-center gap-1 text-[10px] font-semibold mt-0.5" style={{ color: 'var(--color-success)' }}>
+                                    <div className="flex items-center gap-1 text-[15px] font-semibold mt-0.5" style={{ color: 'var(--color-success)' }}>
                                         <TrendingUp style={{ width: 9, height: 9 }} />{item.delta}
                                     </div>
                                 )}
@@ -611,10 +611,10 @@ export default function Home() {
                     <div className="flex items-center justify-between px-3.5 py-2.5">
                         <div className="flex items-center gap-1.5">
                             <BarChart3 style={{ width: 11, height: 11, color: 'var(--color-text-subtle)' }} />
-                            <span className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>Synced from your bookings</span>
+                            <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>Synced from your bookings</span>
                         </div>
                         <button onClick={() => navigate('/spending')}
-                            className="flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                            className="flex items-center gap-1 text-[16px] font-semibold transition-colors"
                             style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                             onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
                             onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
@@ -640,10 +640,10 @@ export default function Home() {
                             </div>
                             <div>
                                 <div className="flex items-center gap-1.5 mb-1">
-                                    <span className="text-[9px] font-bold tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>{step.num}</span>
-                                    <span className="text-[12px] font-bold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{step.title}</span>
+                                    <span className="text-[15px] font-bold tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>{step.num}</span>
+                                    <span className="text-[15px] font-bold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{step.title}</span>
                                 </div>
-                                <p className="text-[11px] leading-relaxed m-0" style={{ color: 'var(--color-text-muted)' }}>{step.desc}</p>
+                                <p className="text-[16px] leading-relaxed m-0" style={{ color: 'var(--color-text-muted)' }}>{step.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -667,22 +667,22 @@ export default function Home() {
                                     onMouseEnter={e => (e.currentTarget.style.filter = 'grayscale(0)',    e.currentTarget.style.transform = 'scale(1.05)')}
                                     onMouseLeave={e => (e.currentTarget.style.filter = 'grayscale(0.35)', e.currentTarget.style.transform = 'scale(1)')} />
                                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 55%)' }} />
-                                <span className="absolute top-1.5 left-1.5 text-[9px] font-bold text-white px-1.5 py-0.5 rounded"
+                                <span className="absolute top-1.5 left-1.5 text-[15px] font-bold text-white px-1.5 py-0.5 rounded"
                                     style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.1)' }}>
                                     {p.badge}
                                 </span>
                                 {p.online && <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} />}
                             </div>
                             <div className="p-2.5">
-                                <div className="text-[11px] font-bold mb-0.5" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{p.name}</div>
-                                <div className="text-[10px] mb-1.5" style={{ color: 'var(--color-text-muted)' }}>{p.role}</div>
+                                <div className="text-[16px] font-bold mb-0.5" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>{p.name}</div>
+                                <div className="text-[15px] mb-1.5" style={{ color: 'var(--color-text-muted)' }}>{p.role}</div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-1">
                                         <Star style={{ width: 9, height: 9, fill: 'var(--color-text-muted)', color: 'var(--color-text-muted)' }} />
-                                        <span className="text-[10px] font-semibold" style={{ color: 'var(--color-text)' }}>{p.rating}</span>
-                                        <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>({p.reviews})</span>
+                                        <span className="text-[15px] font-semibold" style={{ color: 'var(--color-text)' }}>{p.rating}</span>
+                                        <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>({p.reviews})</span>
                                     </div>
-                                    <div className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>
+                                    <div className="flex items-center gap-1 text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                                         <MapPin style={{ width: 8, height: 8 }} />
                                         <span className="truncate max-w-[56px]">{p.location}</span>
                                     </div>
@@ -705,8 +705,8 @@ export default function Home() {
                             <MapPin style={{ width: 15, height: 15, color: 'var(--color-text-muted)' }} />
                         </div>
                         <div>
-                            <div className="text-[12px] font-semibold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>Providers Near You</div>
-                            <p className="text-[10px] mt-0.5 m-0" style={{ color: 'var(--color-text-muted)' }}>{city ? `Available in ${city} now` : 'Available in your area now'}</p>
+                            <div className="text-[15px] font-semibold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>Providers Near You</div>
+                            <p className="text-[15px] mt-0.5 m-0" style={{ color: 'var(--color-text-muted)' }}>{city ? `Available in ${city} now` : 'Available in your area now'}</p>
                         </div>
                     </div>
                     <ArrowRight className="transition-transform group-hover:translate-x-1" style={{ width: 14, height: 14, color: 'var(--color-text-subtle)', flexShrink: 0 }} />
@@ -724,8 +724,8 @@ export default function Home() {
                             <Sparkles style={{ width: 15, height: 15, color: 'var(--color-on-primary)' }} />
                         </div>
                         <div>
-                            <div className="text-[12px] font-semibold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>Meet Simon AI</div>
-                            <p className="text-[10px] mt-0.5 m-0" style={{ color: 'var(--color-text-muted)' }}>Smart booking & recommendations</p>
+                            <div className="text-[15px] font-semibold" style={{ color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>Meet Simon AI</div>
+                            <p className="text-[15px] mt-0.5 m-0" style={{ color: 'var(--color-text-muted)' }}>Smart booking & recommendations</p>
                         </div>
                     </div>
                     <ArrowRight className="relative transition-transform group-hover:translate-x-1" style={{ width: 14, height: 14, color: 'var(--color-text-subtle)', flexShrink: 0 }} />
@@ -739,15 +739,15 @@ export default function Home() {
                     style={{ background: 'radial-gradient(ellipse at 80% 0%,rgba(255,255,255,0.07) 0%,transparent 60%)' }} />
                 <div className="relative flex flex-col sm:flex-row items-start gap-4">
                     <div className="flex-1">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold mb-2"
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[15px] font-semibold mb-2"
                             style={{ backgroundColor: 'rgba(128,128,128,0.18)', color: 'var(--color-on-primary)', opacity: 0.85 }}>
                             <Shield style={{ width: 8, height: 8 }} /> Join 2,400+ providers
                         </div>
                         <h2 className="font-black mb-1" style={{ fontSize: 18, letterSpacing: '-0.03em' }}>Are you a service provider?</h2>
-                        <p className="text-[11px] leading-relaxed mb-3" style={{ opacity: 0.65, maxWidth: 400 }}>
+                        <p className="text-[16px] leading-relaxed mb-3" style={{ opacity: 0.65, maxWidth: 400 }}>
                             Earn more with Truvornex. Set your hours, manage bookings, grow your business.
                         </p>
-                        <div className="flex flex-wrap gap-2 text-[10px] mb-3" style={{ opacity: 0.6 }}>
+                        <div className="flex flex-wrap gap-2 text-[15px] mb-3" style={{ opacity: 0.6 }}>
                             {['Free to join', 'Instant payouts', 'AI-powered tools', 'Dedicated support'].map(f => (
                                 <span key={f} className="flex items-center gap-1">
                                     <CheckCircle2 style={{ width: 8, height: 8 }} />{f}
@@ -755,7 +755,7 @@ export default function Home() {
                             ))}
                         </div>
                         <button onClick={() => navigate('/provider')}
-                            className="inline-flex items-center gap-1.5 rounded-lg text-[12px] font-bold transition-all"
+                            className="inline-flex items-center gap-1.5 rounded-lg text-[15px] font-bold transition-all"
                             style={{ padding: '7px 14px', backgroundColor: 'var(--color-on-primary)', color: 'var(--color-primary)', border: 'none', cursor: 'pointer', letterSpacing: '-0.01em' }}
                             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9', e.currentTarget.style.transform = 'translateY(-1px)')}
                             onMouseLeave={e => (e.currentTarget.style.opacity = '1',   e.currentTarget.style.transform = 'translateY(0)')}>

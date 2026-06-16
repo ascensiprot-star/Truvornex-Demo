@@ -39,7 +39,7 @@ function MessageBubble({ msg }) {
                         {msg.content}
                     </ReactMarkdown>}
                 {!isUser && (
-                    <p className="text-[9px] mt-2 font-mono opacity-40" style={{ color: 'var(--color-text-subtle)' }}>
+                    <p className="text-[15px] mt-2 font-mono opacity-40" style={{ color: 'var(--color-text-subtle)' }}>
                         SIMON COPILOT · TRUVORNEX
                     </p>
                 )}
@@ -177,10 +177,10 @@ You are a proactive, data-driven business advisor. Give specific, numbered actio
                             </h1>
                             <span className="flex items-center gap-1">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[9px]" style={{ color: 'var(--color-text-subtle)' }}>DeepSeek · Live</span>
+                                <span className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>DeepSeek · Live</span>
                             </span>
                         </div>
-                        <p className="text-[10px]" style={{ color: 'var(--color-text-subtle)' }}>
+                        <p className="text-[15px]" style={{ color: 'var(--color-text-subtle)' }}>
                             Your AI business advisor · {isConfigured() ? 'Ready' : 'API key required'}
                         </p>
                     </div>
@@ -260,7 +260,7 @@ You are a proactive, data-driven business advisor. Give specific, numbered actio
                         {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                     </button>
                 </div>
-                <p className="text-center text-[9px] mt-2 tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="text-center text-[15px] mt-2 tracking-widest" style={{ color: 'var(--color-text-subtle)' }}>
                     SIMON AI · TRUVORNEX PROVIDER COPILOT · DEEPSEEK
                 </p>
             </div>

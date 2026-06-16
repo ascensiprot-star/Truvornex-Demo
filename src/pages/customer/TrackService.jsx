@@ -52,7 +52,7 @@ export default function TrackService() {
                                 className={`w-full text-left card-premium p-4 transition-all ${selected?.id === b.id ? 'ring-2 ring-zinc-900' : ''}`}>
                                 <p className="font-semibold text-sm">{b.service_name}</p>
                                 <p className="text-xs text-zinc-400 mt-0.5">{b.provider_name} · {b.date} {b.time_slot}</p>
-                                <span className={`inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full ${b.status === 'confirmed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>{b.status}</span>
+                                <span className={`inline-block mt-1.5 text-[15px] font-bold px-2 py-0.5 rounded-full ${b.status === 'confirmed' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>{b.status}</span>
                             </button>
                         ))}
                     </div>
@@ -83,7 +83,7 @@ export default function TrackService() {
                                                 <div className={`pt-1 ${done ? '' : 'opacity-40'}`}>
                                                     <p className={`font-semibold text-sm ${active ? 'text-zinc-900' : ''}`}>{step.label}</p>
                                                     <p className="text-xs text-zinc-400">{step.desc}</p>
-                                                    {active && <span className="inline-block mt-1 text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">Current Status</span>}
+                                                    {active && <span className="inline-block mt-1 text-[15px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">Current Status</span>}
                                                 </div>
                                             </div>
                                         );

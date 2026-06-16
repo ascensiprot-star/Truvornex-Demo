@@ -951,6 +951,73 @@ app.get('/api/simon/recommendations', async (req, res) => {
     }
 });
 
+// ── Loyalty Stats ───────────────────────────────────────────────────────
+app.get('/api/loyalty/stats', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    try {
+        const [coinsResult, bookingsResult, spendResult, ledgerResult] = await Promise.all([
+            pool.query(
+                'SELECT COALESCE(SUM(coins),0)::bigint AS total_coins FROM loyalty_ledger WHERE user_id=$1',
+                [userId]
+            ),
+            pool.query(
+                "SELECT COUNT(*)::int AS count FROM bookings WHERE customer_id=$1 AND status IN ('completed','confirmed')",
+                [userId]
+            ),
+            pool.query(
+                "SELECT COALESCE(SUM(amount),0)::numeric AS total_spent FROM wallet_transactions WHERE user_id=$1 AND type='debit' AND status='completed'",
+                [userId]
+            ),
+            pool.query(
+                'SELECT coins, reason, created_at FROM loyalty_ledger WHERE user_id=$1 ORDER BY created_at DESC LIMIT 10',
+                [userId]
+            ),
+        ]);
+        res.json({
+            total_coins:    Number(coinsResult.rows[0].total_coins),
+            booking_count:  bookingsResult.rows[0].count,
+            total_spent:    Number(spendResult.rows[0].total_spent),
+            recent_activity: ledgerResult.rows,
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ── Referral Stats ──────────────────────────────────────────────────────
+app.get('/api/referral/stats', requireAuth, async (req, res) => {
+    const userId = req.session.user.id;
+    const referralCode = 'TRV-' + userId.slice(0, 6).toUpperCase();
+    try {
+        const [countResult, creditsResult, recentResult] = await Promise.all([
+            pool.query(
+                "SELECT COUNT(*)::int AS count FROM referrals WHERE referrer_id=$1 AND status='completed'",
+                [userId]
+            ),
+            pool.query(
+                "SELECT COALESCE(SUM(credit_amount),0)::numeric AS total FROM referrals WHERE referrer_id=$1 AND status='completed'",
+                [userId]
+            ),
+            pool.query(
+                `SELECT r.created_at, r.status, r.credit_amount, u.full_name AS referred_name
+                 FROM referrals r
+                 LEFT JOIN users u ON u.id = r.referred_id
+                 WHERE r.referrer_id=$1
+                 ORDER BY r.created_at DESC LIMIT 10`,
+                [userId]
+            ),
+        ]);
+        res.json({
+            referral_code:    referralCode,
+            referral_count:   countResult.rows[0].count,
+            credits_earned:   Number(creditsResult.rows[0].total),
+            recent_referrals: recentResult.rows,
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 if (isProd) {
     const distPath = path.join(__dirname, '..', 'dist');
     app.use(express.static(distPath));

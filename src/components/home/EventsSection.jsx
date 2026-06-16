@@ -124,8 +124,8 @@ export default function EventsSection({ user }) {
                                         : <CatIcon className="h-10 w-10 text-zinc-400" />
                                     }
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                    <span className="absolute top-2.5 left-2.5 bg-white/90 dark:bg-zinc-900/90 text-[10px] font-bold px-2 py-0.5 rounded-full capitalize">{event.category}</span>
-                                    {soldOut && <span className="absolute top-2.5 right-2.5 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">SOLD OUT</span>}
+                                    <span className="absolute top-2.5 left-2.5 bg-white/90 dark:bg-zinc-900/90 text-[15px] font-bold px-2 py-0.5 rounded-full capitalize">{event.category}</span>
+                                    {soldOut && <span className="absolute top-2.5 right-2.5 bg-red-500 text-white text-[15px] font-bold px-2 py-0.5 rounded-full">SOLD OUT</span>}
                                     <p className="absolute bottom-2.5 left-3 text-white font-bold text-sm line-clamp-1 drop-shadow">{event.title}</p>
                                 </div>
                                 <div className="p-4">
@@ -139,7 +139,7 @@ export default function EventsSection({ user }) {
                                     </div>
                                     {event.bundle_services?.length > 0 && (
                                         <div className="flex gap-1 flex-wrap mb-2">
-                                            {event.bundle_services.slice(0, 3).map(s => <span key={s} className="text-[10px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">{s}</span>)}
+                                            {event.bundle_services.slice(0, 3).map(s => <span key={s} className="text-[15px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">{s}</span>)}
                                         </div>
                                     )}
                                     <div className="flex items-center justify-between mt-1">
@@ -163,7 +163,7 @@ export default function EventsSection({ user }) {
                         <div className="flex justify-center mb-1">
                             <VIcon className="h-5 w-5 text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
                         </div>
-                        <p className="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">{name}</p>
+                        <p className="text-[15px] font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100">{name}</p>
                     </Link>
                 ))}
             </div>

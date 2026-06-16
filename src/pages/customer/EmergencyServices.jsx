@@ -49,7 +49,7 @@ export default function EmergencyServices() {
 
             {/* Urgency selector */}
             <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--color-text-subtle)' }}>How urgent is it?</p>
+                <p className="text-[15px] font-bold uppercase tracking-widest mb-2" style={{ color: 'var(--color-text-subtle)' }}>How urgent is it?</p>
                 <div className="grid grid-cols-3 gap-2">
                     {URGENCY_LEVELS.map((u, i) => {
                         const active = selectedUrgency === i;
@@ -62,7 +62,7 @@ export default function EmergencyServices() {
                                     cursor: 'pointer',
                                 }}>
                                 <p className="font-bold text-xs" style={{ color: 'var(--color-primary)' }}>{u.label}</p>
-                                <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{u.sub}</p>
+                                <p className="text-[15px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{u.sub}</p>
                             </button>
                         );
                     })}
@@ -81,7 +81,7 @@ export default function EmergencyServices() {
 
             {/* Provider list */}
             <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>
+                <p className="text-[15px] font-bold uppercase tracking-widest mb-2.5" style={{ color: 'var(--color-text-subtle)' }}>
                     Available Emergency Providers ({providers.length})
                 </p>
                 {loading ? (
